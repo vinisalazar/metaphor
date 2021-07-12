@@ -4,9 +4,9 @@
 
 rule fastqc:
     input: 
-        forwardfq="data/readsa-1.fq",
-        reversefq="data/readsa-2.fq",
+        "data/readsa-1.fq",
+        "data/readsa-2.fq"
     output: 
-        output_dir="reads_fastqc"
+        "readsa_fastqc"
     shell: 
-        "fastqc {input} -o {output.output_dir}"
+        "fastqc {input} -o {output}"
