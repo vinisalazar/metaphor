@@ -2,15 +2,22 @@
 # Original MetaGenePipe workflow by Bobbie Shaban
 # Snakemake port by Vini Salazar
 
+rule all:
+    input: 
+        expand("data/{sample}-{readsno}.fq",
+                sample=["readsa",],
+                readsno=["1", "2"]) 
+
+
 rule fastqc:
     input:
-        "data/{sample}.fq"
+        "data/{sample}-{readsno}.fq"
     output:
-        html="{output}/fastqc/{sample}.html",
-        zip="{output}/fastqc/{sample}_fastqc.zip"
+        html="{output}/fastqc/{sample}-{readsno}.html",
+        zip="{output}/fastqc/{sample}-{readsno}_fastqc.zip"
     params: "--quiet"
     log:
-        "{output}/logs/fastqc/{sample}.log"
+        "{output}/logs/fastqc/{sample}-{readsno}.log"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -24,10 +31,8 @@ rule flash:
         flashNotCombined1="{output}/flash/{sample}.notCombined_1.fastq",
         flashNotCombined2="{output}/flash/{sample}.notCombined_2.fastq",
         flashExtended="{output}/flash/{sample}.extendedFrags.fastq"
-    log:
-
     shell: 
-        "mkdir -p {output.output_dir} ; flash -o {output.output_dir}/readsa {input}"
+        "flash -d {wildcards.output}/flash -o {wildcards.sample} {input}"
 
 
 rule interleave:
