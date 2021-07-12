@@ -3,24 +3,29 @@
 # Snakemake port by Vini Salazar
 
 rule fastqc:
-    input: 
-        fqforward="data/readsa-1.fq",
-        fqreverse="data/readsa-2.fq"
-    output: 
-        output_dir=directory("output/fastqc"),
-    shell: 
-        "mkdir -p {output.output_dir} ; fastqc {input} -o {output.output_dir}"
+    input:
+        "data/{sample}.fq"
+    output:
+        html="{output}/fastqc/{sample}.html",
+        zip="{output}/fastqc/{sample}_fastqc.zip"
+    params: "--quiet"
+    log:
+        "{output}/logs/fastqc/{sample}.log"
+    threads: 1
+    wrapper:
+        "0.77.0/bio/fastqc"
 
 
 rule flash:
     input:
-        fqforward="data/readsa-1.fq",
-        fqreverse="data/readsa-2.fq" 
+        fqforward="data/{sample}-1.fq",
+        fqreverse="data/{sample}-2.fq" 
     output: 
-        output_dir=directory("output/flash"),
-        flashNotCombined1="output/flash/readsa.notCombined_1.fastq",
-        flashNotCombined2="output/flash/readsa.notCombined_2.fastq",
-        flashExtended="output/flash/readsa.extendedFrags.fastq"
+        flashNotCombined1="{output}/flash/{sample}.notCombined_1.fastq",
+        flashNotCombined2="{output}/flash/{sample}.notCombined_2.fastq",
+        flashExtended="{output}/flash/{sample}.extendedFrags.fastq"
+    log:
+
     shell: 
         "mkdir -p {output.output_dir} ; flash -o {output.output_dir}/readsa {input}"
 
