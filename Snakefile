@@ -28,21 +28,20 @@ rule flash:
         fqforward="data/{sample}-1.fq",
         fqreverse="data/{sample}-2.fq" 
     output: 
-        flashNotCombined1="{output}/flash/{sample}.notCombined_1.fastq",
-        flashNotCombined2="{output}/flash/{sample}.notCombined_2.fastq",
-        flashExtended="{output}/flash/{sample}.extendedFrags.fastq"
+        flash_notcombined1="{output}/flash/{sample}_notcombined_1.fastq",
+        flash_notcombined2="{output}/flash/{sample}_notcombined_2.fastq",
+        flash_extended="{output}/flash/{sample}_extendedfrags.fastq"
     shell: 
         "flash -d {wildcards.output}/flash -o {wildcards.sample} {input}"
 
 
 rule interleave:
     input: 
-        flashNotCombined1="output/flash/readsa.notCombined_1.fastq",
-        flashNotCombined2="output/flash/readsa.notCombined_2.fastq",
-        flashExtended="output/flash/readsa.extendedFrags.fastq"
+        flash_notcombined1="{output}/flash/{sample}_notcombined_1.fastq",
+        flash_notcombined2="{output}/flash/{sample}_notcombined_2.fastq",
+        flash_extended="{output}/flash/{sample}_extendedfrags.fastq"
     output: 
-        output_dir=directory("output/interleave"),
-        interleaved="output/interleave/readsa-interleaved.fq",
-        merged="output/interleave/readsa-merged.fq"
+        interleaved="{output}/interleave/{sample}-interleaved.fq",
+        merged="{output}/interleave/{sample}-merged.fq"
     shell: 
-        "mkdir {output.output_dir} ; bash scripts/interleave_fastqc {input.flashNotCombined1} {input.flashNotCombined2} > {output.interleaved} ; cat {output.interleaved} {input.flashExtended} > {output.merged}"
+        "bash scripts/interleave_fastqc.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
