@@ -45,3 +45,22 @@ rule interleave:
         merged="{output}/interleave/{sample}-merged.fq"
     shell: 
         "bash scripts/interleave_fastqc.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
+
+
+rule hostremoval:
+    input:
+        flash_merged="{output}/interleave/{sample}-merged.fq"
+    params:
+        alignment_id_threshold=70,
+        alignment_coverage_threshold=70,
+        dbs="mm1,mm2,mm3,mm4,mm5,mm6"
+    output:
+        host_removal_output="{output}/interleave/{sample}-clean.fq"
+    shell:
+        "cat {input} > {output}"
+        # This rule is off for now due to the lack of databases
+        # "perl bin/dqc/deconseq.pl -dbs {params.dbs}" \
+        # " -f {input}" \
+        # " -i {params.alignment_id_threshold}" \
+        # " -c {params.alignment_coverage_threshold} " \
+        # " -id {wildcards.sample}"
