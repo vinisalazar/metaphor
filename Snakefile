@@ -44,7 +44,8 @@ rule interleave:
         interleaved="{output}/interleave/{sample}-interleaved.fq",
         merged="{output}/interleave/{sample}-merged.fq"
     shell: 
-        "bash scripts/interleave_fastqc.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
+        "bash scripts/interleave_fastqc.sh {input.flash_notcombined1} {input.flash_notcombined2} " \
+        " > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
 
 
 rule hostremoval:
