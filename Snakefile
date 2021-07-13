@@ -28,18 +28,18 @@ rule flash:
         fqforward="data/{sample}-1.fq",
         fqreverse="data/{sample}-2.fq" 
     output: 
-        flash_notcombined1="{output}/flash/{sample}_notcombined_1.fastq",
-        flash_notcombined2="{output}/flash/{sample}_notcombined_2.fastq",
-        flash_extended="{output}/flash/{sample}_extendedfrags.fastq"
+        flash_notcombined1="{output}/flash/{sample}.notCombined_1.fastq",
+        flash_notcombined2="{output}/flash/{sample}.notCombined_2.fastq",
+        flash_extended="{output}/flash/{sample}.extendedFrags.fastq"
     shell: 
         "flash -d {wildcards.output}/flash -o {wildcards.sample} {input}"
 
 
 rule interleave:
     input: 
-        flash_notcombined1="{output}/flash/{sample}_notcombined_1.fastq",
-        flash_notcombined2="{output}/flash/{sample}_notcombined_2.fastq",
-        flash_extended="{output}/flash/{sample}_extendedfrags.fastq"
+        flash_notcombined1="{output}/flash/{sample}.notCombined_1.fastq",
+        flash_notcombined2="{output}/flash/{sample}.notCombined_2.fastq",
+        flash_extended="{output}/flash/{sample}.extendedFrags.fastq"
     output: 
         interleaved="{output}/interleave/{sample}-interleaved.fq",
         merged="{output}/interleave/{sample}-merged.fq"
