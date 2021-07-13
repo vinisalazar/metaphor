@@ -65,3 +65,14 @@ rule hostremoval:
         # " -i {params.alignment_id_threshold}" \
         # " -c {params.alignment_coverage_threshold} " \
         # " -id {wildcards.sample}"
+
+
+rule idba:
+    input:
+        host_removal_output="{output}/interleave/{sample}-clean.fq"
+    output:
+        clean_fa="{output}/interleave/{sample}-clean.fa",
+        idba_scaffolds="{output}/idba/{sample}.scaffolds.fa"
+    shell:
+        "fq2fa --paired {input} {output.clean_fa} ; " \
+        "idba_ud -l {output.clean_fa} -out {wildcards.output}/idba/"
