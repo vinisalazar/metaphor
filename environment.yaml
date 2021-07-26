@@ -5,4 +5,4 @@ dependencies:
   - snakemake-minimal
   - fastqc
   - flash
-  - idba
+  - megahit
