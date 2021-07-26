@@ -44,13 +44,13 @@ rule interleave:
         interleaved="{output}/interleave/{sample}-interleaved.fq",
         merged="{output}/interleave/{sample}-merged.fq"
     shell: 
-        "bash scripts/interleave_fastqc.sh {input.flash_notcombined1} {input.flash_notcombined2} " \
+        "bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} " \
         " > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
 
 
 rule fastqc_merged:  # qc on merged reads, after rules 'flash' and 'interleave'
     input:
-        "{output}/interleave/{sample}-merged.fq"  # output of rule 'interleave'
+        "{output}/interleave/{sample}-merged.fq"
     output:
         html="{output}/qc/{sample}-merged.html",
         zip="{output}/qc/{sample}-merged_fastqc.zip"
@@ -60,6 +60,17 @@ rule fastqc_merged:  # qc on merged reads, after rules 'flash' and 'interleave'
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
+
+
+rule multiqc:
+    input:
+        expand("output/qc/{sample}-{kind}_fastqc.zip", sample=["readsa", ], kind=["1", "2", "merged"])
+    output:
+        report="{output}/qc/multiqc_data.html"
+    log:
+        "{output}/logs/qc/multiqc.log"
+    wrapper:
+        "0.77.0/bio/multiqc"
 
 
 rule hostremoval:
@@ -94,4 +105,4 @@ rule megahit:
         "megahit -r {input} -o {output} --out-prefix {params.out_preffix} " \
         "--min-contig-len {params.min_contig_len} " \
         "-t {workflow.cores} " \
-        "-m {params.memory} " \
+        "-m {params.memory} "
