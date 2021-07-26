@@ -17,7 +17,7 @@ rule fastqc_raw:  # qc on raw reads
         zip="{output}/qc/{sample}-{readsno}_fastqc.zip"
     params: "--quiet"
     log:
-        "{output}/logs/qc/{sample}-{readsno}.log"
+        "{output}/logs/qc/{sample}-{readsno}-fastqc_raw.log"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -31,6 +31,8 @@ rule flash:
         flash_notcombined1="{output}/flash/{sample}.notCombined_1.fastq",
         flash_notcombined2="{output}/flash/{sample}.notCombined_2.fastq",
         flash_extended="{output}/flash/{sample}.extendedFrags.fastq"
+    log:
+        "{output}/logs/qc/{sample}-flash.log"
     shell: 
         "flash -d {wildcards.output}/flash -o {wildcards.sample} {input}"
 
@@ -43,6 +45,8 @@ rule interleave:
     output: 
         interleaved="{output}/interleave/{sample}-interleaved.fq",
         merged="{output}/interleave/{sample}-merged.fq"
+    log:
+        "{output}/logs/interleave/{sample}-interleave.log"
     shell: 
         "bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} " \
         " > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
@@ -56,7 +60,7 @@ rule fastqc_merged:  # qc on merged reads, after rules 'flash' and 'interleave'
         zip="{output}/qc/{sample}-merged_fastqc.zip"
     params: "--quiet"
     log:
-        "{output}/logs/qc/{sample}-merged.log"
+        "{output}/logs/qc/{sample}-fastqc_merged.log"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -82,6 +86,8 @@ rule hostremoval:
         dbs="mm1,mm2,mm3,mm4,mm5,mm6"
     output:
         host_removal_output="{output}/interleave/{sample}-clean.fq"
+    log:
+        "{output}/logs/interleave/{sample}-hostremoval.log"
     shell:
         "cat {input} > {output}"
         # This rule is off for now due to the lack of databases
@@ -101,8 +107,10 @@ rule megahit:
         out_preffix="{sample}",
         min_contig_len=200,
         memory=0.5
+    log:
+        "{output}/logs/megahit/{sample}-megahit.log"
     shell:
         "megahit -r {input} -o {output} --out-prefix {params.out_preffix} " \
         "--min-contig-len {params.min_contig_len} " \
         "-t {workflow.cores} " \
-        "-m {params.memory} "
+        "-m {params.memory}"
