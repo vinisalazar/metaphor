@@ -9,15 +9,15 @@ rule all:
                 readsno=["1", "2"]) 
 
 
-rule fastqc:
+rule fastqc_raw:  # qc on raw reads
     input:
         "data/{sample}-{readsno}.fq"
     output:
-        html="{output}/fastqc/{sample}-{readsno}.html",
-        zip="{output}/fastqc/{sample}-{readsno}_fastqc.zip"
+        html="{output}/qc/{sample}-{readsno}.html",
+        zip="{output}/qc/{sample}-{readsno}_fastqc.zip"
     params: "--quiet"
     log:
-        "{output}/logs/fastqc/{sample}-{readsno}.log"
+        "{output}/logs/qc/{sample}-{readsno}.log"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
