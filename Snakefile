@@ -65,3 +65,19 @@ rule hostremoval:
         # " -i {params.alignment_id_threshold}" \
         # " -c {params.alignment_coverage_threshold} " \
         # " -id {wildcards.sample}"
+
+
+rule megahit:
+    input:
+        host_removal_output="{output}/interleave/{sample}-clean.fq"
+    output:
+        megahit_out=directory("{output}/megahit/{sample}")
+    params:
+        out_preffix="{sample}",
+        min_contig_len=200,
+        memory=0.5
+    shell:
+        "megahit -r {input} -o {output} --out-prefix {params.out_preffix} " \
+        "--min-contig-len {params.min_contig_len} " \
+        "-t {workflow.cores} " \
+        "-m {params.memory} " \
