@@ -48,6 +48,20 @@ rule interleave:
         " > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
 
 
+rule fastqc_merged:  # qc on merged reads, after rules 'flash' and 'interleave'
+    input:
+        "{output}/interleave/{sample}-merged.fq"  # output of rule 'interleave'
+    output:
+        html="{output}/qc/{sample}-merged.html",
+        zip="{output}/qc/{sample}-merged_fastqc.zip"
+    params: "--quiet"
+    log:
+        "{output}/logs/qc/{sample}-merged.log"
+    threads: 1
+    wrapper:
+        "0.77.0/bio/fastqc"
+
+
 rule hostremoval:
     input:
         flash_merged="{output}/interleave/{sample}-merged.fq"
