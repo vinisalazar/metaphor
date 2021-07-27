@@ -161,6 +161,28 @@ rule megahit:
         """
 
 
+rule vamb_concatenate:
+    input:
+        contigs=expand("output/megahit/{sample}/{sample}.contigs.fa", sample=["readsa",]),
+        reads=expand("output/interleave/{sample}-clean.fq")
+    output:
+        catalogue_fna="{output}/vamb/catalogue.fna.gz",
+    params:
+        threads=workflow.cores,
+        minimap2_N=50,
+        minimap2_preset="sr",
+    log:
+        "{output}/logs/vamb/vamb_concatenate.log"
+    benchmark:
+        "{output}/benchmarks/vamb/vamb_concatenate.log"
+    conda:
+        "envs/vamb.yaml" 
+    shell: 
+        """
+        concatenate.py {output.catalogue} {input.contigs}
+        """
+
+
 rule prodigal:
     input:
         contigs="{output}/megahit/{sample}/{sample}.contigs.fa"
