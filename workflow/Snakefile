@@ -5,15 +5,13 @@ configfile: "config/config.yaml"
 
 
 ##### load rules #####
+include: "rules/common.smk"
 include: "rules/preprocess.smk"
 include: "rules/assembly.smk"
 include: "rules/mapping.smk"
 include: "rules/annotation.smk"
 
+
 rule all:
     input: 
-        expand("data/{sample}-{readsno}.fq",
-                sample=["readsa",],
-                readsno=["1", "2"]) 
-
-
+        *get_final_output()
