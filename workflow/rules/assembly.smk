@@ -24,7 +24,7 @@ rule megahit:
     benchmark:
         "{output}/benchmarks/megahit/{sample}.txt"
     conda:
-        "envs/megahit.yaml"
+        "../envs/megahit.yaml"
     
     # Using the '--12' flag yielded slightly better results than the '-r' flag
     shell:
@@ -55,7 +55,7 @@ rule vamb:
     benchmark:
         "output/benchmarks/vamb/vamb.txt"
     conda:
-        "envs/vamb.yaml"
+        "../envs/vamb.yaml"
     shell: 
         """
         rm -rf {output}

@@ -20,7 +20,7 @@ rule concatenate_contigs:
     benchmark:
         "{output}/benchmarks/vamb/concatenate_contigs.txt"
     conda:
-        "envs/vamb.yaml" 
+        "../envs/vamb.yaml" 
     shell: 
         """
         concatenate.py -m {params.sequence_length_cutoff} {output} {input} &> {log}
@@ -37,7 +37,7 @@ rule create_mapping:
     benchmark:
         "{output}/benchmarks/vamb/create_mapping.txt"
     conda:
-        "envs/bwa.yaml"
+        "../envs/bwa.yaml"
     shell:
         """
         minimap2 -d {output} {input} &> {log}
@@ -60,7 +60,7 @@ rule map_reads:
     benchmark:
         "{output}/benchmarks/vamb/{sample}_map_reads.txt"
     conda:
-        "envs/bwa.yaml"
+        "../envs/bwa.yaml"
     shell:
         """
         {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
@@ -81,7 +81,7 @@ rule sort_reads:
     benchmark:
         "{output}/benchmarks/vamb/{sample}_sort_reads.txt"
     conda:
-        "envs/bwa.yaml"
+        "../envs/bwa.yaml"
     shell:
         """
         {{ samtools sort -@ {params.threads} -o {output.sort} {input.bam} ; }} &> {log}

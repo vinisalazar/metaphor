@@ -11,7 +11,7 @@ Preprocessing rules:
 
 rule fastqc_raw:  # qc on raw reads
     input:
-        "data/{sample}.fq"
+        expand("{sample}", sample=raw_fqs)
     output:
         html="{output}/qc/{sample}.html",
         zip="{output}/qc/{sample}_fastqc.zip"
@@ -40,7 +40,7 @@ rule flash:
     benchmark:
         "{output}/benchmarks/flash/{sample}.txt"
     conda:
-        "envs/flash.yaml"
+        "../envs/flash.yaml"
     shell: 
         """
         flash -d {wildcards.output}/flash -o {wildcards.sample} \
@@ -61,7 +61,7 @@ rule interleave:
     benchmark:
         "{output}/benchmarks/interleave/{sample}-interleave.txt"
     conda:
-        "envs/bash.yaml"
+        "../envs/bash.yaml"
     shell: 
         """
         {{ bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
@@ -83,7 +83,7 @@ rule hostremoval:
     benchmark:
         "{output}/benchmarks/interleave/{sample}-hostremoval.txt"
     conda:
-        "envs/bash.yaml"
+        "../envs/bash.yaml"
     shell:
         "cat {input} > {output}"
         # This rule is off for now due to the lack of databases

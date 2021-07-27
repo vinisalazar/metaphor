@@ -23,7 +23,7 @@ rule prodigal:
     benchmark:
         "{output}/benchmarks/prodigal/{sample}.txt"
     conda:
-        "envs/prodigal.yaml"
+        "../envs/prodigal.yaml"
     shell:
         """
         prodigal -i {input} \
@@ -69,7 +69,7 @@ rule collation:
     benchmark:
         "{output}/benchmarks/collation/{sample}-collation.txt"
     conda:
-        "envs/bash.yaml"
+        "../envs/bash.yaml"
     shell: 
         """
         sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}
@@ -93,7 +93,7 @@ rule xmlparser:
     benchmark:
         "{output}/benchmarks/collation/{sample}-xmlparser.txt"
     conda:
-        "envs/bash.yaml"
+        "../envs/bash.yaml"
     shell:
         """
         perl scripts/xml_parser.function.pl \
