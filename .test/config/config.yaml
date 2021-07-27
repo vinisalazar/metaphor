@@ -1,0 +1,7 @@
+samples: "config/samples.csv"
+
+prodigal:
+  mode: "meta"  # for testing purposes only
+
+diamond:
+  db: "data/swissprot-1k.dmnd"  # for testing purposes only
