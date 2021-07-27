@@ -51,6 +51,8 @@ rule diamond:
         "{output}/logs/diamond/{sample}.log"
     benchmark:
         "{output}/benchmarks/diamond/{sample}.txt"
+    conda:
+        "../envs/diamond.yaml"
     shell:
         """
         diamond blastp -q {input} \
