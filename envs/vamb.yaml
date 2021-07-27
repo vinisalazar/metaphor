@@ -1,0 +1,11 @@
+channels:
+  - bioconda
+  - pytorch
+  - conda-forge
+dependencies:
+  - vamb
+  - pytorch
+  - torchvision
+  - cudatoolkit
+  - minimap2
+  - samtools
