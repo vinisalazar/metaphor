@@ -1,10 +1,5 @@
 channels:
-  - bioconda
   - conda-forge
 dependencies:
   - snakemake-minimal
-  - fastqc
-  - flash
-  - megahit
-  - prodigal
-  - diamond
+  - pandas
