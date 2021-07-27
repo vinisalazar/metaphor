@@ -171,7 +171,7 @@ rule vamb_concatenate:
     log:
         "{output}/logs/vamb/vamb_concatenate.log"
     benchmark:
-        "{output}/benchmarks/vamb/vamb_concatenate.log"
+        "{output}/benchmarks/vamb/vamb_concatenate.txt"
     conda:
         "envs/vamb.yaml" 
     shell: 
@@ -188,7 +188,7 @@ rule vamb_create_index:
     log:
         "{output}/logs/vamb/vamb_create_map.log"
     benchmark:
-        "{output}/benchmarks/vamb/vamb_create_map.log"
+        "{output}/benchmarks/vamb/vamb_create_map.txt"
     conda:
         "envs/vamb.yaml"
     shell:
@@ -211,7 +211,7 @@ rule vamb_map_reads:
     log:
         "{output}/logs/vamb/{sample}_map_reads.log"
     benchmark:
-        "{output}/benchmarks/vamb/{sample}_map_reads.log"
+        "{output}/benchmarks/vamb/{sample}_map_reads.txt"
     conda:
         "envs/vamb.yaml"
     shell:
