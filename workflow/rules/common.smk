@@ -43,4 +43,4 @@ def _get_mapping_output():
 
 
 def _get_annotation_output():
-    return expand("output/collation/{sample}-collated.xml", sample=sample_IDs)
+    return expand("output/diamond/{sample}.xml", sample=sample_IDs)
