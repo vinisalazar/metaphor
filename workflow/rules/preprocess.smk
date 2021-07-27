@@ -66,7 +66,7 @@ rule interleave:
         "../envs/bash.yaml"
     shell:
         """
-        {{ bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
+        {{ bash ../scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
 
         cat {input.flash_extended} {output.interleaved} > {output.merged}
         """
