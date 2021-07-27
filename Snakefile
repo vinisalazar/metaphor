@@ -38,7 +38,9 @@ rule flash:
     benchmark:
         "{output}/benchmarks/flash/{sample}.txt"
     shell: 
-        "flash -d {wildcards.output}/flash -o {wildcards.sample} {input}"
+        """
+        flash -d {wildcards.output}/flash -o {wildcards.sample} {input} &>> {log}
+        """
 
 
 rule interleave:
@@ -54,9 +56,11 @@ rule interleave:
     benchmark:
         "{output}/benchmarks/interleave/{sample}-interleave.txt"
     shell: 
-        "bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} " \
-        " > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
+        """
+        bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved}
 
+        cat {output.interleaved} {input.flash_extended} > {output.merged}
+        """
 
 rule fastqc_merged:  # qc on merged reads, after rules 'flash' and 'interleave'
     input:
@@ -136,7 +140,7 @@ rule megahit:
                 --min-contig-len {params.min_contig_len}  \
                 -t {workflow.cores}  \
                 -m {params.memory} \
-                --k-list {params.k_list}
+                --k-list {params.k_list} &> {log}
         """
 
 
@@ -158,7 +162,7 @@ rule prodigal:
                  -d {output.genes} \
                  -a {output.proteins} \
                  -s {output.scores} \
-                 -o {output.genbank} 2>> {log}
+                 -o {output.genbank} &> {log}
         """
 
 
@@ -182,5 +186,5 @@ rule diamond:
                 -p {workflow.cores} \
                 -f {params.format} \
                 -d {params.db} \
-                -o {output}
+                -o {output} &> {log}
         """
