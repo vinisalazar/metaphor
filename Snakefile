@@ -304,10 +304,12 @@ rule collation:
     output:
         collationout="{output}/diamond/{sample}-collated.xml"
     log:
-        "{output}/logs/diamond/{sample}-collation.txt"
+        "{output}/logs/diamond/{sample}-collation.log"
     benchmark:
         "{output}/benchmarks/diamond/{sample}-collation.txt"
     conda:
         "envs/bash.yaml"
     shell: 
-        "sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}" 
+        """
+        sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}
+        """
