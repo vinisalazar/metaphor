@@ -1,6 +1,11 @@
 # MetaSnakePipe
 # Original MetaGenePipe workflow by Bobbie Shaban
 # Snakemake port by Vini Salazar
+from pathlib import Path
+
+
+configfile: "config.yaml"
+
 
 rule all:
     input: 
@@ -37,9 +42,11 @@ rule flash:
         "{output}/logs/qc/{sample}-flash.log"
     benchmark:
         "{output}/benchmarks/flash/{sample}.txt"
+    conda:
+        "envs/flash.yaml"
     shell: 
         """
-        flash -d {wildcards.output}/flash -o {wildcards.sample} {input} &>> {log}
+        flash -d {wildcards.output}/flash -o {wildcards.sample} {input} &> {log}
         """
 
 
@@ -55,6 +62,8 @@ rule interleave:
         "{output}/logs/interleave/{sample}-interleave.log"
     benchmark:
         "{output}/benchmarks/interleave/{sample}-interleave.txt"
+    conda:
+        "envs/bash.yaml"
     shell: 
         """
         bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved}
@@ -104,6 +113,8 @@ rule hostremoval:
         "{output}/logs/interleave/{sample}-hostremoval.log"
     benchmark:
         "{output}/benchmarks/interleave/{sample}-hostremoval.txt"
+    conda:
+        "envs/bash.yaml"
     shell:
         "cat {input} > {output}"
         # This rule is off for now due to the lack of databases
@@ -120,15 +131,17 @@ rule megahit:
     output:
         contigs="{output}/megahit/{sample}/{sample}.contigs.fa"
     params:
-        out_dir="{output}/megahit/",
-        out_preffix="{sample}",
+        out_dir=lambda w, output: str(Path(output.contigs).parent.parent),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
+        k_list="21,29",
         memory=0.5,
-        k_list="21,29"
+        cpus=workflow.cores
     log:
         "{output}/logs/megahit/{sample}-megahit.log"
     benchmark:
         "{output}/benchmarks/megahit/{sample}.txt"
+    conda:
+        "envs/megahit.yaml"
     
     # Using the '--12' flag yielded slightly better results than the '-r' flag
     shell:
@@ -136,9 +149,10 @@ rule megahit:
         # MegaHit has no --force flag, so we must remove the created directory prior to running
         rm -rf {params.out_dir}/{wildcards.sample}
 
-        megahit --12 {input} -o {params.out_dir}/{wildcards.sample} --out-prefix {params.out_preffix} \
+        megahit --12 {input} -o {params.out_dir}/{wildcards.sample} \
+                --out-prefix {wildcards.sample} \
                 --min-contig-len {params.min_contig_len}  \
-                -t {workflow.cores}  \
+                -t {params.cpus}  \
                 -m {params.memory} \
                 --k-list {params.k_list} &> {log}
         """
@@ -156,6 +170,8 @@ rule prodigal:
         "{output}/logs/prodigal/{sample}"
     benchmark:
         "{output}/benchmarks/prodigal/{sample}.txt"
+    conda:
+        "envs/prodigal.yaml"
     shell:
         """
         prodigal -i {input} \
@@ -172,9 +188,10 @@ rule diamond:
     output:
         xmlout="{output}/diamond/{sample}.xml"
     params:
-        db="/Users/vini/Bio/MGP/metaGenePipe/kegg/swissprot.dmnd",
+        db=config["diamond_db"],
         max_target_seqs=1,
-        format=5
+        format=5,
+        cpus=workflow.cores
     log:
         "{output}/logs/diamond/{sample}.log"
     benchmark:
@@ -183,7 +200,7 @@ rule diamond:
         """
         diamond blastp -q {input} \
                 --max-target-seqs {params.max_target_seqs} \
-                -p {workflow.cores} \
+                -p {params.cpus} \
                 -f {params.format} \
                 -d {params.db} \
                 -o {output} &> {log}
