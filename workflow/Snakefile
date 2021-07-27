@@ -13,5 +13,5 @@ include: "rules/annotation.smk"
 
 
 rule all:
-    input: 
-        *get_final_output()
+    input:
+        * get_final_output(),

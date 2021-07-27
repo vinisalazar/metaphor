@@ -21,7 +21,7 @@ samples = pd.read_csv(
 # validate(samples, schema="../schemas/samples.schema.yaml")
 
 sample_IDs = samples.index.to_list()
-raw_fqs = samples['fq1'].to_list() + samples['fq2'].to_list()
+raw_fqs = samples["fq1"].to_list() + samples["fq2"].to_list()
 
 
 def get_final_output():
@@ -37,7 +37,9 @@ def _get_assembly_output():
 
 
 def _get_mapping_output():
-    return expand("output/vamb/{kind}/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sort"))
+    return expand(
+        "output/vamb/{kind}/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sort")
+    )
 
 
 def _get_annotation_output():
