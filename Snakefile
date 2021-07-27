@@ -69,7 +69,7 @@ rule interleave:
         "envs/bash.yaml"
     shell: 
         """
-        bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved}
+        {{ bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
 
         cat {output.interleaved} {input.flash_extended} > {output.merged}
         """
@@ -176,7 +176,7 @@ rule vamb_concatenate:
         "envs/vamb.yaml" 
     shell: 
         """
-        concatenate.py -m {params.sequence_length_cutoff} {output} {input}
+        concatenate.py -m {params.sequence_length_cutoff} {output} {input} &> {log}
         """
 
 
@@ -193,7 +193,7 @@ rule vamb_create_index:
         "envs/vamb.yaml"
     shell:
         """
-        minimap2 -d {output} {input}
+        minimap2 -d {output} {input} &> {log}
         """
 
 
@@ -216,9 +216,9 @@ rule vamb_map_reads:
         "envs/vamb.yaml"
     shell:
         """
-        minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
+        {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
                  {input.catalogue_idx} {input.reads} | samtools view \
-                 -F {params.flags} -b --threads {params.threads} > {output}
+                 -F {params.flags} -b --threads {params.threads} > {output} ; }} &> {log}
         """
 
 
