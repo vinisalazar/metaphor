@@ -294,3 +294,16 @@ rule diamond:
                 -d {params.db} \
                 -o {output} &> {log}
         """
+
+
+rule collation:
+    input: 
+        xmlout="{output}/diamond/{sample}.xml"
+    output:
+        collationout="{output}/diamond/{sample}-collated.xml"
+    log:
+        "{output}/logs/diamond/{sample}-collation.txt"
+    benchmark:
+        "{output}/benchmarks/diamond/{sample}-collation.txt"
+    shell: 
+        "sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}" 
