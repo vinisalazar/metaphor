@@ -18,6 +18,8 @@ rule fastqc_raw:  # qc on raw reads
     params: "--quiet"
     log:
         "{output}/logs/qc/{sample}-{readsno}-fastqc_raw.log"
+    benchmark:
+        "{output}/benchmarks/qc/{sample}-{readsno}_fastqc_raw.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -33,6 +35,8 @@ rule flash:
         flash_extended="{output}/flash/{sample}.extendedFrags.fastq"
     log:
         "{output}/logs/qc/{sample}-flash.log"
+    benchmark:
+        "{output}/benchmarks/flash/{sample}.txt"
     shell: 
         "flash -d {wildcards.output}/flash -o {wildcards.sample} {input}"
 
@@ -47,6 +51,8 @@ rule interleave:
         merged="{output}/interleave/{sample}-merged.fq"
     log:
         "{output}/logs/interleave/{sample}-interleave.log"
+    benchmark:
+        "{output}/benchmarks/interleave/{sample}-interleave.txt"
     shell: 
         "bash scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} " \
         " > {output.interleaved} ; cat {output.interleaved} {input.flash_extended} > {output.merged}"
@@ -61,6 +67,8 @@ rule fastqc_merged:  # qc on merged reads, after rules 'flash' and 'interleave'
     params: "--quiet"
     log:
         "{output}/logs/qc/{sample}-fastqc_merged.log"
+    benchmark:
+        "{output}/benchmarks/qc/{sample}_fastqc_merged.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -73,6 +81,8 @@ rule multiqc:
         report="{output}/qc/multiqc_data.html"
     log:
         "{output}/logs/qc/multiqc.log"
+    benchmark:
+        "{output}/benchmarks/qc/multiqc.txt"
     wrapper:
         "0.77.0/bio/multiqc"
 
@@ -88,6 +98,8 @@ rule hostremoval:
         host_removal_output="{output}/interleave/{sample}-clean.fq"
     log:
         "{output}/logs/interleave/{sample}-hostremoval.log"
+    benchmark:
+        "{output}/benchmarks/interleave/{sample}-hostremoval.txt"
     shell:
         "cat {input} > {output}"
         # This rule is off for now due to the lack of databases
@@ -111,6 +123,8 @@ rule megahit:
         k_list="21,29"
     log:
         "{output}/logs/megahit/{sample}-megahit.log"
+    benchmark:
+        "{output}/benchmarks/megahit/{sample}.txt"
     shell:
         """
         # MegaHit has no --force flag, so we must remove the created directory prior to running
@@ -133,8 +147,9 @@ rule prodigal:
         scores="{output}/prodigal/{sample}/{sample}_scores.cds"
     log:
         "{output}/logs/prodigal/{sample}"
+    benchmark:
+        "{output}/benchmarks/prodigal/{sample}.txt"
     shell:
         """
         prodigal -i {input} -d {output.genes} -a {output.proteins} -s {output.scores} -q
         """
-
