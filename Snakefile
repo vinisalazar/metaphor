@@ -313,3 +313,34 @@ rule collation:
         """
         sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}
         """
+
+
+rule xmlparser:
+    input: 
+        collationout="{output}/collation/{sample}-collated.xml"
+    output:
+        gene_count_table="{output}/collation/{sample}_gene_count_table.txt",
+        otu_table="{output}/collation/{sample}_OTU_out.txt"
+    params:
+        output_dir=str(Path(output).parent),
+        ko_formatted_file="bin/db/formatted.xml.out",
+        kegg_species_file="bin/db/species_prokaryotes.dat",
+        tax_rank_file="bin/db/tax_rank",
+        full_lineage_file="fullnamelineage.dmp"
+    log:
+        "{output}/logs/diamond/xmlparser.log"
+    benchmark:
+        "{output}/benchmarks/diamond/xmlparser.txt"
+    conda:
+        "envs/bash.yaml"
+    shell:
+        """
+        perl scripts/xml_parser.function.pl \
+             {output.gene_count_table} 1 \
+             {params.ko_formatted_file} \
+             {params.kegg_species_file} \
+             {input}
+
+        perl scripts/orgID_2_name.pl {params.tax_rank_file} \
+             {params.full_lineage_file} {params.output_dir} > {output.otu_table}
+        """  # must add 'sep' next to input (see L30) of metaGenePipe/tasks/xml_parser.wdl
