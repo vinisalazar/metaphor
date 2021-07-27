@@ -202,7 +202,8 @@ rule map_reads:
         catalogue_idx="{output}/vamb/catalogue.mmi",
         reads="{output}/interleave/{sample}-clean.fq"
     output: 
-        bam="{output}/vamb/bam/{sample}.bam"
+        bam="{output}/vamb/bam/{sample}.bam",
+        sort="{output}/vamb/sort/{sample}.sort"
     params:
         threads=workflow.cores,
         N=50,
@@ -218,8 +219,10 @@ rule map_reads:
         """
         {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
                  {input.catalogue_idx} {input.reads} | samtools view \
-                 -F {params.flags} -b --threads {params.threads} > {output} ; }} &> {log}
+                 -F {params.flags} -b --threads {params.threads} > {output.bam}; \
+                 samtools sort -@ {params.threads} -o {output.sort} {output.bam} ; }} &> {log}
         """
+
 
 
 rule vamb:
