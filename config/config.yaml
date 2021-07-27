@@ -1,4 +1,7 @@
 samples: "config/samples.csv"
 
-diamond_db:
-  "/Users/vini/Bio/MGP/metaGenePipe/kegg/swissprot.dmnd"
+prodigal:
+  mode: "single"
+
+diamond:
+  db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
