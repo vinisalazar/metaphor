@@ -122,3 +122,19 @@ rule megahit:
                 -m {params.memory} \
                 --k-list {params.k_list}
         """
+
+
+rule prodigal:
+    input:
+        contigs="{output}/megahit/{sample}/{sample}.contigs.fa"
+    output:
+        genes="{output}/prodigal/{sample}/{sample}_genes.fna",
+        proteins="{output}/prodigal/{sample}/{sample}_proteins.faa",
+        scores="{output}/prodigal/{sample}/{sample}_scores.cds"
+    log:
+        "{output}/logs/prodigal/{sample}"
+    shell:
+        """
+        prodigal -i {input} -d {output.genes} -a {output.proteins} -s {output.scores} -q
+        """
+
