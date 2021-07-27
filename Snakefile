@@ -227,21 +227,22 @@ rule vamb:
         bamfiles=expand("output/vamb/bam/{sample}", sample=["readsa",]),
         catalogue="{output}/vamb/catalogue.fna.gz"
     output: 
-        outdir=directory("output/vamb/bam/vamb/vamb")
+        outdir=directory("output/vamb/vamb")
     params:  # defaults in vamb's README
         binsplit_sep="C",
         minfasta=200000
     log:
-        "{output}/log/"
+        "output/log/vamb/vamb.log"
     benchmark:
-        "{output}/benchmarks/vamb/{sample}_vamb.txt"
+        "output/benchmarks/vamb/vamb.txt"
     conda:
         "envs/vamb.yaml"
     shell: 
         """
         rm -rf {output}
 
-        vamb --outdir {output} --fasta {input.catalogue} \
+        vamb --outdir {output} \
+             --fasta {input.catalogue} \
              --bamfiles {input.bamfiles} \
              -o {params.binsplit_sep} \
              --minfasta {params.minfasta} &> {log}
@@ -322,15 +323,15 @@ rule xmlparser:
         gene_count_table="{output}/collation/{sample}_gene_count_table.txt",
         otu_table="{output}/collation/{sample}_OTU_out.txt"
     params:
-        output_dir=str(Path(output).parent),
+        output_dir=str(Path("{input}").parent),
         ko_formatted_file="bin/db/formatted.xml.out",
         kegg_species_file="bin/db/species_prokaryotes.dat",
         tax_rank_file="bin/db/tax_rank",
         full_lineage_file="fullnamelineage.dmp"
     log:
-        "{output}/logs/diamond/xmlparser.log"
+        "{output}/logs/collation/{sample}-xmlparser.log"
     benchmark:
-        "{output}/benchmarks/diamond/xmlparser.txt"
+        "{output}/benchmarks/collation/{sample}-xmlparser.txt"
     conda:
         "envs/bash.yaml"
     shell:
@@ -341,6 +342,8 @@ rule xmlparser:
              {params.kegg_species_file} \
              {input}
 
-        perl scripts/orgID_2_name.pl {params.tax_rank_file} \
-             {params.full_lineage_file} {params.output_dir} > {output.otu_table}
+        perl scripts/orgID_2_name.pl \
+             {params.tax_rank_file} \
+             {params.full_lineage_file} \
+             {params.output_dir} > {output.otu_table}
         """  # must add 'sep' next to input (see L30) of metaGenePipe/tasks/xml_parser.wdl
