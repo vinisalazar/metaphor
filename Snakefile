@@ -235,6 +235,8 @@ rule vamb:
         "{output}/log/"
     benchmark:
         "{output}/benchmarks/vamb/{sample}_vamb.txt"
+    conda:
+        "envs/vamb.yaml"
     shell: 
         """
         rm -rf {output}
@@ -305,5 +307,7 @@ rule collation:
         "{output}/logs/diamond/{sample}-collation.txt"
     benchmark:
         "{output}/benchmarks/diamond/{sample}-collation.txt"
+    conda:
+        "envs/bash.yaml"
     shell: 
         "sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}" 
