@@ -10,30 +10,35 @@ Mapping rules:
 
 rule concatenate_contigs:
     input:
-        contigs=expand("output/megahit/{sample}/{sample}.contigs.fa", sample=["readsa",])
+        contigs=expand(
+            "output/megahit/{sample}/{sample}.contigs.fa",
+            sample=[
+                "readsa",
+            ],
+        ),
     output:
-        catalogue="{output}/vamb/catalogue.fna.gz"
+        catalogue="{output}/vamb/catalogue.fna.gz",
     params:
-        sequence_length_cutoff=2000  # vamb's default
+        sequence_length_cutoff=2000,  # vamb's default
     log:
-        "{output}/logs/vamb/concatenate_contigs.log"
+        "{output}/logs/vamb/concatenate_contigs.log",
     benchmark:
         "{output}/benchmarks/vamb/concatenate_contigs.txt"
     conda:
-        "../envs/vamb.yaml" 
-    shell: 
+        "../envs/vamb.yaml"
+    shell:
         """
         concatenate.py -m {params.sequence_length_cutoff} {output} {input} &> {log}
         """
 
 
 rule create_mapping:
-    input: 
-        catalogue_fna="{output}/vamb/catalogue.fna.gz"
-    output: 
-        catalogue_idx="{output}/vamb/catalogue.mmi"
+    input:
+        catalogue_fna="{output}/vamb/catalogue.fna.gz",
+    output:
+        catalogue_idx="{output}/vamb/catalogue.mmi",
     log:
-        "{output}/logs/vamb/create_mapping.log"
+        "{output}/logs/vamb/create_mapping.log",
     benchmark:
         "{output}/benchmarks/vamb/create_mapping.txt"
     conda:
@@ -45,18 +50,18 @@ rule create_mapping:
 
 
 rule map_reads:
-    input: 
+    input:
         catalogue_idx="{output}/vamb/catalogue.mmi",
-        reads="{output}/interleave/{sample}-clean.fq"
-    output: 
-        bam="{output}/vamb/bam/{sample}.bam"
+        reads="{output}/interleave/{sample}-clean.fq",
+    output:
+        bam="{output}/vamb/bam/{sample}.bam",
     params:
         threads=workflow.cores,
         N=50,
         preset="sr",
-        flags=3584
+        flags=3584,
     log:
-        "{output}/logs/vamb/{sample}_map_reads.log"
+        "{output}/logs/vamb/{sample}_map_reads.log",
     benchmark:
         "{output}/benchmarks/vamb/{sample}_map_reads.txt"
     conda:
@@ -70,14 +75,14 @@ rule map_reads:
 
 
 rule sort_reads:
-    input: 
-        bam="{output}/vamb/bam/{sample}.bam"
-    output: 
-        sort="{output}/vamb/sort/{sample}.sort"
+    input:
+        bam="{output}/vamb/bam/{sample}.bam",
+    output:
+        sort="{output}/vamb/sort/{sample}.sort",
     params:
         threads=workflow.cores,
     log:
-        "{output}/logs/vamb/{sample}_sort_reads.log"
+        "{output}/logs/vamb/{sample}_sort_reads.log",
     benchmark:
         "{output}/benchmarks/vamb/{sample}_sort_reads.txt"
     conda:
@@ -86,6 +91,3 @@ rule sort_reads:
         """
         {{ samtools sort -@ {params.threads} -o {output.sort} {input.bam} ; }} &> {log}
         """
-
-
-
