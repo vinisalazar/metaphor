@@ -84,13 +84,13 @@ rule xmlparser:
         "../envs/bash.yaml"
     shell:
         """
-        perl scripts/xml_parser.function.pl \
+        perl ../scripts/xml_parser.function.pl \
              {output.gene_count_table} 1 \
              {params.ko_formatted_file} \
              {params.kegg_species_file} \
              {input}
 
-        perl scripts/orgID_2_name.pl \
+        perl ../scripts/orgID_2_name.pl \
              {params.tax_rank_file} \
              {params.full_lineage_file} \
              {params.output_dir} > {output.otu_table}
