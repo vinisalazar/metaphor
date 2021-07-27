@@ -1,0 +1,5 @@
+# Base environment for miscellaneous tasks
+channels:
+  - conda-forge
+dependencies:
+  - bash
