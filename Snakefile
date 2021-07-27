@@ -1,6 +1,6 @@
 # MetaSnakePipe
 # Original MetaGenePipe workflow by Bobbie Shaban
-# Snakemake port by Vini Salazar
+# Snakemake port by Vini Salazar (with modifications)
 from pathlib import Path
 
 
@@ -163,14 +163,11 @@ rule megahit:
 
 rule vamb_concatenate:
     input:
-        contigs=expand("output/megahit/{sample}/{sample}.contigs.fa", sample=["readsa",]),
-        reads=expand("output/interleave/{sample}-clean.fq")
+        contigs=expand("output/megahit/{sample}/{sample}.contigs.fa", sample=["readsa",])
     output:
-        catalogue_fna="{output}/vamb/catalogue.fna.gz",
+        catalogue="{output}/vamb/catalogue.fna.gz"
     params:
-        threads=workflow.cores,
-        minimap2_N=50,
-        minimap2_preset="sr",
+        sequence_length_cutoff=2000  # vamb's default
     log:
         "{output}/logs/vamb/vamb_concatenate.log"
     benchmark:
@@ -179,11 +176,11 @@ rule vamb_concatenate:
         "envs/vamb.yaml" 
     shell: 
         """
-        concatenate.py {output.catalogue} {input.contigs}
+        concatenate.py -m {params.sequence_length_cutoff} {output} {input}
         """
 
 
-rule vamb_create_map:
+rule vamb_create_index:
     input: 
         catalogue_fna="{output}/vamb/catalogue.fna.gz"
     output: 
@@ -197,6 +194,31 @@ rule vamb_create_map:
     shell:
         """
         minimap2 -d {output} {input}
+        """
+
+
+rule vamb_map_reads:
+    input: 
+        catalogue_idx="{output}/vamb/catalogue.mmi",
+        reads="{output}/interleave/{sample}-clean.fq"
+    output: 
+        bam="{output}/vamb/bam/{sample}.bam"
+    params:
+        threads=workflow.cores,
+        N=50,
+        preset="sr",
+        flags=3584
+    log:
+        "{output}/logs/vamb/{sample}_map_reads.log"
+    benchmark:
+        "{output}/benchmarks/vamb/{sample}_map_reads.log"
+    conda:
+        "envs/vamb.yaml"
+    shell:
+        """
+        minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
+                 {input.catalogue_idx} {input.reads} | samtools view \
+                 -F {params.flags} -b --threads {params.threads} > {output}
         """
 
 
