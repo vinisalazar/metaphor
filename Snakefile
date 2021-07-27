@@ -183,6 +183,23 @@ rule vamb_concatenate:
         """
 
 
+rule vamb_create_map:
+    input: 
+        catalogue_fna="{output}/vamb/catalogue.fna.gz"
+    output: 
+        catalogue_idx="{output}/vamb/catalogue.mmi"
+    log:
+        "{output}/logs/vamb/vamb_create_map.log"
+    benchmark:
+        "{output}/benchmarks/vamb/vamb_create_map.log"
+    conda:
+        "envs/vamb.yaml"
+    shell:
+        """
+        minimap2 -d {output} {input}
+        """
+
+
 rule prodigal:
     input:
         contigs="{output}/megahit/{sample}/{sample}.contigs.fa"
