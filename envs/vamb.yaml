@@ -7,5 +7,3 @@ dependencies:
   - pytorch
   - torchvision
   - cudatoolkit
-  - minimap2
-  - samtools

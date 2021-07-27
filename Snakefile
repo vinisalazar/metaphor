@@ -161,7 +161,7 @@ rule megahit:
         """
 
 
-rule vamb_concatenate:
+rule concatenate_contigs:
     input:
         contigs=expand("output/megahit/{sample}/{sample}.contigs.fa", sample=["readsa",])
     output:
@@ -169,9 +169,9 @@ rule vamb_concatenate:
     params:
         sequence_length_cutoff=2000  # vamb's default
     log:
-        "{output}/logs/vamb/vamb_concatenate.log"
+        "{output}/logs/vamb/concatenate_contigs.log"
     benchmark:
-        "{output}/benchmarks/vamb/vamb_concatenate.txt"
+        "{output}/benchmarks/vamb/concatenate_contigs.txt"
     conda:
         "envs/vamb.yaml" 
     shell: 
@@ -180,24 +180,24 @@ rule vamb_concatenate:
         """
 
 
-rule vamb_create_index:
+rule create_mapping:
     input: 
         catalogue_fna="{output}/vamb/catalogue.fna.gz"
     output: 
         catalogue_idx="{output}/vamb/catalogue.mmi"
     log:
-        "{output}/logs/vamb/vamb_create_map.log"
+        "{output}/logs/vamb/create_mapping.log"
     benchmark:
-        "{output}/benchmarks/vamb/vamb_create_map.txt"
+        "{output}/benchmarks/vamb/create_mapping.txt"
     conda:
-        "envs/vamb.yaml"
+        "envs/bwa.yaml"
     shell:
         """
         minimap2 -d {output} {input} &> {log}
         """
 
 
-rule vamb_map_reads:
+rule map_reads:
     input: 
         catalogue_idx="{output}/vamb/catalogue.mmi",
         reads="{output}/interleave/{sample}-clean.fq"
@@ -213,7 +213,7 @@ rule vamb_map_reads:
     benchmark:
         "{output}/benchmarks/vamb/{sample}_map_reads.txt"
     conda:
-        "envs/vamb.yaml"
+        "envs/bwa.yaml"
     shell:
         """
         {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
