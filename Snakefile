@@ -102,15 +102,23 @@ rule megahit:
     input:
         host_removal_output="{output}/interleave/{sample}-clean.fq"
     output:
-        megahit_out=directory("{output}/megahit/{sample}")
+        contigs="{output}/megahit/{sample}/{sample}.contigs.fa"
     params:
+        out_dir="{output}/megahit/",
         out_preffix="{sample}",
         min_contig_len=200,
-        memory=0.5
+        memory=0.5,
+        k_list="21,29"
     log:
         "{output}/logs/megahit/{sample}-megahit.log"
     shell:
-        "megahit -r {input} -o {output} --out-prefix {params.out_preffix} " \
-        "--min-contig-len {params.min_contig_len} " \
-        "-t {workflow.cores} " \
-        "-m {params.memory}"
+        """
+        # MegaHit has no --force flag, so we must remove the created directory prior to running
+        rm -rf {params.out_dir}/{wildcards.sample}
+
+        megahit -r {input} -o {params.out_dir}/{wildcards.sample} --out-prefix {params.out_preffix} \
+                --min-contig-len {params.min_contig_len}  \
+                -t {workflow.cores}  \
+                -m {params.memory} \
+                --k-list {params.k_list}
+        """
