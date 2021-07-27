@@ -6,3 +6,5 @@ dependencies:
   - fastqc
   - flash
   - megahit
+  - prodigal
+  - diamond
