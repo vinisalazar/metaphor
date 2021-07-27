@@ -125,12 +125,14 @@ rule megahit:
         "{output}/logs/megahit/{sample}-megahit.log"
     benchmark:
         "{output}/benchmarks/megahit/{sample}.txt"
+    
+    # Using the '--12' flag yielded slightly better results than the '-r' flag
     shell:
         """
         # MegaHit has no --force flag, so we must remove the created directory prior to running
         rm -rf {params.out_dir}/{wildcards.sample}
 
-        megahit -r {input} -o {params.out_dir}/{wildcards.sample} --out-prefix {params.out_preffix} \
+        megahit --12 {input} -o {params.out_dir}/{wildcards.sample} --out-prefix {params.out_preffix} \
                 --min-contig-len {params.min_contig_len}  \
                 -t {workflow.cores}  \
                 -m {params.memory} \
@@ -144,12 +146,17 @@ rule prodigal:
     output:
         genes="{output}/prodigal/{sample}/{sample}_genes.fna",
         proteins="{output}/prodigal/{sample}/{sample}_proteins.faa",
-        scores="{output}/prodigal/{sample}/{sample}_scores.cds"
+        scores="{output}/prodigal/{sample}/{sample}_scores.cds",
+        genbank="{output}/prodigal/{sample}/{sample}_genbank.gbk"
     log:
         "{output}/logs/prodigal/{sample}"
     benchmark:
         "{output}/benchmarks/prodigal/{sample}.txt"
     shell:
         """
-        prodigal -i {input} -d {output.genes} -a {output.proteins} -s {output.scores} -q
+        prodigal -i {input} \
+                 -d {output.genes} \
+                 -a {output.proteins} \
+                 -s {output.scores} \
+                 -o {output.genbank} 2>> {log}
         """
