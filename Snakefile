@@ -16,15 +16,15 @@ rule all:
 
 rule fastqc_raw:  # qc on raw reads
     input:
-        "data/{sample}-{readsno}.fq"
+        "data/{sample}.fq"
     output:
-        html="{output}/qc/{sample}-{readsno}.html",
-        zip="{output}/qc/{sample}-{readsno}_fastqc.zip"
+        html="{output}/qc/{sample}.html",
+        zip="{output}/qc/{sample}_fastqc.zip"
     params: "--quiet"
     log:
-        "{output}/logs/qc/{sample}-{readsno}-fastqc_raw.log"
+        "{output}/logs/qc/{sample}-fastqc.log"
     benchmark:
-        "{output}/benchmarks/qc/{sample}-{readsno}_fastqc_raw.txt"
+        "{output}/benchmarks/qc/{sample}_fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -38,6 +38,8 @@ rule flash:
         flash_notcombined1="{output}/flash/{sample}.notCombined_1.fastq",
         flash_notcombined2="{output}/flash/{sample}.notCombined_2.fastq",
         flash_extended="{output}/flash/{sample}.extendedFrags.fastq"
+    params:
+        max_overlap=120
     log:
         "{output}/logs/qc/{sample}-flash.log"
     benchmark:
@@ -46,7 +48,8 @@ rule flash:
         "envs/flash.yaml"
     shell: 
         """
-        flash -d {wildcards.output}/flash -o {wildcards.sample} {input} &> {log}
+        flash -d {wildcards.output}/flash -o {wildcards.sample} \
+              -M {params.max_overlap} {input} &> {log}
         """
 
 
@@ -91,7 +94,7 @@ rule multiqc:
     input:
         expand("output/qc/{sample}-{kind}_fastqc.zip", sample=["readsa", ], kind=["1", "2", "merged"])
     output:
-        report="{output}/qc/multiqc_data.html"
+        report="{output}/qc/multiqc.html"
     log:
         "{output}/logs/qc/multiqc.log"
     benchmark:
