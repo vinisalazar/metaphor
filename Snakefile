@@ -160,3 +160,27 @@ rule prodigal:
                  -s {output.scores} \
                  -o {output.genbank} 2>> {log}
         """
+
+
+rule diamond:
+    input:
+        proteins="{output}/prodigal/{sample}/{sample}_proteins.faa"
+    output:
+        xmlout="{output}/diamond/{sample}.xml"
+    params:
+        db="/Users/vini/Bio/MGP/metaGenePipe/kegg/swissprot.dmnd",
+        max_target_seqs=1,
+        format=5
+    log:
+        "{output}/logs/diamond/{sample}.log"
+    benchmark:
+        "{output}/benchmarks/diamond/{sample}.txt"
+    shell:
+        """
+        diamond blastp -q {input} \
+                --max-target-seqs {params.max_target_seqs} \
+                -p {workflow.cores} \
+                -f {params.format} \
+                -d {params.db} \
+                -o {output}
+        """
