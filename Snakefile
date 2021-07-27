@@ -302,11 +302,11 @@ rule collation:
     input: 
         xmlout="{output}/diamond/{sample}.xml"
     output:
-        collationout="{output}/diamond/{sample}-collated.xml"
+        collationout="{output}/collation/{sample}-collated.xml"
     log:
-        "{output}/logs/diamond/{sample}-collation.log"
+        "{output}/logs/collation/{sample}-collation.log"
     benchmark:
-        "{output}/benchmarks/diamond/{sample}-collation.txt"
+        "{output}/benchmarks/collation/{sample}-collation.txt"
     conda:
         "envs/bash.yaml"
     shell: 
