@@ -222,6 +222,31 @@ rule vamb_map_reads:
         """
 
 
+rule vamb:
+    input: 
+        bamfiles=expand("output/vamb/bam/{sample}", sample=["readsa",]),
+        catalogue="{output}/vamb/catalogue.fna.gz"
+    output: 
+        outdir=directory("output/vamb/bam/vamb/vamb")
+    params:  # defaults in vamb's README
+        binsplit_sep="C",
+        minfasta=200000
+    log:
+        "{output}/log/"
+    benchmark:
+        "{output}/benchmarks/vamb/{sample}_vamb.txt"
+    shell: 
+        """
+        rm -rf {output}
+
+        vamb --outdir {output} --fasta {input.catalogue} \
+             --bamfiles {input.bamfiles} \
+             -o {params.binsplit_sep} \
+             --minfasta {params.minfasta} &> {log}
+        """
+
+
+
 rule prodigal:
     input:
         contigs="{output}/megahit/{sample}/{sample}.contigs.fa"
