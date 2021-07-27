@@ -18,6 +18,8 @@ rule prodigal:
         proteins="{output}/prodigal/{sample}/{sample}_proteins.faa",
         scores="{output}/prodigal/{sample}/{sample}_scores.cds",
         genbank="{output}/prodigal/{sample}/{sample}_genbank.gbk"
+    params:
+        mode=config["prodigal"]["mode"]
     log:
         "{output}/logs/prodigal/{sample}"
     benchmark:
@@ -26,7 +28,8 @@ rule prodigal:
         "../envs/prodigal.yaml"
     shell:
         """
-        prodigal -i {input} \
+        prodigal -p {params.mode} \
+                 -i {input} \
                  -d {output.genes} \
                  -a {output.proteins} \
                  -s {output.scores} \
@@ -40,7 +43,7 @@ rule diamond:
     output:
         xmlout="{output}/diamond/{sample}.xml"
     params:
-        db=config["diamond_db"],
+        db=config["diamond"]["db"],
         max_target_seqs=1,
         format=5,
         cpus=workflow.cores
