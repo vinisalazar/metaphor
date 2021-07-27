@@ -3,7 +3,6 @@ Annotation rules:
 
     - prodigal: gene prediction with Prodigal
     - diamond: protein annotation with Diamond
-    - collation: format Diamond XML outputs with sed
     - xmlparser: parse collated outputs with custom scripts
 """
 
@@ -55,38 +54,22 @@ rule diamond:
         "../envs/diamond.yaml"
     shell:
         """
-        diamond blastp -q {input} \
-                --max-target-seqs {params.max_target_seqs} \
-                -p {params.cpus} \
-                -f {params.format} \
-                -d {params.db} \
-                -o {output} &> {log}
-        """
-
-
-rule collation:
-    input:
-        xmlout="{output}/diamond/{sample}.xml",
-    output:
-        collationout="{output}/collation/{sample}-collated.xml",
-    log:
-        "{output}/logs/collation/{sample}-collation.log",
-    benchmark:
-        "{output}/benchmarks/collation/{sample}-collation.txt"
-    conda:
-        "../envs/bash.yaml"
-    shell:
-        """
-        sed 's/\&quot;//g' '{input}' | sed 's/\&//g' > {output}
+        {{ diamond blastp -q {input} \
+                   --max-target-seqs {params.max_target_seqs} \
+                   -p {params.cpus} \
+                   -f {params.format} \
+                   -d {params.db} \
+                   | sed 's/\&quot;//g' \
+                   | sed 's/\&//g' > {output} ; }} &> {log}
         """
 
 
 rule xmlparser:
     input:
-        collationout="{output}/collation/{sample}-collated.xml",
+        xmlout="{output}/diamond/{sample}.xml",
     output:
-        gene_count_table="{output}/collation/{sample}_gene_count_table.txt",
-        otu_table="{output}/collation/{sample}_OTU_out.txt",
+        gene_count_table="{output}/diamond/{sample}_gene_count_table.txt",
+        otu_table="{output}/diamond/{sample}_OTU_out.txt",
     params:
         output_dir=str(Path("{input}").parent),
         ko_formatted_file="bin/db/formatted.xml.out",
@@ -94,9 +77,9 @@ rule xmlparser:
         tax_rank_file="bin/db/tax_rank",
         full_lineage_file="fullnamelineage.dmp",
     log:
-        "{output}/logs/collation/{sample}-xmlparser.log",
+        "{output}/logs/diamond/{sample}-xmlparser.log",
     benchmark:
-        "{output}/benchmarks/collation/{sample}-xmlparser.txt"
+        "{output}/benchmarks/diamond/{sample}-xmlparser.txt"
     conda:
         "../envs/bash.yaml"
     shell:
