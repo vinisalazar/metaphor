@@ -9,6 +9,7 @@ include: "rules/common.smk"
 include: "rules/preprocess.smk"
 include: "rules/assembly.smk"
 include: "rules/mapping.smk"
+include: "rules/binning.smk"
 include: "rules/annotation.smk"
 
 
