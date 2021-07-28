@@ -42,7 +42,7 @@ rule create_mapping:
     benchmark:
         "{output}/benchmarks/mapping/create_mapping.txt"
     conda:
-        "../envs/bwa.yaml"
+        "../envs/samtools.yaml"
     shell:
         """
         minimap2 -d {output} {input} &> {log}
@@ -65,7 +65,7 @@ rule map_reads:
     benchmark:
         "{output}/benchmarks/mapping/{sample}_map_reads.txt"
     conda:
-        "../envs/bwa.yaml"
+        "../envs/samtools.yaml"
     shell:
         """
         {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
@@ -86,8 +86,22 @@ rule sort_reads:
     benchmark:
         "{output}/benchmarks/mapping/{sample}_sort_reads.txt"
     conda:
-        "../envs/bwa.yaml"
+        "../envs/samtools.yaml"
     shell:
         """
         {{ samtools sort -@ {params.threads} -o {output.sort} {input.bam} ; }} &> {log}
         """
+
+
+rule jgi_summarize_bam_contig_depths:
+    input:
+        expand("/output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs)
+    output: 
+        output("{output}/mapping/bam_contig_depths.txt")
+    log:
+        "/{output}/logs/mapping/jgi_summarize_bam_contig_depths.log"
+    benchmark:
+        "/{output}/benchmarks/mapping/jgi_summarize_bam_contig_depths.txt"
+    conda:
+        "../envs/metabat2.yaml"
+    shell: 
