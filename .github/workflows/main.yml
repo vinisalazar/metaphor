@@ -45,9 +45,11 @@ jobs:
     - name: Test workflow
       uses: snakemake/snakemake-github-action@v1.6.0
       with:
-        directory: .test
         snakefile: workflow/Snakefile
-        args: "--use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache"
+        args: "--use-conda --show-failed-logs \
+               --cores 2 --conda-cleanup-pkgs cache \
+               --config prodigal='{mode: meta}'"  # This is required for testing due to small dataset
+    # Report testing is deactivated for now
     # - name: Test report
     #   uses: snakemake/snakemake-github-action@v1.6.0
     #   with:
