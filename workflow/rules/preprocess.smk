@@ -14,14 +14,14 @@ rule fastqc_raw:  # qc on raw reads
     input:
         expand("{sample}", sample=raw_fqs),
     output:
-        html="{output}/qc/{sample}.html",
-        zip="{output}/qc/{sample}_fastqc.zip",
+        html="{output}/preprocess/fastqc/{sample}.html",
+        zip="{output}/preprocess/fastqc/{sample}_fastqc.zip",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/{sample}-fastqc.log",
+        "{output}/logs/preprocess/fastqc/{sample}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/qc/{sample}_fastqc.txt"
+        "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -32,15 +32,15 @@ rule flash:
         fqforward="data/{sample}-1.fq",
         fqreverse="data/{sample}-2.fq",
     output:
-        flash_notcombined1="{output}/flash/{sample}.notCombined_1.fastq",
-        flash_notcombined2="{output}/flash/{sample}.notCombined_2.fastq",
-        flash_extended="{output}/flash/{sample}.extendedFrags.fastq",
+        flash_notcombined1="{output}/preprocess/flash/{sample}.notCombined_1.fastq",
+        flash_notcombined2="{output}/preprocess/flash/{sample}.notCombined_2.fastq",
+        flash_extended="{output}/preprocess/flash/{sample}.extendedFrags.fastq",
     params:
         max_overlap=120,
     log:
-        "{output}/logs/qc/{sample}-flash.log",
+        "{output}/logs/preprocess/flash/{sample}-flash.log",
     benchmark:
-        "{output}/benchmarks/flash/{sample}.txt"
+        "{output}/benchmarks/preprocess/flash/{sample}.txt"
     conda:
         "../envs/flash.yaml"
     shell:
@@ -52,18 +52,18 @@ rule flash:
 
 rule interleave:
     input:
-        flash_notcombined1="{output}/flash/{sample}.notCombined_1.fastq",
-        flash_notcombined2="{output}/flash/{sample}.notCombined_2.fastq",
-        flash_extended="{output}/flash/{sample}.extendedFrags.fastq",
+        flash_notcombined1="{output}/preprocess/flash/{sample}.notCombined_1.fastq",
+        flash_notcombined2="{output}/preprocess/flash/{sample}.notCombined_2.fastq",
+        flash_extended="{output}/preprocess/flash/{sample}.extendedFrags.fastq",
     output:
-        interleaved="{output}/interleave/{sample}-interleaved.fq",
-        merged="{output}/interleave/{sample}-merged.fq",
+        interleaved="{output}/preprocess/interleave/{sample}-interleaved.fq",
+        merged="{output}/preprocess/interleave/{sample}-merged.fq",
     params:
         binpath=pathfinder("../scripts/interleave_fastq.sh"),
     log:
-        "{output}/logs/interleave/{sample}-interleave.log",
+        "{output}/logs/preprocess/interleave/{sample}-interleave.log",
     benchmark:
-        "{output}/benchmarks/interleave/{sample}-interleave.txt"
+        "{output}/benchmarks/preprocess/interleave/{sample}-interleave.txt"
     conda:
         "../envs/bash.yaml"
     shell:
@@ -76,17 +76,17 @@ rule interleave:
 
 rule hostremoval:
     input:
-        flash_merged="{output}/interleave/{sample}-merged.fq",
+        flash_merged="{output}/preprocess/interleave/{sample}-merged.fq",
     params:
         alignment_id_threshold=70,
         alignment_coverage_threshold=70,
         dbs="mm1,mm2,mm3,mm4,mm5,mm6",
     output:
-        host_removal_output="{output}/interleave/{sample}-clean.fq",
+        host_removal_output="{output}/preprocess/interleave/{sample}-clean.fq",
     log:
-        "{output}/logs/interleave/{sample}-hostremoval.log",
+        "{output}/logs/preprocess/interleave/{sample}-hostremoval.log",
     benchmark:
-        "{output}/benchmarks/interleave/{sample}-hostremoval.txt"
+        "{output}/benchmarks/preprocess/interleave/{sample}-hostremoval.txt"
     conda:
         "../envs/bash.yaml"
     shell:
@@ -101,16 +101,16 @@ rule hostremoval:
 
 rule fastqc_clean:  # qc on merged reads, after rules 'flash', 'interleave', and 'hostremoval'
     input:
-        "{output}/interleave/{sample}-clean.fq",
+        "{output}/preprocess/interleave/{sample}-clean.fq",
     output:
-        html="{output}/qc/{sample}-clean.html",
-        zip="{output}/qc/{sample}-clean.zip",
+        html="{output}/preprocess/fastqc/{sample}-clean.html",
+        zip="{output}/preprocess/fastqc/{sample}-clean.zip",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/{sample}-fastqc_clean.log",
+        "{output}/logs/preprocess/fastqc/{sample}-fastqc_clean.log",
     benchmark:
-        "{output}/benchmarks/qc/{sample}_fastqc_clean.txt"
+        "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc_clean.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -119,17 +119,17 @@ rule fastqc_clean:  # qc on merged reads, after rules 'flash', 'interleave', and
 rule multiqc:
     input:
         expand(
-            "output/qc/{sample}-{kind}_fastqc.zip",
+            "output/preprocess/fastqc/{sample}-{kind}_fastqc.zip",
             sample=[
                 "readsa",
             ],
             kind=["1", "2", "merged"],
         ),
     output:
-        report="{output}/qc/multiqc.html",
+        report="{output}/preprocess/multiqc.html",
     log:
-        "{output}/logs/qc/multiqc.log",
+        "{output}/logs/preprocess/multiqc.log",
     benchmark:
-        "{output}/benchmarks/qc/multiqc.txt"
+        "{output}/benchmarks/preprocess/multiqc.txt"
     wrapper:
         "0.77.0/bio/multiqc"
