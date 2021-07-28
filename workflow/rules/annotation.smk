@@ -77,7 +77,7 @@ rule xmlparser:
         tax_rank_file="bin/db/tax_rank",
         full_lineage_file="fullnamelineage.dmp",
         xml_parser=pathfinder("../scripts/xml_parser.function.pl"),
-        orgID_2_name=pathfinder("../scripts/orgID_2_name.pl")
+        orgID_2_name=pathfinder("../scripts/orgID_2_name.pl"),
     log:
         "{output}/logs/diamond/{sample}-xmlparser.log",
     benchmark:

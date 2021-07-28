@@ -59,7 +59,7 @@ rule interleave:
         interleaved="{output}/interleave/{sample}-interleaved.fq",
         merged="{output}/interleave/{sample}-merged.fq",
     params:
-        binpath=pathfinder("../scripts/interleave_fastq.sh")
+        binpath=pathfinder("../scripts/interleave_fastq.sh"),
     log:
         "{output}/logs/interleave/{sample}-interleave.log",
     benchmark:
