@@ -2,5 +2,6 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - snakemake-minimal
+  - mamba               # recommended for use with conda
   - pandas
+  - snakemake-minimal
