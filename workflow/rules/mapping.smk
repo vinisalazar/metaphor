@@ -11,19 +11,19 @@ Mapping rules:
 rule concatenate_contigs:
     input:
         contigs=expand(
-            "output/megahit/{sample}/{sample}.contigs.fa",
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
             sample=[
                 "readsa",
             ],
         ),
     output:
-        catalogue="{output}/vamb/catalogue.fna.gz",
+        catalogue="{output}/mapping/catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
     log:
-        "{output}/logs/vamb/concatenate_contigs.log",
+        "{output}/logs/mapping/concatenate_contigs.log",
     benchmark:
-        "{output}/benchmarks/vamb/concatenate_contigs.txt"
+        "{output}/benchmarks/mapping/concatenate_contigs.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -34,13 +34,13 @@ rule concatenate_contigs:
 
 rule create_mapping:
     input:
-        catalogue_fna="{output}/vamb/catalogue.fna.gz",
+        catalogue_fna="{output}/mapping/catalogue.fna.gz",
     output:
-        catalogue_idx="{output}/vamb/catalogue.mmi",
+        catalogue_idx="{output}/mapping/catalogue.mmi",
     log:
-        "{output}/logs/vamb/create_mapping.log",
+        "{output}/logs/mapping/create_mapping.log",
     benchmark:
-        "{output}/benchmarks/vamb/create_mapping.txt"
+        "{output}/benchmarks/mapping/create_mapping.txt"
     conda:
         "../envs/bwa.yaml"
     shell:
@@ -51,19 +51,19 @@ rule create_mapping:
 
 rule map_reads:
     input:
-        catalogue_idx="{output}/vamb/catalogue.mmi",
-        reads="{output}/interleave/{sample}-clean.fq",
+        catalogue_idx="{output}/mapping/catalogue.mmi",
+        reads="{output}/preprocess/interleave/{sample}-clean.fq",
     output:
-        bam="{output}/vamb/bam/{sample}.bam",
+        bam="{output}/mapping/bam/{sample}.bam",
     params:
         threads=workflow.cores,
         N=50,
         preset="sr",
         flags=3584,
     log:
-        "{output}/logs/vamb/{sample}_map_reads.log",
+        "{output}/logs/mapping/{sample}_map_reads.log",
     benchmark:
-        "{output}/benchmarks/vamb/{sample}_map_reads.txt"
+        "{output}/benchmarks/mapping/{sample}_map_reads.txt"
     conda:
         "../envs/bwa.yaml"
     shell:
@@ -76,15 +76,15 @@ rule map_reads:
 
 rule sort_reads:
     input:
-        bam="{output}/vamb/bam/{sample}.bam",
+        bam="{output}/mapping/bam/{sample}.bam",
     output:
-        sort="{output}/vamb/bam/{sample}.sorted.bam",
+        sort="{output}/mapping/bam/{sample}.sorted.bam",
     params:
         threads=workflow.cores,
     log:
-        "{output}/logs/vamb/{sample}_sort_reads.log",
+        "{output}/logs/mapping/{sample}_sort_reads.log",
     benchmark:
-        "{output}/benchmarks/vamb/{sample}_sort_reads.txt"
+        "{output}/benchmarks/mapping/{sample}_sort_reads.txt"
     conda:
         "../envs/bwa.yaml"
     shell:
