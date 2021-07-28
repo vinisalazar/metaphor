@@ -1,0 +1,18 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the sample sheet
+properties:
+  sample_name:
+    type: string
+    description: sample name/identifier
+  fq1:
+    type: string
+    description: fq forward reads
+  fq2:
+    type: string
+    description: fq reverse reads
+
+required:
+  - sample_name
+  - fq1
+  - fq2
