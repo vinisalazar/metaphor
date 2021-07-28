@@ -12,7 +12,7 @@ Preprocess rules:
 
 rule fastqc_raw:  # qc on raw reads
     input:
-        expand("{sample}", sample=raw_fqs),
+        expand("{sample}", sample=fq1 + fq2),
     output:
         html="{output}/preprocess/fastqc/{sample}.html",
         zip="{output}/preprocess/fastqc/{sample}_fastqc.zip",
@@ -29,8 +29,8 @@ rule fastqc_raw:  # qc on raw reads
 
 rule flash:
     input:
-        fqforward=expand("data/{sample}-1.fq", sample=sample_IDs),
-        fqreverse=expand("data/{sample}-2.fq", sample=sample_IDs),
+        fqforward=fq1,
+        fqreverse=fq2,
     output:
         flash_notcombined1="{output}/preprocess/flash/{sample}.notCombined_1.fastq",
         flash_notcombined2="{output}/preprocess/flash/{sample}.notCombined_2.fastq",
@@ -58,8 +58,6 @@ rule interleave:
     output:
         interleaved="{output}/preprocess/interleave/{sample}-interleaved.fq",
         merged="{output}/preprocess/interleave/{sample}-merged.fq",
-    params:
-        binpath=pathfinder("../scripts/interleave_fastq.sh"),
     log:
         "{output}/logs/preprocess/interleave/{sample}-interleave.log",
     benchmark:
@@ -68,7 +66,7 @@ rule interleave:
         "../envs/bash.yaml"
     shell:
         """
-        {{ bash {params.binpath} {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
+        {{ bash workflow/scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
 
         cat {input.flash_extended} {output.interleaved} > {output.merged}
         """
@@ -90,13 +88,13 @@ rule hostremoval:
     conda:
         "../envs/bash.yaml"
     shell:
-        "cat {input} > {output}"
         # This rule is off for now due to the lack of databases
         # "perl bin/dqc/deconseq.pl -dbs {params.dbs}" \
         # " -f {input}" \
         # " -i {params.alignment_id_threshold}" \
         # " -c {params.alignment_coverage_threshold} " \
         # " -id {wildcards.sample}"
+        "cat {input} > {output}"
 
 
 rule fastqc_clean:  # qc on merged reads, after rules 'flash', 'interleave', and 'hostremoval'
