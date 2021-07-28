@@ -6,6 +6,7 @@ Inspired by the same one from the RNASeq workflow:
 """
 
 import glob
+from pathlib import Path
 
 import pandas as pd
 from snakemake.utils import validate
@@ -42,3 +43,7 @@ def _get_mapping_output():
 
 def _get_annotation_output():
     return expand("output/diamond/{sample}.xml", sample=sample_IDs)
+
+
+def pathfinder(path: str):
+    return str(Path(path).absolute())
