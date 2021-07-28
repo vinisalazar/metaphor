@@ -1,0 +1,30 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+  samples:
+    type: string
+
+  prodigal:
+    type: object
+    properties:
+      mode:
+        type: string
+    required:
+      - mode
+
+  diamond:
+    type: object
+    properties:
+      db:
+        type: string
+    required:
+      - db
+
+required:
+  - samples
+  - prodigal
+  - diamond
