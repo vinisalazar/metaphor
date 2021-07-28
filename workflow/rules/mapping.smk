@@ -19,7 +19,7 @@ rule concatenate_contigs:
     output:
         catalogue="{output}/vamb/catalogue.fna.gz",
     params:
-        sequence_length_cutoff=2000,  # vamb's default
+        sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
     log:
         "{output}/logs/vamb/concatenate_contigs.log",
     benchmark:
@@ -78,7 +78,7 @@ rule sort_reads:
     input:
         bam="{output}/vamb/bam/{sample}.bam",
     output:
-        sort="{output}/vamb/sort/{sample}.sort",
+        sort="{output}/vamb/bam/{sample}.sorted.bam",
     params:
         threads=workflow.cores,
     log:
