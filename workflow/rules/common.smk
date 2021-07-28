@@ -32,17 +32,17 @@ def get_final_output():
 
 
 def _get_assembly_output():
-    return expand("output/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
+    return expand("output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
 
 
 def _get_mapping_output():
     return expand(
-        "output/vamb/bam/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sorted.bam")
+        "output/mapping/bam/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sorted.bam")
     )
 
 
 def _get_annotation_output():
-    return expand("output/diamond/{sample}.xml", sample=sample_IDs)
+    return expand("output/annotation/diamond/{sample}.xml", sample=sample_IDs)
 
 
 def pathfinder(path: str):

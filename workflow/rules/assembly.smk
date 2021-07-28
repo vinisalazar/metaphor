@@ -10,7 +10,7 @@ from pathlib import Path
 
 rule megahit:
     input:
-        host_removal_output="{output}/preprocessing/interleave/{sample}-clean.fq",
+        host_removal_output="{output}/preprocess/interleave/{sample}-clean.fq",
     output:
         contigs="{output}/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:

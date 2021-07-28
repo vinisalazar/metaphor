@@ -11,18 +11,18 @@ from pathlib import Path
 
 rule prodigal:
     input:
-        contigs="{output}/megahit/{sample}/{sample}.contigs.fa",
+        contigs="{output}/assembly/megahit/{sample}/{sample}.contigs.fa",
     output:
-        genes="{output}/prodigal/{sample}/{sample}_genes.fna",
-        proteins="{output}/prodigal/{sample}/{sample}_proteins.faa",
-        scores="{output}/prodigal/{sample}/{sample}_scores.cds",
-        genbank="{output}/prodigal/{sample}/{sample}_genbank.gbk",
+        genes="{output}/annotation/prodigal/{sample}/{sample}_genes.fna",
+        proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
+        scores="{output}/annotation/prodigal/{sample}/{sample}_scores.cds",
+        genbank="{output}/annotation/prodigal/{sample}/{sample}_genbank.gbk",
     params:
         mode=config["prodigal"]["mode"],
     log:
-        "{output}/logs/prodigal/{sample}",
+        "{output}/logs/annotation/prodigal/{sample}",
     benchmark:
-        "{output}/benchmarks/prodigal/{sample}.txt"
+        "{output}/benchmarks/annotation/prodigal/{sample}.txt"
     conda:
         "../envs/prodigal.yaml"
     shell:
@@ -38,18 +38,18 @@ rule prodigal:
 
 rule diamond:
     input:
-        proteins="{output}/prodigal/{sample}/{sample}_proteins.faa",
+        proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
     output:
-        xmlout="{output}/diamond/{sample}.xml",
+        xmlout="{output}/annotation/diamond/{sample}.xml",
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
         format=5,
         cpus=workflow.cores,
     log:
-        "{output}/logs/diamond/{sample}.log",
+        "{output}/logs/annotation/diamond/{sample}.log",
     benchmark:
-        "{output}/benchmarks/diamond/{sample}.txt"
+        "{output}/benchmarks/annotation/diamond/{sample}.txt"
     conda:
         "../envs/diamond.yaml"
     shell:
@@ -66,10 +66,10 @@ rule diamond:
 
 rule xmlparser:
     input:
-        xmlout="{output}/diamond/{sample}.xml",
+        xmlout="{output}/annotation/diamond/{sample}.xml",
     output:
-        gene_count_table="{output}/diamond/{sample}_gene_count_table.txt",
-        otu_table="{output}/diamond/{sample}_OTU_out.txt",
+        gene_count_table="{output}/annotation/diamond/{sample}_gene_count_table.txt",
+        otu_table="{output}/annotation/diamond/{sample}_OTU_out.txt",
     params:
         output_dir=str(Path("{input}").parent),
         ko_formatted_file="bin/db/formatted.xml.out",
@@ -79,9 +79,9 @@ rule xmlparser:
         xml_parser=pathfinder("../scripts/xml_parser.function.pl"),
         orgID_2_name=pathfinder("../scripts/orgID_2_name.pl"),
     log:
-        "{output}/logs/diamond/{sample}-xmlparser.log",
+        "{output}/logs/annotation/diamond/{sample}-xmlparser.log",
     benchmark:
-        "{output}/benchmarks/diamond/{sample}-xmlparser.txt"
+        "{output}/benchmarks/annotation/diamond/{sample}-xmlparser.txt"
     conda:
         "../envs/bash.yaml"
     shell:
