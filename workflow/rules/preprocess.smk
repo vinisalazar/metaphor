@@ -58,6 +58,8 @@ rule interleave:
     output:
         interleaved="{output}/interleave/{sample}-interleaved.fq",
         merged="{output}/interleave/{sample}-merged.fq",
+    params:
+        binpath=pathfinder("../scripts/interleave_fastq.sh")
     log:
         "{output}/logs/interleave/{sample}-interleave.log",
     benchmark:
@@ -66,7 +68,7 @@ rule interleave:
         "../envs/bash.yaml"
     shell:
         """
-        {{ bash ../scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
+        {{ bash {params.binpath} {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
 
         cat {input.flash_extended} {output.interleaved} > {output.merged}
         """
