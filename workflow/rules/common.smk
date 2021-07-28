@@ -13,14 +13,14 @@ from snakemake.utils import validate
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype={"sample_name": str}).sort_values(
-    "sample_name"
-)
+samples = pd.read_csv(config["samples"], dtype={"sample_name": str})
+samples = samples.set_index("sample_name", drop=False).sort_index()
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 
-sample_IDs = samples["sample_name"].to_list()
-raw_fqs = samples["fq1"].to_list() + samples["fq2"].to_list()
+sample_IDs = samples.index.to_list()
+fq1 = samples["fq1"].to_list()
+fq2 = samples["fq2"].to_list()
 
 
 def get_final_output():
