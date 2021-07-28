@@ -105,3 +105,4 @@ rule jgi_summarize_bam_contig_depths:
     conda:
         "../envs/metabat2.yaml"
     shell: 
+        "jgi_summarize_bam_contig_depths {input} --outputDepth {output}"
