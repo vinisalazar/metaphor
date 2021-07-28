@@ -8,6 +8,14 @@ properties:
   samples:
     type: string
 
+  concatenate_contigs:
+    type: object
+    properties:
+      sequence_length_cutoff: 
+        type: integer
+    required:
+      - sequence_length_cutoff
+
   prodigal:
     type: object
     properties:
