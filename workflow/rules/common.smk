@@ -32,12 +32,16 @@ def get_final_output():
 
 
 def _get_assembly_output():
-    return expand("output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
+    return expand(
+        "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
+    )
 
 
 def _get_mapping_output():
     return expand(
-        "output/mapping/bam/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sorted.bam")
+        "output/mapping/bam/{sample}.{kind}",
+        sample=sample_IDs,
+        kind=("bam", "sorted.bam"),
     )
 
 
