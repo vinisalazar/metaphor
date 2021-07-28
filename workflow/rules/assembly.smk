@@ -37,5 +37,3 @@ rule megahit:
                 -m {params.memory} \
                 --k-list {params.k_list} &> {log}
         """
-
-
