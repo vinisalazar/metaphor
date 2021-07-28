@@ -9,9 +9,7 @@ rule vamb:
     input:
         bamfiles=expand(
             "output/mapping/bam/{sample}",
-            sample=[
-                "readsa",
-            ],
+            sample=sample_IDs,
         ),
         catalogue="{output}/binning/catalogue.fna.gz",
     output:

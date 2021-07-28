@@ -41,7 +41,7 @@ def _get_mapping_output():
     return expand(
         "output/mapping/bam/{sample}.{kind}",
         sample=sample_IDs,
-        kind=("bam", "sorted.bam"),
+        kind=("map.bam", "sorted.bam"),
     )
 
 

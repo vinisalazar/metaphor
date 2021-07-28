@@ -12,9 +12,7 @@ rule concatenate_contigs:
     input:
         contigs=expand(
             "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-            sample=[
-                "readsa",
-            ],
+            sample=sample_IDs,
         ),
     output:
         catalogue="{output}/mapping/catalogue.fna.gz",
@@ -54,7 +52,7 @@ rule map_reads:
         catalogue_idx="{output}/mapping/catalogue.mmi",
         reads="{output}/preprocess/interleave/{sample}-clean.fq",
     output:
-        bam="{output}/mapping/bam/{sample}.bam",
+        bam="{output}/mapping/bam/{sample}.map.bam",
     params:
         threads=workflow.cores,
         N=50,
@@ -76,7 +74,7 @@ rule map_reads:
 
 rule sort_reads:
     input:
-        bam="{output}/mapping/bam/{sample}.bam",
+        bam="{output}/mapping/bam/{sample}.map.bam",
     output:
         sort="{output}/mapping/bam/{sample}.sorted.bam",
     params:
