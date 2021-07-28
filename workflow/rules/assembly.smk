@@ -2,7 +2,6 @@
 Assembly rules:
 
     - megahit: assemble preprocessed reads with Megahit
-    - vamb: refine contigs with vamb
 """
 
 from pathlib import Path
@@ -40,33 +39,3 @@ rule megahit:
         """
 
 
-rule vamb:
-    input:
-        bamfiles=expand(
-            "output/mapping/bam/{sample}",
-            sample=[
-                "readsa",
-            ],
-        ),
-        catalogue="{output}/mapping/catalogue.fna.gz",
-    output:
-        outdir=directory("output/mapping/vamb"),
-    params:  # defaults in vamb's README
-        binsplit_sep="C",
-        minfasta=200000,
-    log:
-        "output/log/mapping/vamb.log",
-    benchmark:
-        "output/benchmarks/mapping/vamb.txt"
-    conda:
-        "../envs/vamb.yaml"
-    shell:
-        """
-        rm -rf {output}
-
-        vamb --outdir {output} \
-             --fasta {input.catalogue} \
-             --bamfiles {input.bamfiles} \
-             -o {params.binsplit_sep} \
-             --minfasta {params.minfasta} &> {log}
-        """

@@ -45,6 +45,12 @@ def _get_mapping_output():
     )
 
 
+def _get_binning_output():
+    return directory(
+        "output/binning/vamb/"
+    )
+
+
 def _get_annotation_output():
     return expand("output/annotation/diamond/{sample}.xml", sample=sample_IDs)
 
