@@ -37,7 +37,7 @@ def _get_assembly_output():
 
 def _get_mapping_output():
     return expand(
-        "output/vamb/{kind}/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sort")
+        "output/vamb/bam/{sample}.{kind}", sample=sample_IDs, kind=("bam", "sorted.bam")
     )
 
 
