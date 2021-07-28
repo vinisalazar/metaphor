@@ -54,4 +54,4 @@ def _get_annotation_output():
 
 
 def pathfinder(path: str):
-    return str(Path(path).absolute())
+    return str(Path(__file__).joinpath(Path(path)).absolute())
