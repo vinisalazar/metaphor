@@ -76,8 +76,6 @@ rule xmlparser:
         kegg_species_file="bin/db/species_prokaryotes.dat",
         tax_rank_file="bin/db/tax_rank",
         full_lineage_file="fullnamelineage.dmp",
-        xml_parser=pathfinder("../scripts/xml_parser.function.pl"),
-        orgID_2_name=pathfinder("../scripts/orgID_2_name.pl"),
     log:
         "{output}/logs/annotation/diamond/{sample}-xmlparser.log",
     benchmark:
@@ -86,13 +84,13 @@ rule xmlparser:
         "../envs/bash.yaml"
     shell:
         """
-        perl {params.xml_parser} \
+        perl workflow/scripts/xml_parser.function.pl \
              {output.gene_count_table} 1 \
              {params.ko_formatted_file} \
              {params.kegg_species_file} \
              {input}
 
-        perl {params.orgID_2_name} \
+        perl workflow/scripts/orgID_2_name.pl \
              {params.tax_rank_file} \
              {params.full_lineage_file} \
              {params.output_dir} > {output.otu_table}
