@@ -13,9 +13,9 @@ from snakemake.utils import validate
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_csv(
-    config["samples"], dtype={"sample_name": str}
-).sort_values("sample_name")
+samples = pd.read_csv(config["samples"], dtype={"sample_name": str}).sort_values(
+    "sample_name"
+)
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 
