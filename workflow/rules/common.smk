@@ -24,11 +24,17 @@ fq2 = samples["fq2"].to_list()
 
 
 def get_final_output():
+
     assembly_output = _get_assembly_output()
     mapping_output = _get_mapping_output()
     annotation_output = _get_annotation_output()
 
-    return assembly_output, mapping_output, annotation_output
+    return (
+        "output/preprocess/multiqc.html",
+        assembly_output,
+        mapping_output,
+        annotation_output,
+    )
 
 
 def _get_assembly_output():
