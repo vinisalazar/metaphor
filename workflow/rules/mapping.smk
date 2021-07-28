@@ -95,13 +95,13 @@ rule sort_reads:
 
 rule jgi_summarize_bam_contig_depths:
     input:
-        expand("/output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs)
+        expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs)
     output: 
-        output("{output}/mapping/bam_contig_depths.txt")
+        contig_depths="output/mapping/bam_contig_depths.txt"
     log:
-        "/{output}/logs/mapping/jgi_summarize_bam_contig_depths.log"
+        "{output}/logs/mapping/jgi_summarize_bam_contig_depths.log"
     benchmark:
-        "/{output}/benchmarks/mapping/jgi_summarize_bam_contig_depths.txt"
+        "{output}/benchmarks/mapping/jgi_summarize_bam_contig_depths.txt"
     conda:
         "../envs/metabat2.yaml"
     shell: 
