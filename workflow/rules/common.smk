@@ -10,17 +10,15 @@ import glob
 import pandas as pd
 from snakemake.utils import validate
 
-# to-do
-# validate(config, schema="../schemas/config.schema.yaml")
+validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_csv(
-    config["samples"], dtype={"sample_name": str}, index_col="sample_name"
-).sort_index()
+    config["samples"], dtype={"sample_name": str}
+).sort_values("sample_name")
 
-# to-do
-# validate(samples, schema="../schemas/samples.schema.yaml")
+validate(samples, schema="../schemas/samples.schema.yaml")
 
-sample_IDs = samples.index.to_list()
+sample_IDs = samples["sample_name"].to_list()
 raw_fqs = samples["fq1"].to_list() + samples["fq2"].to_list()
 
 
