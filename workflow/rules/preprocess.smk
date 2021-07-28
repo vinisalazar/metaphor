@@ -1,5 +1,5 @@
 """
-Preprocessing rules:
+Preprocess rules:
 
     - fastqc_raw: check quality of raw reads with FastQC
     - flash: extend and combine reads with Flash
@@ -45,7 +45,7 @@ rule flash:
         "../envs/flash.yaml"
     shell:
         """
-        flash -d {wildcards.output}/flash -o {wildcards.sample} \
+        flash -d {wildcards.output}/preprocess/flash -o {wildcards.sample} \
               -M {params.max_overlap} {input} &> {log}
         """
 
