@@ -22,15 +22,15 @@ rule fastqc_raw:  # qc on raw reads
         "{output}/logs/preprocess/fastqc/{sample}-fastqc.log",
     benchmark:
         "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc.txt"
-    threads: 1
+    threads: workflow.cores
     wrapper:
         "0.77.0/bio/fastqc"
 
 
 rule flash:
     input:
-        fqforward="data/{sample}-1.fq",
-        fqreverse="data/{sample}-2.fq",
+        fqforward=expand("data/{sample}-1.fq", sample=sample_IDs),
+        fqreverse=expand("data/{sample}-2.fq", sample=sample_IDs),
     output:
         flash_notcombined1="{output}/preprocess/flash/{sample}.notCombined_1.fastq",
         flash_notcombined2="{output}/preprocess/flash/{sample}.notCombined_2.fastq",
@@ -111,7 +111,7 @@ rule fastqc_clean:  # qc on merged reads, after rules 'flash', 'interleave', and
         "{output}/logs/preprocess/fastqc/{sample}-fastqc_clean.log",
     benchmark:
         "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc_clean.txt"
-    threads: 1
+    threads: workflow.cores
     wrapper:
         "0.77.0/bio/fastqc"
 
@@ -120,9 +120,7 @@ rule multiqc:
     input:
         expand(
             "output/preprocess/fastqc/{sample}-{kind}_fastqc.zip",
-            sample=[
-                "readsa",
-            ],
+            sample=sample_IDs,
             kind=["1", "2", "merged"],
         ),
     output:
