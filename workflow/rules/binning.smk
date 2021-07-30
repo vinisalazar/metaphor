@@ -7,10 +7,7 @@ Binning rules:
 
 rule vamb:
     input:
-        bamfiles=expand(
-            "output/mapping/bam/{sample}",
-            sample=sample_IDs,
-        ),
+        bamfiles=expand("output/mapping/bam/{sample}", sample=sample_IDs,),
         catalogue="{output}/binning/catalogue.fna.gz",
     output:
         outdir=directory("output/binning/vamb"),
