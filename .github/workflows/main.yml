@@ -48,7 +48,7 @@ jobs:
         directory: .
         snakefile: workflow/Snakefile
         args: "--use-conda --show-failed-logs \
-               --cores 2 --conda-cleanup-pkgs cache --config prodigal='{mode:"meta"}'"
+               --cores 2 --conda-cleanup-pkgs cache"
     # Report testing is deactivated for now
     # - name: Test report
     #   uses: snakemake/snakemake-github-action@v1.6.0
