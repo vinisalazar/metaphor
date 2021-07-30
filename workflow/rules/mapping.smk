@@ -11,8 +11,7 @@ Mapping rules:
 rule concatenate_contigs:
     input:
         contigs=expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-            sample=sample_IDs,
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs,
         ),
     output:
         catalogue="{output}/mapping/catalogue.fna.gz",
