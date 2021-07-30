@@ -17,7 +17,7 @@ rule megahit:
         min_contig_len=200,
         k_list="21,29",
         memory=0.5,
-        cpus=workflow.cores,
+    threads: int(workflow.cores * 0.75)
     log:
         "{output}/logs/assembly/megahit/{sample}-megahit.log",
     benchmark:
@@ -33,7 +33,7 @@ rule megahit:
         megahit -r {input} -o {params.out_dir}/{wildcards.sample} \
                 --out-prefix {wildcards.sample} \
                 --min-contig-len {params.min_contig_len}  \
-                -t {params.cpus}  \
+                -t {threads}  \
                 -m {params.memory} \
                 --k-list {params.k_list} &> {log}
         """
