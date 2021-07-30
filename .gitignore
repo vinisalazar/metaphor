@@ -3,5 +3,5 @@ data/
 .snakemake/
 output/
 bin/
+config/slurm/
 msp.code-workspace
-slurm/
