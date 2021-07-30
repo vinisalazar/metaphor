@@ -24,13 +24,13 @@ rule megahit:
         "{output}/benchmarks/assembly/megahit/{sample}.txt"
     conda:
         "../envs/megahit.yaml"
-    # Using the '--12' flag yielded slightly better results than the '-r' flag
+    # Using the '--12' flag yielded slightly better results than the '-r' flag, but also eventually presented errors
     shell:
         """
         # MegaHit has no --force flag, so we must remove the created directory prior to running
         rm -rf {params.out_dir}/{wildcards.sample}
 
-        megahit --12 {input} -o {params.out_dir}/{wildcards.sample} \
+        megahit -r {input} -o {params.out_dir}/{wildcards.sample} \
                 --out-prefix {wildcards.sample} \
                 --min-contig-len {params.min_contig_len}  \
                 -t {params.cpus}  \
