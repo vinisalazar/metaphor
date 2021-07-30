@@ -3,5 +3,7 @@ data/
 .snakemake/
 output/
 bin/
-config/slurm/
+config/slurm*/
+config/spartan-*
 msp.code-workspace
+slurm-*.out
