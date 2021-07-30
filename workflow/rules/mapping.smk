@@ -54,10 +54,10 @@ rule map_reads:
     output:
         bam="{output}/mapping/bam/{sample}.map.bam",
     params:
-        threads=workflow.cores,
         N=50,
         preset="sr",
         flags=3584,
+    threads: workflow.cores
     log:
         "{output}/logs/mapping/{sample}_map_reads.log",
     benchmark:
@@ -66,7 +66,7 @@ rule map_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
+        {{ minimap2 -t {threads} -N {params.N} -a -x {params.preset} \
                  {input.catalogue_idx} {input.reads} | samtools view \
                  -F {params.flags} -b --threads {params.threads} > {output.bam} ; }} &> {log}
         """
@@ -77,8 +77,7 @@ rule sort_reads:
         bam="{output}/mapping/bam/{sample}.map.bam",
     output:
         sort="{output}/mapping/bam/{sample}.sorted.bam",
-    params:
-        threads=workflow.cores,
+    threads: int(workflow.cores * 0.25)
     log:
         "{output}/logs/mapping/{sample}_sort_reads.log",
     benchmark:
@@ -87,7 +86,7 @@ rule sort_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ samtools sort -@ {params.threads} -o {output.sort} {input.bam} ; }} &> {log}
+        {{ samtools sort -@ {threads} -o {output.sort} {input.bam} ; }} &> {log}
         """
 
 

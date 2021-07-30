@@ -17,7 +17,7 @@ rule megahit:
         min_contig_len=200,
         k_list="21,29",
         memory=0.5,
-    threads: int(workflow.cores * 0.75)
+    threads: workflow.cores
     log:
         "{output}/logs/assembly/megahit/{sample}-megahit.log",
     benchmark:

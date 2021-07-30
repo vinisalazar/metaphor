@@ -45,7 +45,7 @@ rule diamond:
         db=config["diamond"]["db"],
         max_target_seqs=1,
         format=5,
-        cpus=workflow.cores,
+    threads: workflow.cores
     log:
         "{output}/logs/annotation/diamond/{sample}.log",
     benchmark:
@@ -56,7 +56,7 @@ rule diamond:
         """
         {{ diamond blastp -q {input} \
                    --max-target-seqs {params.max_target_seqs} \
-                   -p {params.cpus} \
+                   -p {threads} \
                    -f {params.format} \
                    -d {params.db} \
                    | sed 's/\&quot;//g' \
