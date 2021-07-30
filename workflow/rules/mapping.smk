@@ -67,7 +67,7 @@ rule map_reads:
         """
         {{ minimap2 -t {threads} -N {params.N} -a -x {params.preset} \
                  {input.catalogue_idx} {input.reads} | samtools view \
-                 -F {params.flags} -b --threads {params.threads} > {output.bam} ; }} &> {log}
+                 -F {params.flags} -b --threads {threads} > {output.bam} ; }} &> {log}
         """
 
 
