@@ -57,7 +57,3 @@ def _get_binning_output():
 
 def _get_annotation_output():
     return expand("output/annotation/diamond/{sample}.xml", sample=sample_IDs)
-
-
-def pathfinder(path: str):
-    return str(Path(__file__).joinpath(Path(path)).absolute())
