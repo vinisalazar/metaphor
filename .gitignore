@@ -3,4 +3,4 @@ data/
 .snakemake/
 output/
 bin/
-
+msp.code-workspace
