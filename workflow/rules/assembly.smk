@@ -15,8 +15,7 @@ rule megahit:
     params:
         out_dir=lambda w, output: str(Path(output.contigs).parent.parent),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
-        k_list="21,29",
-        memory=0.5,
+        k_list="21,29,39,59,79,99,119,141",
     threads: workflow.cores
     log:
         "{output}/logs/assembly/megahit/{sample}-megahit.log",
@@ -34,6 +33,5 @@ rule megahit:
                 --out-prefix {wildcards.sample} \
                 --min-contig-len {params.min_contig_len}  \
                 -t {threads}  \
-                -m {params.memory} \
                 --k-list {params.k_list} &> {log}
         """
