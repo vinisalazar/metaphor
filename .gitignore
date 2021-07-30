@@ -4,3 +4,4 @@ data/
 output/
 bin/
 msp.code-workspace
+slurm/
