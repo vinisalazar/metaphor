@@ -5,7 +5,7 @@ concatenate_contigs:
   sequence_length_cutoff: 1  # the script's default is 2000
 
 prodigal:
-  mode: "single"
+  mode: "meta"
 
 diamond:
   db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
