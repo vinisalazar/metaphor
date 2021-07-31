@@ -49,7 +49,7 @@ rule create_mapping:
 rule map_reads:
     input:
         catalogue_idx="{output}/mapping/catalogue.mmi",
-        reads="{output}/preprocess/interleave/{sample}-clean.fq",
+        reads="{output}/qc/interleave/{sample}-clean.fq",
     output:
         bam="{output}/mapping/bam/{sample}.map.bam",
     params:

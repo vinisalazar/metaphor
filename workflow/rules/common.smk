@@ -23,14 +23,14 @@ sample_IDs = samples.index.to_list()
 # Fastq files
 fq1 = samples["fq1"].to_list()
 fq2 = samples["fq2"].to_list()
-fq_clean = samples["clean"] = samples["sample_name"].apply(lambda s: f"output/preprocess/interleave/{s}-clean.fq").to_list()
+fq_clean = samples["clean"] = samples["sample_name"].apply(lambda s: f"output/qc/interleave/{s}-clean.fq").to_list()
 fqs = fq1 + fq2 + fq_clean
 fq_basenames = [str(Path(i).stem) for i in fqs]
 
 
 def get_multiqc_input():
     return expand(
-            "output/preprocess/fastqc/{sample}_fastqc.zip",
+            "output/qc/fastqc/{sample}_fastqc.zip",
             sample=fq_basenames
         )
 
@@ -47,7 +47,7 @@ def get_final_output():
 
 
 def get_qc_output():
-    return "output/preprocess/multiqc.html"
+    return "output/qc/multiqc.html"
 
 
 def get_assembly_output():
