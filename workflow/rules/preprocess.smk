@@ -12,17 +12,34 @@ Preprocess rules:
 
 rule fastqc_raw:  # qc on raw reads
     input:
-        expand("{sample}", sample=fq1 + fq2),
+        "data/{sample}.fq"
     output:
-        html="{output}/preprocess/fastqc/{sample}.html",
         zip="{output}/preprocess/fastqc/{sample}_fastqc.zip",
+        html="{output}/preprocess/fastqc/{sample}.html",
     params:
         "--quiet",
     log:
         "{output}/logs/preprocess/fastqc/{sample}-fastqc.log",
     benchmark:
         "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc.txt"
-    threads: workflow.cores
+    threads: 1
+    wrapper:
+        "0.77.0/bio/fastqc"
+
+
+rule fastqc_clean:  # qc on clean reads
+    input:
+        "{output}/preprocess/interleave/{sample}-clean.fq"
+    output:
+        zip="{output}/preprocess/fastqc/{sample}-clean_fastqc.zip",
+        html="{output}/preprocess/fastqc/{sample}-clean.html",
+    params:
+        "--quiet",
+    log:
+        "{output}/logs/preprocess/fastqc/{sample}-fastqc.log",
+    benchmark:
+        "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc.txt"
+    threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
 
@@ -97,30 +114,9 @@ rule hostremoval:
         "cat {input} > {output}"
 
 
-rule fastqc_clean:  # qc on merged reads, after rules 'flash', 'interleave', and 'hostremoval'
-    input:
-        "{output}/preprocess/interleave/{sample}-clean.fq",
-    output:
-        html="{output}/preprocess/fastqc/{sample}-clean.html",
-        zip="{output}/preprocess/fastqc/{sample}-clean.zip",
-    params:
-        "--quiet",
-    log:
-        "{output}/logs/preprocess/fastqc/{sample}-fastqc_clean.log",
-    benchmark:
-        "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc_clean.txt"
-    threads: workflow.cores
-    wrapper:
-        "0.77.0/bio/fastqc"
-
-
 rule multiqc:
     input:
-        expand(
-            "output/preprocess/fastqc/{sample}-{kind}_fastqc.zip",
-            sample=sample_IDs,
-            kind=["1", "2", "merged"],
-        ),
+        get_multiqc_input(),
     output:
         report="{output}/preprocess/multiqc.html",
     log:
