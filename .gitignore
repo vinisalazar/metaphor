@@ -1,3 +1,4 @@
+data
 data/
 .idea/
 .snakemake/
@@ -7,3 +8,4 @@ config/slurm*/
 config/spartan-*
 msp.code-workspace
 slurm-*.out
+.DS_Store
