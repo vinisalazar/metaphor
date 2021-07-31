@@ -3,7 +3,7 @@ Preprocess rules:
 
     - fastqc_raw: check quality of raw reads with FastQC
     - flash: extend and combine reads with Flash
-    - interleave: interleave merged reads and extended fragments with custom script
+    - interleave: interleave clean reads and extended fragments with custom script
     - hostremoval: map reads against reference database with ???
     - fastqc_clean: check quality after previous steps with FastQC
     - multiqc: combine reports of rules 'fastqc_raw' and 'fastqc_clean' with MultiQC
@@ -74,7 +74,7 @@ rule interleave:
         flash_extended="{output}/qc/flash/{sample}.extendedFrags.fastq",
     output:
         interleaved="{output}/qc/interleave/{sample}-interleaved.fq",
-        merged="{output}/qc/interleave/{sample}-merged.fq",
+        clean="{output}/qc/interleave/{sample}-clean.fq",
     log:
         "{output}/logs/qc/interleave/{sample}-interleave.log",
     benchmark:
@@ -85,33 +85,8 @@ rule interleave:
         """
         {{ bash workflow/scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
 
-        cat {input.flash_extended} {output.interleaved} > {output.merged}
+        cat {input.flash_extended} {output.interleaved} > {output.clean}
         """
-
-
-rule hostremoval:
-    input:
-        flash_merged="{output}/qc/interleave/{sample}-merged.fq",
-    params:
-        alignment_id_threshold=70,
-        alignment_coverage_threshold=70,
-        dbs="mm1,mm2,mm3,mm4,mm5,mm6",
-    output:
-        host_removal_output="{output}/qc/interleave/{sample}-clean.fq",
-    log:
-        "{output}/logs/qc/interleave/{sample}-hostremoval.log",
-    benchmark:
-        "{output}/benchmarks/qc/interleave/{sample}-hostremoval.txt"
-    conda:
-        "../envs/bash.yaml"
-    shell:
-        # This rule is off for now due to the lack of databases
-        # "perl bin/dqc/deconseq.pl -dbs {params.dbs}" \
-        # " -f {input}" \
-        # " -i {params.alignment_id_threshold}" \
-        # " -c {params.alignment_coverage_threshold} " \
-        # " -id {wildcards.sample}"
-        "cat {input} > {output}"
 
 
 rule multiqc:
