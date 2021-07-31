@@ -19,31 +19,44 @@ samples = samples.set_index("sample_name", drop=False).sort_index()
 validate(samples, schema="../schemas/samples.schema.yaml")
 
 sample_IDs = samples.index.to_list()
+
+# Fastq files
 fq1 = samples["fq1"].to_list()
 fq2 = samples["fq2"].to_list()
+fq_clean = samples["clean"] = samples["sample_name"].apply(lambda s: f"output/preprocess/interleave/{s}-clean.fq").to_list()
+fqs = fq1 + fq2 + fq_clean
+fq_basenames = [str(Path(i).stem) for i in fqs]
 
 
+def get_multiqc_input():
+    return expand(
+            "output/preprocess/fastqc/{sample}_fastqc.zip",
+            sample=fq_basenames
+        )
+
+
+# Outputs
 def get_final_output():
 
-    assembly_output = _get_assembly_output()
-    mapping_output = _get_mapping_output()
-    annotation_output = _get_annotation_output()
-
     return (
-        "output/preprocess/multiqc.html",
-        assembly_output,
-        mapping_output,
-        annotation_output,
+        get_qc_output(),
+        get_assembly_output(),
+        get_mapping_output(),
+        get_annotation_output(),
     )
 
 
-def _get_assembly_output():
+def get_qc_output():
+    return "output/preprocess/multiqc.html"
+
+
+def get_assembly_output():
     return expand(
         "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
     )
 
 
-def _get_mapping_output():
+def get_mapping_output():
     return expand(
         "output/mapping/bam/{sample}.{kind}",
         sample=sample_IDs,
@@ -51,9 +64,9 @@ def _get_mapping_output():
     )
 
 
-def _get_binning_output():
+def get_binning_output():
     return directory("output/binning/vamb/")
 
 
-def _get_annotation_output():
+def get_annotation_output():
     return expand("output/annotation/diamond/{sample}.xml", sample=sample_IDs)
