@@ -14,14 +14,14 @@ rule fastqc_raw:  # qc on raw reads
     input:
         "data/{sample}.fq"
     output:
-        zip="{output}/preprocess/fastqc/{sample}_fastqc.zip",
-        html="{output}/preprocess/fastqc/{sample}.html",
+        zip="{output}/qc/fastqc/{sample}_fastqc.zip",
+        html="{output}/qc/fastqc/{sample}.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/preprocess/fastqc/{sample}-fastqc.log",
+        "{output}/logs/qc/fastqc/{sample}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc.txt"
+        "{output}/benchmarks/qc/fastqc/{sample}_fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -29,16 +29,16 @@ rule fastqc_raw:  # qc on raw reads
 
 rule fastqc_clean:  # qc on clean reads
     input:
-        "{output}/preprocess/interleave/{sample}-clean.fq"
+        "{output}/qc/interleave/{sample}-clean.fq"
     output:
-        zip="{output}/preprocess/fastqc/{sample}-clean_fastqc.zip",
-        html="{output}/preprocess/fastqc/{sample}-clean.html",
+        zip="{output}/qc/fastqc/{sample}-clean_fastqc.zip",
+        html="{output}/qc/fastqc/{sample}-clean.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/preprocess/fastqc/{sample}-fastqc.log",
+        "{output}/logs/qc/fastqc/{sample}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/preprocess/fastqc/{sample}_fastqc.txt"
+        "{output}/benchmarks/qc/fastqc/{sample}_fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -49,36 +49,36 @@ rule flash:
         fqforward=fq1,
         fqreverse=fq2,
     output:
-        flash_notcombined1="{output}/preprocess/flash/{sample}.notCombined_1.fastq",
-        flash_notcombined2="{output}/preprocess/flash/{sample}.notCombined_2.fastq",
-        flash_extended="{output}/preprocess/flash/{sample}.extendedFrags.fastq",
+        flash_notcombined1="{output}/qc/flash/{sample}.notCombined_1.fastq",
+        flash_notcombined2="{output}/qc/flash/{sample}.notCombined_2.fastq",
+        flash_extended="{output}/qc/flash/{sample}.extendedFrags.fastq",
     params:
         max_overlap=120,
     log:
-        "{output}/logs/preprocess/flash/{sample}-flash.log",
+        "{output}/logs/qc/flash/{sample}-flash.log",
     benchmark:
-        "{output}/benchmarks/preprocess/flash/{sample}.txt"
+        "{output}/benchmarks/qc/flash/{sample}.txt"
     conda:
         "../envs/flash.yaml"
     shell:
         """
-        flash -d {wildcards.output}/preprocess/flash -o {wildcards.sample} \
+        flash -d {wildcards.output}/qc/flash -o {wildcards.sample} \
               -M {params.max_overlap} {input} &> {log}
         """
 
 
 rule interleave:
     input:
-        flash_notcombined1="{output}/preprocess/flash/{sample}.notCombined_1.fastq",
-        flash_notcombined2="{output}/preprocess/flash/{sample}.notCombined_2.fastq",
-        flash_extended="{output}/preprocess/flash/{sample}.extendedFrags.fastq",
+        flash_notcombined1="{output}/qc/flash/{sample}.notCombined_1.fastq",
+        flash_notcombined2="{output}/qc/flash/{sample}.notCombined_2.fastq",
+        flash_extended="{output}/qc/flash/{sample}.extendedFrags.fastq",
     output:
-        interleaved="{output}/preprocess/interleave/{sample}-interleaved.fq",
-        merged="{output}/preprocess/interleave/{sample}-merged.fq",
+        interleaved="{output}/qc/interleave/{sample}-interleaved.fq",
+        merged="{output}/qc/interleave/{sample}-merged.fq",
     log:
-        "{output}/logs/preprocess/interleave/{sample}-interleave.log",
+        "{output}/logs/qc/interleave/{sample}-interleave.log",
     benchmark:
-        "{output}/benchmarks/preprocess/interleave/{sample}-interleave.txt"
+        "{output}/benchmarks/qc/interleave/{sample}-interleave.txt"
     conda:
         "../envs/bash.yaml"
     shell:
@@ -91,17 +91,17 @@ rule interleave:
 
 rule hostremoval:
     input:
-        flash_merged="{output}/preprocess/interleave/{sample}-merged.fq",
+        flash_merged="{output}/qc/interleave/{sample}-merged.fq",
     params:
         alignment_id_threshold=70,
         alignment_coverage_threshold=70,
         dbs="mm1,mm2,mm3,mm4,mm5,mm6",
     output:
-        host_removal_output="{output}/preprocess/interleave/{sample}-clean.fq",
+        host_removal_output="{output}/qc/interleave/{sample}-clean.fq",
     log:
-        "{output}/logs/preprocess/interleave/{sample}-hostremoval.log",
+        "{output}/logs/qc/interleave/{sample}-hostremoval.log",
     benchmark:
-        "{output}/benchmarks/preprocess/interleave/{sample}-hostremoval.txt"
+        "{output}/benchmarks/qc/interleave/{sample}-hostremoval.txt"
     conda:
         "../envs/bash.yaml"
     shell:
@@ -118,10 +118,10 @@ rule multiqc:
     input:
         get_multiqc_input(),
     output:
-        report="{output}/preprocess/multiqc.html",
+        report="{output}/qc/multiqc.html",
     log:
-        "{output}/logs/preprocess/multiqc.log",
+        "{output}/logs/qc/multiqc.log",
     benchmark:
-        "{output}/benchmarks/preprocess/multiqc.txt"
+        "{output}/benchmarks/qc/multiqc.txt"
     wrapper:
         "0.77.0/bio/multiqc"
