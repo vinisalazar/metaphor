@@ -13,26 +13,45 @@ from snakemake.utils import validate
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype={"sample_name": str})
-samples = samples.set_index("sample_name", drop=False).sort_index()
+samples = (
+    pd.read_csv(config["samples"], dtype={"sample_name": str})
+    .set_index("sample_name", drop=False)
+    .sort_index()
+)
 
 validate(samples, schema="../schemas/samples.schema.yaml")
+
+units = (
+    pd.read_csv(config["units"], dtype={"sample_name": str, "unit_name": str})
+    .set_index(["sample_name", "unit_name"], drop=False)
+    .sort_index()
+)
+validate(units, schema="../schemas/units.schema.yaml")
 
 sample_IDs = samples.index.to_list()
 
 # Fastq files
 fq1 = samples["fq1"].to_list()
 fq2 = samples["fq2"].to_list()
-fq_clean = samples["clean"] = samples["sample_name"].apply(lambda s: f"output/qc/interleave/{s}-clean.fq").to_list()
+fq_clean = samples["clean"] = (
+    samples["sample_name"]
+    .apply(lambda s: f"output/qc/interleave/{s}-clean.fq")
+    .to_list()
+)
 fqs = fq1 + fq2 + fq_clean
 fq_basenames = [str(Path(i).stem) for i in fqs]
 
+# Helpers
+def is_activated(xpath):  # from rna-seq workflow
+    c = config
+    for entry in xpath.split("/"):
+        c = c.get(entry, {})
+    return bool(c.get("activate", False))
 
+
+# Inputs
 def get_multiqc_input():
-    return expand(
-            "output/qc/fastqc/{sample}_fastqc.zip",
-            sample=fq_basenames
-        )
+    return expand("output/qc/fastqc/{sample}_fastqc.zip", sample=fq_basenames)
 
 
 # Outputs
