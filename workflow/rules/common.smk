@@ -5,7 +5,7 @@ Inspired by the same one from the RNASeq workflow:
     https://github.com/snakemake-workflows/rna-seq-star-deseq2/
 """
 
-import glob
+from glob import glob
 from pathlib import Path
 
 import pandas as pd
@@ -30,28 +30,117 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 sample_IDs = samples.index.to_list()
 
-# Fastq files
-fq1 = samples["fq1"].to_list()
-fq2 = samples["fq2"].to_list()
-fq_clean = samples["clean"] = (
-    samples["sample_name"]
-    .apply(lambda s: f"output/qc/interleave/{s}-clean.fq")
-    .to_list()
-)
-fqs = fq1 + fq2 + fq_clean
-fq_basenames = [str(Path(i).stem) for i in fqs]
-
 # Helpers
-def is_activated(xpath):  # from rna-seq workflow
+def is_activated(xpath):
     c = config
     for entry in xpath.split("/"):
         c = c.get(entry, {})
     return bool(c.get("activate", False))
 
 
+def is_paired_end(sample):
+    sample_units = units.loc[sample]
+    fq2_null = sample_units["R2"].isnull()
+    paired = ~fq2_null
+    all_paired = paired.all()
+    all_single = (~paired).all()
+    assert (
+        all_single or all_paired
+    ), "invalid units for sample {}, must be all paired end or all single end".format(
+        sample
+    )
+    return all_paired
+
+
 # Inputs
-def get_multiqc_input():
-    return expand("output/qc/fastqc/{sample}_fastqc.zip", sample=fq_basenames)
+
+def get_multiqc_input(wildcards):
+    return glob("output/qc/fastqc/*_fastqc.zip")
+
+
+def get_fastqs(wildcards):
+    if config["trimming"]["activate"]:
+        return expand(
+            "output/qc/trim/{sample}_{unit}_{read}_trim.fq.gz",
+            unit=units.loc[wildcards.sample, "unit_name"],
+            sample=wildcards.sample,
+            read=wildcards.read,
+        )
+    unit = units.loc[wildcards.sample]
+    fq = "fq{}".format(wildcards.read[-1])
+    return units.loc[wildcards.sample, fq].tolist()
+
+
+def get_trim_pipe_input(wildcards):
+    files = list(
+        sorted(glob(units.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
+    )
+    assert len(files) > 0, "No files were found!"
+    return files
+
+
+def get_trim_input(wildcards):
+    unit = units.loc[wildcards.sample].loc[wildcards.unit]
+
+    if unit["R1"].endswith("gz"):
+        ending = ".gz"
+    else:
+        ending = ""
+
+    if pd.isna(unit["R2"]):
+        # single end local sample
+        return "pipe/qc/trim/{sample}_{unit}_trim.fq{ending}".format(
+            sample=unit.sample_name, unit=unit.unit_name, ending=ending
+        )
+    else:
+        # paired end local sample
+        return expand(
+            "pipe/qc/trim/{sample}_{unit}_{{read}}.fq{ending}".format(
+                sample=unit.sample_name, unit=unit.unit_name, ending=ending
+            ),
+            read=["R1", "R2"],
+        )
+
+
+def get_map_reads_input_R1(wildcards):
+    if not is_activated("merge_reads"):
+        if config["trimming"]["activate"]:
+            return expand(
+                "output/trim/{sample}_{unit}_R1.fastq.gz",
+                unit=units.loc[wildcards.sample, "unit_name"],
+                sample=wildcards.sample,
+            )
+        unit = units.loc[wildcards.sample]
+        if all(pd.isna(unit["R1"])):
+            # SRA sample (always paired-end for now)
+            accession = unit["sra"]
+            return expand("sra/{accession}_R1.fastq", accession=accession)
+        sample_units = units.loc[wildcards.sample]
+        return sample_units["R1"]
+    if is_paired_end(wildcards.sample):
+        return "output/merged/{sample}_R1.fastq.gz"
+    return "output/merged/{sample}_single.fastq.gz"
+
+
+def get_map_reads_input_R2(wildcards):
+    if is_paired_end(wildcards.sample):
+        if not is_activated("merge_reads"):
+            if config["trimming"]["activate"]:
+                return expand(
+                    "output/trim/{sample}_{unit}_R1.fastq.gz",
+                    unit=units.loc[wildcards.sample, "unit_name"],
+                    sample=wildcards.sample,
+                )
+            unit = units.loc[wildcards.sample]
+            if all(pd.isna(unit["R1"])):
+                # SRA sample (always paired-end for now)
+                accession = unit["sra"]
+                return expand("sra/{accession}_R2.fastq", accession=accession)
+            sample_units = units.loc[wildcards.sample]
+            return sample_units["R2"]
+        return ("output/merged/{sample}_R2.fastq.gz",)
+    return ""
+
 
 
 # Outputs
@@ -60,8 +149,8 @@ def get_final_output():
     return (
         get_qc_output(),
         get_assembly_output(),
-        get_mapping_output(),
-        get_annotation_output(),
+        # get_mapping_output(),
+        # get_annotation_output(),
     )
 
 
