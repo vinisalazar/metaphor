@@ -1,4 +1,20 @@
-samples: "config/samples.csv"
+# Based on the Snakemake RNASeq workflow:
+#   https://github.com/snakemake-workflows/rna-seq-star-deseq2/
+
+# Path or URL to sample sheet (TSV format, columns: sample, condition, ...)
+samples: config/samples.csv
+
+# Path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
+# Units are technical replicates (e.g. lanes, or resequencing of the same biological
+# sample).
+units: config/units.csv
+
+
+trimming:
+  activate: True
+
+merge_reads:
+  activate: True
 
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
