@@ -8,10 +8,10 @@ properties:
   unit_name:
     type: string
     description: unit id
-  fq1:
+  R1:
     type: string
     description: path to FASTQ file
-  fq2:
+  R2:
     type: string
     description: path to second FASTQ file (leave empty in case of single-end)
 
