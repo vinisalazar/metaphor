@@ -7,6 +7,25 @@ type: object
 properties:
   samples:
     type: string
+  
+  units:
+    type: string
+
+  trimming:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+  merge_reads:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
 
   concatenate_contigs:
     type: object
