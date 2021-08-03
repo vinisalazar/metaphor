@@ -9,89 +9,87 @@ Preprocess rules:
     - multiqc: combine reports of rules 'fastqc_raw' and 'fastqc_clean' with MultiQC
 """
 
-
-rule fastqc_raw:  # qc on raw reads
+rule trim_pipe:
     input:
-        "data/{sample}.fq"
+        get_trim_pipe_input,
     output:
-        zip="{output}/qc/fastqc/{sample}_fastqc.zip",
-        html="{output}/qc/fastqc/{sample}.html",
+        pipe("pipe/qc/trim/{sample}_{unit}_{fq}.{ext}"),
+    log:
+        "output/logs/qc/trim_pipe/{sample}_{unit}_{fq}.{ext}.log",
+    wildcard_constraints:
+        ext=r"fq|fq\.gz|fastq|fastq\.gz",
+    threads: 1
+    shell:
+        "cat {input} > {output} 2> {log}"
+
+
+rule trim_galore_pe:
+    input:
+        get_trim_input,
+    output:
+        fastq1="output/qc/trim/{sample}_{unit}_R1_trim.fq.gz",
+        qc_fq1="output/qc/trim/{sample}_{unit}_R1.gz_trimming_report.txt",
+        fastq2="output/qc/trim/{sample}_{unit}_R2_trim.fq.gz",
+        qc_fq2="output/qc/trim/{sample}_{unit}_R2.gz_trimming_report.txt"
+    params:
+        extra="--illumina -q 20"
+    log:
+        "output/logs/qc/trim_galore/{sample}_{unit}.log"
+    benchmark:
+        "output/benchmarks/qc/trim_galore/{sample}_{unit}.log"
+    wrapper:
+        "0.77.0/bio/trim_galore/pe"
+
+
+# rule trim_galore_se:
+#     input:
+#         get_trim_input,
+#     output:
+#         fastq="output/qc/trim/{sample}_{unit}.trim.fq.gz",
+#         qc="output/qc/trim/{sample}_{unit}.fq.gz_trimming_report.txt",
+#     params:
+#         extra="--illumina -q 20"
+#     log:
+#         "output/logs/qc/trim_galore/{sample}_{unit}.log"
+#     benchmark:
+#         "output/benchmarks//qc/trim_galore/{sample}_{unit}.log"
+#     wrapper:
+#         "0.77.0/bio/trim_galore/se"
+    
+
+rule merge_fastqs:
+    input:
+        get_fastqs,
+    output:
+        "output/qc/merged/{sample}_{read}.fq.gz",
+    log:
+        "output/logs/qc/merge_fastqs/{sample}.{read}.log",
+    wildcard_constraints:
+        read="single|R1|R2",
+    shell:
+        "cat {input} > {output} 2> {log}"
+
+
+rule fastqc:  # qc on raw reads
+    input:
+        "output/qc/{kind}/{basename}.fq.gz"
+    output:
+        zip="{output}/qc/fastqc/{basename}-{kind}_fastqc.zip",
+        html="{output}/qc/fastqc/{basename}-{kind}.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/fastqc/{sample}-fastqc.log",
+        "{output}/logs/qc/fastqc/{basename}-{kind}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc/{sample}_fastqc.txt"
+        "{output}/benchmarks/qc/fastqc/{basename}-{kind}_fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
-
-
-rule fastqc_clean:  # qc on clean reads
-    input:
-        "{output}/qc/interleave/{sample}-clean.fq"
-    output:
-        zip="{output}/qc/fastqc/{sample}-clean_fastqc.zip",
-        html="{output}/qc/fastqc/{sample}-clean.html",
-    params:
-        "--quiet",
-    log:
-        "{output}/logs/qc/fastqc/{sample}-fastqc.log",
-    benchmark:
-        "{output}/benchmarks/qc/fastqc/{sample}_fastqc.txt"
-    threads: 1
-    wrapper:
-        "0.77.0/bio/fastqc"
-
-
-rule flash:
-    input:
-        fqforward=fq1,
-        fqreverse=fq2,
-    output:
-        flash_notcombined1="{output}/qc/flash/{sample}.notCombined_1.fastq",
-        flash_notcombined2="{output}/qc/flash/{sample}.notCombined_2.fastq",
-        flash_extended="{output}/qc/flash/{sample}.extendedFrags.fastq",
-    params:
-        max_overlap=120,
-    log:
-        "{output}/logs/qc/flash/{sample}-flash.log",
-    benchmark:
-        "{output}/benchmarks/qc/flash/{sample}.txt"
-    conda:
-        "../envs/flash.yaml"
-    shell:
-        """
-        flash -d {wildcards.output}/qc/flash -o {wildcards.sample} \
-              -M {params.max_overlap} {input} &> {log}
-        """
-
-
-rule interleave:
-    input:
-        flash_notcombined1="{output}/qc/flash/{sample}.notCombined_1.fastq",
-        flash_notcombined2="{output}/qc/flash/{sample}.notCombined_2.fastq",
-        flash_extended="{output}/qc/flash/{sample}.extendedFrags.fastq",
-    output:
-        interleaved="{output}/qc/interleave/{sample}-interleaved.fq",
-        clean="{output}/qc/interleave/{sample}-clean.fq",
-    log:
-        "{output}/logs/qc/interleave/{sample}-interleave.log",
-    benchmark:
-        "{output}/benchmarks/qc/interleave/{sample}-interleave.txt"
-    conda:
-        "../envs/bash.yaml"
-    shell:
-        """
-        {{ bash workflow/scripts/interleave_fastq.sh {input.flash_notcombined1} {input.flash_notcombined2} > {output.interleaved} ; }} &> {log}
-
-        cat {input.flash_extended} {output.interleaved} > {output.clean}
-        """
 
 
 rule multiqc:
     input:
-        get_multiqc_input(),
+        get_multiqc_input,
     output:
         report="{output}/qc/multiqc.html",
     log:
