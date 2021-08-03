@@ -9,7 +9,8 @@ from pathlib import Path
 
 rule megahit:
     input:
-        host_removal_output="{output}/qc/interleave/{sample}-clean.fq",
+        fastq1="{output}/qc/merged/{sample}_R1.fq.gz",
+        fastq2="{output}/qc/merged/{sample}_R2.fq.gz",
     output:
         contigs="{output}/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:
@@ -29,7 +30,8 @@ rule megahit:
         # MegaHit has no --force flag, so we must remove the created directory prior to running
         rm -rf {params.out_dir}/{wildcards.sample}
 
-        megahit -r {input} -o {params.out_dir}/{wildcards.sample} \
+        megahit -1 {input.fastq1} -2 {input.fastq2} \
+                -o {params.out_dir}/{wildcards.sample} \
                 --out-prefix {wildcards.sample} \
                 --min-contig-len {params.min_contig_len}  \
                 -t {threads}  \
