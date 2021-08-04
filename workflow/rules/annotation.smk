@@ -20,7 +20,7 @@ rule prodigal:
     params:
         mode=config["prodigal"]["mode"],
     log:
-        "{output}/logs/annotation/prodigal/{sample}",
+        "{output}/logs/annotation/prodigal/{sample}.log",
     benchmark:
         "{output}/benchmarks/annotation/prodigal/{sample}.txt"
     conda:
@@ -36,11 +36,35 @@ rule prodigal:
         """
 
 
+rule hmmsearch:
+    input:
+        fasta="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
+        profile=config["hmmsearch"]["db"],
+    output:
+        # only one of these is required
+        tblout="{output}/annotation/hmmsearch/{sample}_hmmer.tblout", # save parseable table of per-sequence hits to file <f>
+        # domtblout="{output}/annotation/hmmsearch/{sample}_hmmer.domtblout", # save parseable table of per-domain hits to file <f>
+        alignment_hits="{output}/annotation/hmmsearch/{sample}_hmmer.aln", # Save a multiple alignment of all significant hits (those satisfying inclusion thresholds) to the file <f>
+        outfile="{output}/annotation/hmmsearch/{sample}_hmmer.out", # Direct the main human-readable output to a file <f> instead of the default stdout.
+    log:
+        "{output}/logs/annotation/hmmsearch/{sample}.log",
+    benchmark:
+        "{output}/benchmarks/annotation/hmmsearch/{sample}.txt"
+    params:
+        evalue_threshold=0.00001,
+        # if bitscore threshold provided, hmmsearch will use that instead
+        #score_threshold=50,
+        extra="",
+    threads: workflow.cores * 0.75
+    wrapper:
+        "0.77.0/bio/hmmer/hmmsearch"
+
+
 rule diamond:
     input:
         proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
     output:
-        xmlout="{output}/annotation/diamond/{sample}.xml",
+        xmlout="{output}/annotation/diamond/{sample}_dmnd.xml",
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
