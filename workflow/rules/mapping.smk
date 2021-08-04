@@ -49,7 +49,8 @@ rule create_mapping:
 rule map_reads:
     input:
         catalogue_idx="{output}/mapping/catalogue.mmi",
-        reads="{output}/qc/interleave/{sample}-clean.fq",
+        fastq1=get_map_reads_input_R1,
+        fastq2=get_map_reads_input_R2
     output:
         bam="{output}/mapping/bam/{sample}.map.bam",
     params:
@@ -66,8 +67,9 @@ rule map_reads:
     shell:
         """
         {{ minimap2 -t {threads} -N {params.N} -a -x {params.preset} \
-                 {input.catalogue_idx} {input.reads} | samtools view \
-                 -F {params.flags} -b --threads {threads} > {output.bam} ; }} &> {log}
+                 {input.catalogue_idx} {input.fastq1} {input.fastq2} \
+                 | samtools view -F {params.flags} -b --threads \
+                   {threads} > {output.bam} ; }} &> {log}
         """
 
 
