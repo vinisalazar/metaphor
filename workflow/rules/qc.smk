@@ -55,9 +55,9 @@ rule merge_fastqs:
         "cat {input} > {output} 2> {log}"
 
 
-rule fastqc:  # qc on raw reads
+rule fastqc_raw:  # qc on raw reads
     input:
-        get_fastqc_input,
+        get_fastqc_input_raw,
     output:
         zip="{output}/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip",
         html="{output}/qc/fastqc/{sample}-{unit}-{read}.html",
@@ -66,7 +66,24 @@ rule fastqc:  # qc on raw reads
     log:
         "{output}/logs/qc/fastqc/{sample}-{unit}-{read}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc/{sample}-{unit}-{read}-fastqc.txt"
+        "{output}/benchmarks/qc/fastqc/{sample}-{unit}-q{read}-fastqc.txt"
+    threads: 1
+    wrapper:
+        "0.77.0/bio/fastqc"
+
+
+rule fastqc_merged:  # qc on raw reads
+    input:
+        get_fastqc_input_merged,
+    output:
+        zip="{output}/qc/fastqc/{sample}-{read}_fastqc.zip",
+        html="{output}/qc/fastqc/{sample}-{read}.html",
+    params:
+        "--quiet",
+    log:
+        "{output}/logs/qc/fastqc/{sample}-{read}-fastqc.log",
+    benchmark:
+        "{output}/benchmarks/qc/fastqc/{sample}-{read}-fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
