@@ -189,4 +189,6 @@ def get_binning_output():
 
 
 def get_annotation_output():
-    return expand("output/annotation/diamond/{sample}.xml", sample=sample_IDs)
+    diamond = expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
+    hmmsearch = expand("output/annotation/hmmsearch/{sample}_hmmer.out", sample=sample_IDs)
+    return diamond + hmmsearch
