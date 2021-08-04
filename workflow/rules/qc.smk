@@ -9,13 +9,13 @@ Preprocess rules:
     - multiqc: combine reports of rules 'fastqc_raw' and 'fastqc_clean' with MultiQC
 """
 
-rule trim_pipe:
+rule cutadapt_pipe:
     input:
-        get_trim_pipe_input,
+        get_cutadapt_pipe_input,
     output:
-        pipe("pipe/qc/trim/{sample}_{unit}_{fq}.{ext}"),
+        pipe("pipe/qc/cutadapt/{sample}_{unit}_{fq}.{ext}"),
     log:
-        "output/logs/qc/trim_pipe/{sample}_{unit}_{fq}.{ext}.log",
+        "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
     wildcard_constraints:
         ext=r"fq|fq\.gz|fastq|fastq\.gz",
     threads: 1
@@ -23,38 +23,23 @@ rule trim_pipe:
         "cat {input} > {output} 2> {log}"
 
 
-rule trim_galore_pe:
+rule cutadapt_pe:
     input:
-        get_trim_input,
+        get_cutadapt_input,
     output:
-        fastq1="output/qc/trim/{sample}_{unit}_R1_trim.fq.gz",
-        qc_fq1="output/qc/trim/{sample}_{unit}_R1.gz_trimming_report.txt",
-        fastq2="output/qc/trim/{sample}_{unit}_R2_trim.fq.gz",
-        qc_fq2="output/qc/trim/{sample}_{unit}_R2.gz_trimming_report.txt"
-    params:
-        extra="--illumina -q 20"
+        fastq1="output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
+        fastq2="output/qc/cutadapt/{sample}_{unit}_R2.fq.gz",
+        qc="output/qc/cutadapt/{sample}_{unit}.paired.qc.txt",
     log:
-        "output/logs/qc/trim_galore/{sample}_{unit}.log"
-    benchmark:
-        "output/benchmarks/qc/trim_galore/{sample}_{unit}.log"
+        "output/logs/cutadapt/{sample}-{unit}.log",
+    params:
+        others="", # config["params"]["cutadapt-pe"],
+        adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
+        extra="--minimum-length 1 -q 20"
+        # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
+    threads: 1
     wrapper:
-        "0.77.0/bio/trim_galore/pe"
-
-
-# rule trim_galore_se:
-#     input:
-#         get_trim_input,
-#     output:
-#         fastq="output/qc/trim/{sample}_{unit}.trim.fq.gz",
-#         qc="output/qc/trim/{sample}_{unit}.fq.gz_trimming_report.txt",
-#     params:
-#         extra="--illumina -q 20"
-#     log:
-#         "output/logs/qc/trim_galore/{sample}_{unit}.log"
-#     benchmark:
-#         "output/benchmarks//qc/trim_galore/{sample}_{unit}.log"
-#     wrapper:
-#         "0.77.0/bio/trim_galore/se"
+        "0.59.2/bio/cutadapt/pe"
     
 
 rule merge_fastqs:
@@ -72,16 +57,16 @@ rule merge_fastqs:
 
 rule fastqc:  # qc on raw reads
     input:
-        "output/qc/{kind}/{basename}.fq.gz"
+        get_fastqc_input,
     output:
-        zip="{output}/qc/fastqc/{basename}-{kind}_fastqc.zip",
-        html="{output}/qc/fastqc/{basename}-{kind}.html",
+        zip="{output}/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip",
+        html="{output}/qc/fastqc/{sample}-{unit}-{read}.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/fastqc/{basename}-{kind}-fastqc.log",
+        "{output}/logs/qc/fastqc/{sample}-{unit}-{read}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc/{basename}-{kind}_fastqc.txt"
+        "{output}/benchmarks/qc/fastqc/{sample}-{unit}-{read}-fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
@@ -91,10 +76,10 @@ rule multiqc:
     input:
         get_multiqc_input,
     output:
-        report="{output}/qc/multiqc.html",
+        report="output/qc/multiqc.html",
     log:
-        "{output}/logs/qc/multiqc.log",
+        "output/logs/qc/multiqc.log",
     benchmark:
-        "{output}/benchmarks/qc/multiqc.txt"
+        "output/benchmarks/qc/multiqc.txt"
     wrapper:
         "0.77.0/bio/multiqc"
