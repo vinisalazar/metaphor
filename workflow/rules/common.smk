@@ -119,7 +119,7 @@ def get_map_reads_input_R1(wildcards):
     if not is_activated("merge_reads"):
         if config["trimming"]["activate"]:
             return expand(
-                "output/cutadapt/{sample}_{unit}_R1.fastq.gz",
+                "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
                 unit=units.loc[wildcards.sample, "unit_name"],
                 sample=wildcards.sample,
             )
@@ -127,12 +127,12 @@ def get_map_reads_input_R1(wildcards):
         if all(pd.isna(unit["R1"])):
             # SRA sample (always paired-end for now)
             accession = unit["sra"]
-            return expand("sra/{accession}_R1.fastq", accession=accession)
+            return expand("sra/{accession}_R1.fq", accession=accession)
         sample_units = units.loc[wildcards.sample]
         return sample_units["R1"]
     if is_paired_end(wildcards.sample):
-        return "output/merged/{sample}_R1.fastq.gz"
-    return "output/merged/{sample}_single.fastq.gz"
+        return "output/qc/merged/{sample}_R1.fq.gz"
+    return "output/qc/merged/{sample}_single.fq.gz"
 
 
 def get_map_reads_input_R2(wildcards):
@@ -140,7 +140,7 @@ def get_map_reads_input_R2(wildcards):
         if not is_activated("merge_reads"):
             if config["trimming"]["activate"]:
                 return expand(
-                    "output/cutadapt/{sample}_{unit}_R1.fastq.gz",
+                    "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
                     unit=units.loc[wildcards.sample, "unit_name"],
                     sample=wildcards.sample,
                 )
@@ -148,10 +148,10 @@ def get_map_reads_input_R2(wildcards):
             if all(pd.isna(unit["R1"])):
                 # SRA sample (always paired-end for now)
                 accession = unit["sra"]
-                return expand("sra/{accession}_R2.fastq", accession=accession)
+                return expand("sra/{accession}_R2.fq", accession=accession)
             sample_units = units.loc[wildcards.sample]
             return sample_units["R2"]
-        return ("output/merged/{sample}_R2.fastq.gz",)
+        return ("output/qc/merged/{sample}_R2.fq.gz",)
     return ""
 
 
@@ -161,7 +161,7 @@ def get_final_output():
     return (
         get_qc_output(),
         get_assembly_output(),
-        # get_mapping_output(),
+        get_mapping_output(),
         # get_annotation_output(),
     )
 
