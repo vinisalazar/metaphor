@@ -55,7 +55,7 @@ rule merge_fastqs:
         "cat {input} > {output} 2> {log}"
 
 
-rule fastqc_raw:  # qc on raw reads
+rule fastqc_raw:  # qc on raw, unmerged reads
     input:
         get_fastqc_input_raw,
     output:
@@ -72,7 +72,7 @@ rule fastqc_raw:  # qc on raw reads
         "0.77.0/bio/fastqc"
 
 
-rule fastqc_merged:  # qc on raw reads
+rule fastqc_merged:  # qc on trimmed, merged reads
     input:
         get_fastqc_input_merged,
     output:
