@@ -23,5 +23,8 @@ concatenate_contigs:
 prodigal:
   mode: "meta"
 
+hmmsearch:
+  db: ".test/data/hmmer-2.hmm"
+
 diamond:
   db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
