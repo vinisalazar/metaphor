@@ -98,14 +98,21 @@ def get_cutadapt_input(wildcards):
         )
 
 
-def get_fastqc_input(wildcards):
+def get_fastqc_input_raw(wildcards):
     unit = units.loc[wildcards.sample].loc[wildcards.unit][wildcards.read]
     return unit
 
 
+def get_fastqc_input_merged(wildcards):
+    sample, read = wildcards.sample, wildcards.read
+    return "output/qc/merged/{sample}_{read}.fq.gz"
+
+
 
 def get_multiqc_input(wildcards):
-    return expand("output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip", sample=sample_IDs, unit=unit_names, read=["R1", "R2"])
+    raw = expand("output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip", sample=sample_IDs, unit=unit_names, read=["R1", "R2"])
+    merged = expand("output/qc/fastqc/{sample}-{read}_fastqc.zip", sample=sample_IDs, read=["R1", "R2"])
+    return raw + merged
 
 
 def get_map_reads_input_R1(wildcards):
