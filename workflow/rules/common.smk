@@ -20,6 +20,7 @@ samples = (
 )
 
 validate(samples, schema="../schemas/samples.schema.yaml")
+sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 
 units = (
     pd.read_csv(config["units"], dtype={"sample_name": str, "unit_name": str})
@@ -27,8 +28,8 @@ units = (
     .sort_index()
 )
 validate(units, schema="../schemas/units.schema.yaml")
+unit_names = units["unit_name"].drop_duplicates().to_list()
 
-sample_IDs = samples.index.to_list()
 
 # Helpers
 def is_activated(xpath):
@@ -53,25 +54,20 @@ def is_paired_end(sample):
 
 
 # Inputs
-
-def get_multiqc_input(wildcards):
-    return glob("output/qc/fastqc/*_fastqc.zip")
-
-
 def get_fastqs(wildcards):
     if config["trimming"]["activate"]:
         return expand(
-            "output/qc/trim/{sample}_{unit}_{read}_trim.fq.gz",
+            "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz",
             unit=units.loc[wildcards.sample, "unit_name"],
             sample=wildcards.sample,
             read=wildcards.read,
         )
     unit = units.loc[wildcards.sample]
-    fq = "fq{}".format(wildcards.read[-1])
+    fq = "R{}".format(wildcards.read[-1])
     return units.loc[wildcards.sample, fq].tolist()
 
 
-def get_trim_pipe_input(wildcards):
+def get_cutadapt_pipe_input(wildcards):
     files = list(
         sorted(glob(units.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
     )
@@ -79,7 +75,7 @@ def get_trim_pipe_input(wildcards):
     return files
 
 
-def get_trim_input(wildcards):
+def get_cutadapt_input(wildcards):
     unit = units.loc[wildcards.sample].loc[wildcards.unit]
 
     if unit["R1"].endswith("gz"):
@@ -89,24 +85,34 @@ def get_trim_input(wildcards):
 
     if pd.isna(unit["R2"]):
         # single end local sample
-        return "pipe/qc/trim/{sample}_{unit}_trim.fq{ending}".format(
+        return "pipe/qc/cutadapt/{sample}_{unit}.fq{ending}".format(
             sample=unit.sample_name, unit=unit.unit_name, ending=ending
         )
     else:
         # paired end local sample
         return expand(
-            "pipe/qc/trim/{sample}_{unit}_{{read}}.fq{ending}".format(
+            "pipe/qc/cutadapt/{sample}_{unit}_{{read}}.fq{ending}".format(
                 sample=unit.sample_name, unit=unit.unit_name, ending=ending
             ),
             read=["R1", "R2"],
         )
 
 
+def get_fastqc_input(wildcards):
+    unit = units.loc[wildcards.sample].loc[wildcards.unit][wildcards.read]
+    return unit
+
+
+
+def get_multiqc_input(wildcards):
+    return expand("output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip", sample=sample_IDs, unit=unit_names, read=["R1", "R2"])
+
+
 def get_map_reads_input_R1(wildcards):
     if not is_activated("merge_reads"):
         if config["trimming"]["activate"]:
             return expand(
-                "output/trim/{sample}_{unit}_R1.fastq.gz",
+                "output/cutadapt/{sample}_{unit}_R1.fastq.gz",
                 unit=units.loc[wildcards.sample, "unit_name"],
                 sample=wildcards.sample,
             )
@@ -127,7 +133,7 @@ def get_map_reads_input_R2(wildcards):
         if not is_activated("merge_reads"):
             if config["trimming"]["activate"]:
                 return expand(
-                    "output/trim/{sample}_{unit}_R1.fastq.gz",
+                    "output/cutadapt/{sample}_{unit}_R1.fastq.gz",
                     unit=units.loc[wildcards.sample, "unit_name"],
                     sample=wildcards.sample,
                 )
@@ -140,7 +146,6 @@ def get_map_reads_input_R2(wildcards):
             return sample_units["R2"]
         return ("output/merged/{sample}_R2.fastq.gz",)
     return ""
-
 
 
 # Outputs
