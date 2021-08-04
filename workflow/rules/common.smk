@@ -162,7 +162,7 @@ def get_final_output():
         get_qc_output(),
         get_assembly_output(),
         get_mapping_output(),
-        # get_annotation_output(),
+        get_annotation_output(),
     )
 
 
