@@ -10,3 +10,4 @@ msp.code-workspace
 slurm-*.out
 .DS_Store
 mgp/
+.*-bkp/
