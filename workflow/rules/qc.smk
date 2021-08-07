@@ -66,7 +66,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
     log:
         "{output}/logs/qc/fastqc/{sample}-{unit}-{read}-fastqc.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc/{sample}-{unit}-q{read}-fastqc.txt"
+        "{output}/benchmarks/qc/fastqc/{sample}-{unit}-{read}-fastqc.txt"
     threads: 1
     wrapper:
         "0.77.0/bio/fastqc"
