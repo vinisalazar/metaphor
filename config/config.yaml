@@ -28,3 +28,7 @@ hmmsearch:
 
 diamond:
   db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
+
+hmmer_parser:
+  db: ".test/data/taxon/brite.txt"
+  consistent_pathways: True
