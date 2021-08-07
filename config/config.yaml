@@ -24,7 +24,7 @@ prodigal:
   mode: "meta"
 
 hmmsearch:
-  db: ".test/data/hmmer-2.hmm"
+  db: ".test/data/hmmer-test.hmm"
 
 diamond:
   db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
