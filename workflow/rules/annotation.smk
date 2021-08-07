@@ -93,7 +93,7 @@ rule diamond:
 
 rule xml_parser:
     input:
-        xmls=get_xml_parser_input(),
+        xmls=get_diamond_output(),
     output:
         outfile=get_xml_parser_output(),
     params:
