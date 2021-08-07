@@ -48,8 +48,11 @@ properties:
     properties:
       db:
         type: string
+      consistent_pathways:
+        type: boolean
     required:
       - db
+      - consistent_pathways
 
   diamond:
     type: object
