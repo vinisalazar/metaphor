@@ -97,7 +97,7 @@ rule xml_parser:
     output:
         outfile=get_xml_parser_output(),
     params:
-        db=config["xml_parser"]["db"]
+        db=config["xml_parser"]["db"],
     log:
         "output/logs/annotation/xml_parser/xml_parser.log",
     benchmark:
@@ -118,7 +118,7 @@ rule hmmer_parser:
     params:
         brite=config["hmmer_parser"]["db"],
         consistent_pathways=config["hmmer_parser"]["consistent_pathways"],
-        outprefix="{output}/annotation/brite/{sample}",
+        outprefix=lambda w, output: output.brite_level1.split("_brite_Level")[0],  # Cannot provide output file prefix, must infer instead.
     log:
         "{output}/logs/annotation/hmmer_parser/{sample}.log",
     benchmark:
