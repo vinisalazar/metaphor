@@ -202,17 +202,26 @@ def get_binning_output():
 
 
 def get_annotation_output():
-    diamond = expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
+    diamond = get_diamond_output()
     hmmsearch = get_hmmsearch_output()
     hmmer_parser = expand(
         "output/annotation/brite/{sample}_brite_Level{level}.tsv",
         sample=sample_IDs,
         level=list("123"),
     )
-    return diamond + hmmsearch + hmmer_parser
+    xml_parser = [get_xml_parser_output(),]
+
+    # These can be selected
+    return diamond + hmmsearch + hmmer_parser + xml_parser
 
 
 def get_hmmsearch_output():
     return expand(
         "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
     )
+
+def get_xml_parser_output():
+    return "output/annotation/brite/brite_OTU_table.tsv"
+
+def get_diamond_output():
+    return expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
