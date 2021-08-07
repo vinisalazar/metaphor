@@ -43,9 +43,10 @@ rule hmmsearch:
     output:
         # only one of these is required
         tblout="{output}/annotation/hmmsearch/{sample}_hmmer.tblout", # save parseable table of per-sequence hits to file <f>
-        # domtblout="{output}/annotation/hmmsearch/{sample}_hmmer.domtblout", # save parseable table of per-domain hits to file <f>
-        alignment_hits="{output}/annotation/hmmsearch/{sample}_hmmer.aln", # Save a multiple alignment of all significant hits (those satisfying inclusion thresholds) to the file <f>
         outfile="{output}/annotation/hmmsearch/{sample}_hmmer.out", # Direct the main human-readable output to a file <f> instead of the default stdout.
+        # domtblout="{output}/annotation/hmmsearch/{sample}_hmmer.domtblout", # save parseable table of per-domain hits to file <f>
+        # alignment is disabled because it's too big
+        # alignment_hits="{output}/annotation/hmmsearch/{sample}_hmmer.aln", # Save a multiple alignment of all significant hits (those satisfying inclusion thresholds) to the file <f>
     log:
         "{output}/logs/annotation/hmmsearch/{sample}.log",
     benchmark:
@@ -53,7 +54,7 @@ rule hmmsearch:
     params:
         evalue_threshold=0.00001,
         # if bitscore threshold provided, hmmsearch will use that instead
-        #score_threshold=50,
+        # score_threshold=50,
         extra="",
     threads: workflow.cores * 0.75
     wrapper:
@@ -119,3 +120,24 @@ rule xmlparser:
              {params.full_lineage_file} \
              {params.output_dir} > {output.otu_table}
         """  # must add 'sep' next to input (see L30) of metaGenePipe/tasks/xml_parser.wdl
+
+
+rule hmmer_parser:
+    input: 
+        hmm_tbls=get_hmmsearch_output(),
+    output:
+        brite_level1="{output}/annotation/taxon/{sample}_brite_level1.tsv",
+        brite_level2="{output}/annotation/taxon/{sample}_brite_level2.tsv",
+        brite_level3="{output}/annotation/taxon/{sample}_brite_level3.tsv",
+    params:
+        brite=config["hmmer_parser"]["db"],
+        consistent_pathways=config["hmmer_parser"]["consistent_pathways"],
+        outprefix="{sample}"
+    log:
+        "{output}/logs/annotation/hmmer_parser/{sample}.log"
+    benchmark:
+        "{output}/benchmarks/annotation/hmmer_parser/{sample}.txt"
+    conda:
+        "../envs/bash.yaml"
+    script: 
+        "../scripts/hmmer_parser.py"
