@@ -126,13 +126,13 @@ rule hmmer_parser:
     input: 
         hmm_tbls=get_hmmsearch_output(),
     output:
-        brite_level1="{output}/annotation/taxon/{sample}_brite_level1.tsv",
-        brite_level2="{output}/annotation/taxon/{sample}_brite_level2.tsv",
-        brite_level3="{output}/annotation/taxon/{sample}_brite_level3.tsv",
+        brite_level1="{output}/annotation/brite/{sample}_brite_Level1.tsv",
+        brite_level2="{output}/annotation/brite/{sample}_brite_Level2.tsv",
+        brite_level3="{output}/annotation/brite/{sample}_brite_Level3.tsv",
     params:
         brite=config["hmmer_parser"]["db"],
         consistent_pathways=config["hmmer_parser"]["consistent_pathways"],
-        outprefix="{sample}"
+        outprefix="{output}/annotation/brite/{sample}"
     log:
         "{output}/logs/annotation/hmmer_parser/{sample}.log"
     benchmark:
