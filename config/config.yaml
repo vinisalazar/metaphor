@@ -32,3 +32,6 @@ diamond:
 hmmer_parser:
   db: ".test/data/taxon/brite.txt"
   consistent_pathways: True
+
+xml_parser:
+  db: ".test/data/taxon/taxonomic_lineages.db"
