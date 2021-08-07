@@ -209,7 +209,9 @@ def get_annotation_output():
         sample=sample_IDs,
         level=list("123"),
     )
-    xml_parser = [get_xml_parser_output(),]
+    xml_parser = [
+        get_xml_parser_output(),
+    ]
 
     # These can be selected
     return diamond + hmmsearch + hmmer_parser + xml_parser
@@ -220,8 +222,10 @@ def get_hmmsearch_output():
         "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
     )
 
+
 def get_xml_parser_output():
     return "output/annotation/brite/brite_OTU_table.tsv"
+
 
 def get_diamond_output():
     return expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
