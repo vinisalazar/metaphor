@@ -4,7 +4,7 @@ Annotation rules:
     - prodigal: gene prediction with Prodigal
     - hmmsearch: find KEGG categories with hmmsearch
     - diamond: protein annotation with Diamond
-    - xmlparser: parse collated outputs with custom Python script
+    - xml_parser: parse collated outputs with custom Python script
     - hmmer_parser: parse the output of hmmsearch with custom Python script
 """
 
@@ -91,22 +91,17 @@ rule diamond:
         """
 
 
-rule xmlparser:
+rule xml_parser:
     input:
-        xmlout="{output}/annotation/diamond/{sample}.xml",
+        xmls=get_xml_parser_input(),
     output:
-        gene_count_table="{output}/annotation/diamond/{sample}_gene_count_table.txt",
-        otu_table="{output}/annotation/diamond/{sample}_OTU_out.txt",
+        outfile=get_xml_parser_output(),
     params:
-        output_dir=str(Path("{input}").parent),
-        ko_formatted_file="bin/db/formatted.xml.out",
-        kegg_species_file="bin/db/species_prokaryotes.dat",
-        tax_rank_file="bin/db/tax_rank",
-        full_lineage_file="fullnamelineage.dmp",
+        db=config["xml_parser"]["db"]
     log:
-        "{output}/logs/annotation/diamond/{sample}-xmlparser.log",
+        "output/logs/annotation/xml_parser/xml_parser.log",
     benchmark:
-        "{output}/benchmarks/annotation/diamond/{sample}-xmlparser.txt"
+        "output/benchmarks/annotation/xml_parser/xml_parser.txt"
     conda:
         "../envs/bash.yaml"
     script:

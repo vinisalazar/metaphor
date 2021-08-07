@@ -70,6 +70,14 @@ properties:
       - db
       - consistent_pathways
 
+  xml_parser:
+    type: object
+    properties:
+      db:
+        type: string
+    required:
+      - db
+
 required:
   - units
   - trimming
@@ -79,3 +87,4 @@ required:
   - diamond
   - hmmsearch
   - hmmer_parser
+  - xml_parser
