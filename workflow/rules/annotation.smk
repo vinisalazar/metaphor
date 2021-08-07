@@ -2,8 +2,10 @@
 Annotation rules:
 
     - prodigal: gene prediction with Prodigal
+    - hmmsearch: find KEGG categories with hmmsearch
     - diamond: protein annotation with Diamond
-    - xmlparser: parse collated outputs with custom scripts
+    - xmlparser: parse collated outputs with custom Python script
+    - hmmer_parser: parse the output of hmmsearch with custom Python script
 """
 
 from pathlib import Path

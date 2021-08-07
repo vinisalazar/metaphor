@@ -5,6 +5,7 @@ Mapping rules:
     - create_mapping: create mapping file from contig catalogue with minimap2
     - map_reads: map short reads against contigs with minimap2 and samtools
     - sort_reads: sort BAM file with samtools
+    - flagstat: calculate flagstat with samtools
 """
 
 
@@ -107,6 +108,7 @@ rule flagstat:
         "{{ samtools flagstat -@ {threads} {input.sort} > {output.flagstat} ; }} &> {log}"
 
 
+# WIP - for vamb step
 rule jgi_summarize_bam_contig_depths:
     input:
         expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),

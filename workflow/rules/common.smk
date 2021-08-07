@@ -3,6 +3,11 @@ Common rules: these are special Python help functions to run other rules.
 
 Inspired by the same one from the RNASeq workflow:
     https://github.com/snakemake-workflows/rna-seq-star-deseq2/
+
+They are divided into three parts:
+    - helpers: utility functions
+    - input functions: take wildcards as input from Snakemake
+    - output functions: do not take wildcards as inputs
 """
 
 from glob import glob
