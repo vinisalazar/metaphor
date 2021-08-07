@@ -91,6 +91,22 @@ rule sort_reads:
         """
 
 
+rule flagstat:
+    input: 
+        sort="{output}/mapping/bam/{sample}.sorted.bam",
+    output:
+        flagstat="{output}/mapping/bam/{sample}.flagstat.txt",
+    threads: int(workflow.cores * 0.25) 
+    log:
+        "{output}/logs/mapping/{sample}_flagstat.log",
+    benchmark:
+        "{output}/benchmarks/mapping/{sample}_flagstat.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell: 
+        "{{ samtools flagstat -@ {threads} {input.sort} > {output.flagstat} ; }} &> {log}"
+
+
 rule jgi_summarize_bam_contig_depths:
     input:
         expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
