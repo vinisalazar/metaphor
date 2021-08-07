@@ -180,7 +180,7 @@ def get_mapping_output():
     return expand(
         "output/mapping/bam/{sample}.{kind}",
         sample=sample_IDs,
-        kind=("map.bam", "sorted.bam"),
+        kind=("map.bam", "sorted.bam", "flagstat.txt"),
     )
 
 
