@@ -44,8 +44,8 @@ rule hmmsearch:
         profile=config["hmmsearch"]["db"],
     output:
         # only one of these is required
-        tblout="{output}/annotation/hmmsearch/{sample}_hmmer.tblout", # save parseable table of per-sequence hits to file <f>
-        outfile="{output}/annotation/hmmsearch/{sample}_hmmer.out", # Direct the main human-readable output to a file <f> instead of the default stdout.
+        tblout="{output}/annotation/hmmsearch/{sample}_hmmer.tblout",  # save parseable table of per-sequence hits to file <f>
+        outfile="{output}/annotation/hmmsearch/{sample}_hmmer.out",  # Direct the main human-readable output to a file <f> instead of the default stdout.
         # domtblout="{output}/annotation/hmmsearch/{sample}_hmmer.domtblout", # save parseable table of per-domain hits to file <f>
         # alignment is disabled because it's too big
         # alignment_hits="{output}/annotation/hmmsearch/{sample}_hmmer.aln", # Save a multiple alignment of all significant hits (those satisfying inclusion thresholds) to the file <f>
@@ -114,7 +114,7 @@ rule xmlparser:
 
 
 rule hmmer_parser:
-    input: 
+    input:
         hmm_tbls=get_hmmsearch_output(),
     output:
         brite_level1="{output}/annotation/brite/{sample}_brite_Level1.tsv",
@@ -123,12 +123,12 @@ rule hmmer_parser:
     params:
         brite=config["hmmer_parser"]["db"],
         consistent_pathways=config["hmmer_parser"]["consistent_pathways"],
-        outprefix="{output}/annotation/brite/{sample}"
+        outprefix="{output}/annotation/brite/{sample}",
     log:
-        "{output}/logs/annotation/hmmer_parser/{sample}.log"
+        "{output}/logs/annotation/hmmer_parser/{sample}.log",
     benchmark:
         "{output}/benchmarks/annotation/hmmer_parser/{sample}.txt"
     conda:
         "../envs/bash.yaml"
-    script: 
+    script:
         "../scripts/hmmer_parser.py"

@@ -8,6 +8,7 @@ Preprocess rules:
     - multiqc: combine reports of rules 'fastqc_raw' and 'fastqc_clean' with MultiQC
 """
 
+
 rule cutadapt_pipe:
     input:
         get_cutadapt_pipe_input,
@@ -32,14 +33,14 @@ rule cutadapt_pe:
     log:
         "output/logs/cutadapt/{sample}-{unit}.log",
     params:
-        others="", # config["params"]["cutadapt-pe"],
+        others="",  # config["params"]["cutadapt-pe"],
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        extra="--minimum-length 1 -q 20"
+        extra="--minimum-length 1 -q 20",
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     threads: 1
     wrapper:
         "0.59.2/bio/cutadapt/pe"
-    
+
 
 rule merge_fastqs:
     input:

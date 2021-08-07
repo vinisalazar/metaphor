@@ -113,10 +113,18 @@ def get_fastqc_input_merged(wildcards):
     return "output/qc/merged/{sample}_{read}.fq.gz"
 
 
-
 def get_multiqc_input(wildcards):
-    raw = expand("output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip", sample=sample_IDs, unit=unit_names, read=["R1", "R2"])
-    merged = expand("output/qc/fastqc/{sample}-{read}_fastqc.zip", sample=sample_IDs, read=["R1", "R2"])
+    raw = expand(
+        "output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip",
+        sample=sample_IDs,
+        unit=unit_names,
+        read=["R1", "R2"],
+    )
+    merged = expand(
+        "output/qc/fastqc/{sample}-{read}_fastqc.zip",
+        sample=sample_IDs,
+        read=["R1", "R2"],
+    )
     return raw + merged
 
 
@@ -195,9 +203,16 @@ def get_binning_output():
 
 def get_annotation_output():
     diamond = expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
-    hmmsearch = list(*get_hmmsearch_output())  # this was somehow returning a tuple, coerce to list
-    hmmer_parser = expand("output/annotation/brite/{sample}_brite_Level{level}.tsv", sample=sample_IDs, level=list("123"))
+    hmmsearch = get_hmmsearch_output()
+    hmmer_parser = expand(
+        "output/annotation/brite/{sample}_brite_Level{level}.tsv",
+        sample=sample_IDs,
+        level=list("123"),
+    )
     return diamond + hmmsearch + hmmer_parser
 
+
 def get_hmmsearch_output():
-    return expand("output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs)
+    return expand(
+        "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
+    )

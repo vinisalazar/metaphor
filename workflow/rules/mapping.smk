@@ -12,7 +12,8 @@ Mapping rules:
 rule concatenate_contigs:
     input:
         contigs=expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs,
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
+            sample=sample_IDs,
         ),
     output:
         catalogue="{output}/mapping/catalogue.fna.gz",
@@ -51,7 +52,7 @@ rule map_reads:
     input:
         catalogue_idx="{output}/mapping/catalogue.mmi",
         fastq1=get_map_reads_input_R1,
-        fastq2=get_map_reads_input_R2
+        fastq2=get_map_reads_input_R2,
     output:
         bam="{output}/mapping/bam/{sample}.map.bam",
     params:
@@ -93,18 +94,18 @@ rule sort_reads:
 
 
 rule flagstat:
-    input: 
+    input:
         sort="{output}/mapping/bam/{sample}.sorted.bam",
     output:
         flagstat="{output}/mapping/bam/{sample}.flagstat.txt",
-    threads: int(workflow.cores * 0.25) 
+    threads: int(workflow.cores * 0.25)
     log:
         "{output}/logs/mapping/{sample}_flagstat.log",
     benchmark:
         "{output}/benchmarks/mapping/{sample}_flagstat.txt"
     conda:
         "../envs/samtools.yaml"
-    shell: 
+    shell:
         "{{ samtools flagstat -@ {threads} {input.sort} > {output.flagstat} ; }} &> {log}"
 
 
