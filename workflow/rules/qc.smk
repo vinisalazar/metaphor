@@ -1,11 +1,10 @@
 """
 Preprocess rules:
-
+    - cutadapt_pipe: get pipe input for cutadapt
+    - cutadapt_pe: trim paired end reads with cutadapt
+    - merge_fastqs: merge files from different lanes in the same sample with cat
     - fastqc_raw: check quality of raw reads with FastQC
-    - flash: extend and combine reads with Flash
-    - interleave: interleave clean reads and extended fragments with custom script
-    - hostremoval: map reads against reference database with ???
-    - fastqc_clean: check quality after previous steps with FastQC
+    - fastqc_merged: check quality of trimmed and merged reads with FastQC
     - multiqc: combine reports of rules 'fastqc_raw' and 'fastqc_clean' with MultiQC
 """
 
