@@ -19,6 +19,8 @@ rule cutadapt_pipe:
     wildcard_constraints:
         ext=r"fq|fq\.gz|fastq|fastq\.gz",
     threads: 1
+    conda:
+        "../envs/bash.yaml"
     shell:
         "cat {input} > {output} 2> {log}"
 
@@ -51,6 +53,8 @@ rule merge_fastqs:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     wildcard_constraints:
         read="single|R1|R2",
+    conda:
+        "../envs/bash.yaml"
     shell:
         "cat {input} > {output} 2> {log}"
 
