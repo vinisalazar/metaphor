@@ -191,8 +191,8 @@ def get_binning_output():
 def get_annotation_output():
     diamond = expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
     hmmsearch = [*get_hmmsearch_output(),]  # this was somehow returning a tuple
-    hmmer_parser = expand("output/annotation/taxon/{sample}_brite_level{level}.tsv", sample=sample_IDs, level=list("123"))
+    hmmer_parser = expand("output/annotation/brite/{sample}_brite_Level{level}.tsv", sample=sample_IDs, level=list("123"))
     return diamond + hmmsearch + hmmer_parser
 
 def get_hmmsearch_output():
-    return expand("output/annotation/hmmsearch/{sample}_hmmer.out", sample=sample_IDs)
+    return expand("output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs)
