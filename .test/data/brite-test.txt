@@ -1,0 +1,2 @@
+KO	Gene	Level1	Level2	Level3	Desc
+KXXXXX	XX;	Xxxxxxx	00000 Xxxxxx xxxxxx	Xxxxxx / Xxxxx [PATH:koXXXXX]	xxxxx [EC:x.x.x.x]
