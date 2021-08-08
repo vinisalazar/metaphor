@@ -17,7 +17,7 @@ rule cutadapt_pipe:
     log:
         "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
     benchmark:
-        "output/benchmarks/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.txt",
+        "output/benchmarks/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.txt"
     wildcard_constraints:
         ext=r"fq|fq\.gz|fastq|fastq\.gz",
     threads: 1
@@ -37,7 +37,7 @@ rule cutadapt_pe:
     log:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
-        "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt",
+        "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
     params:
         others="",  # config["params"]["cutadapt-pe"],
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
@@ -56,7 +56,7 @@ rule merge_fastqs:
     log:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     benchmark:
-        "output/benchmarks/qc/merge_fastqs/{sample}.{read}.txt",
+        "output/benchmarks/qc/merge_fastqs/{sample}.{read}.txt"
     wildcard_constraints:
         read="single|R1|R2",
     conda:
