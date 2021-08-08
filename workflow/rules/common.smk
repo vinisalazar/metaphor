@@ -213,8 +213,8 @@ def get_annotation_output():
         get_xml_parser_output(),
     ]
 
-    # These can be selected
-    return diamond + hmmsearch + hmmer_parser + xml_parser
+    # xml_parser is disabled for now until gdbm problem is solved
+    return diamond + hmmsearch + hmmer_parser  # + xml_parser
 
 
 def get_hmmsearch_output():
