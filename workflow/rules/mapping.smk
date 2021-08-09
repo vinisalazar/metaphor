@@ -2,7 +2,7 @@
 Mapping rules:
 
     - concatenate_contigs: concatenate contigs into a compressed file with vamb script
-    - create_mapping: create mapping file from contig catalogue with minimap2
+    - create_index: create index file from contig catalogue with minimap2
     - map_reads: map short reads against contigs with minimap2 and samtools
     - sort_reads: sort BAM file with samtools
     - flagstat: calculate flagstat with samtools
@@ -31,15 +31,15 @@ rule concatenate_contigs:
         """
 
 
-rule create_mapping:
+rule create_index:
     input:
         catalogue_fna="{output}/mapping/catalogue.fna.gz",
     output:
         catalogue_idx="{output}/mapping/catalogue.mmi",
     log:
-        "{output}/logs/mapping/create_mapping.log",
+        "{output}/logs/mapping/create_index.log",
     benchmark:
-        "{output}/benchmarks/mapping/create_mapping.txt"
+        "{output}/benchmarks/mapping/create_index.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
