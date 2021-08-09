@@ -46,7 +46,7 @@ def is_activated(xpath):
 
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
-    return str(Path.parent)
+    return str(Path(path).parent)
 
 
 def is_paired_end(sample):
