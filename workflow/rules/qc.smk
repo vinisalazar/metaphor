@@ -40,16 +40,16 @@ rule cutadapt_pe:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
     threads: 1
     params:
+        # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
         extra=f"--minimum-length {config['trimming']['minimum_length']} \
                 --quality-cutoff {config['trimming']['quality_cutoff']} \
-                --quality-base {config['trimming']['phred']}"
-        #        -u {clip_r5}  \
-        #        -u -{clip_r3} \
-        #        -U {clip_r5}  \
-        #        -U -{clip_r3}"
-        # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
+                --quality-base {config['trimming']['phred']}            \
+                -u {config['trimming']['clip_r5']}                      \
+                -u -{config['trimming']['clip_r3']}                     \
+                -U {config['trimming']['clip_r5']}                      \
+                -U -{config['trimming']['clip_r3']}"
     wrapper:
         "0.77.0/bio/cutadapt/pe"
 
