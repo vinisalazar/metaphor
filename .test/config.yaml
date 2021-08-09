@@ -29,7 +29,7 @@ megahit:
   preset: "meta-large"
 
 prodigal:
-  mode: "single"
+  mode: "meta"
 
 hmmsearch:
   db: ".test/data/hmmer-test.hmm"
@@ -44,7 +44,7 @@ hmmer_parser:
 
 xml_parser:
   db: ".test/data/tax-lineage-test.db"
-  activate: True
+  activate: False
 
 vamb:
-  activate: True
+  activate: False
