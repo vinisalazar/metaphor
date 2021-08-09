@@ -58,7 +58,7 @@ rule hmmsearch:
         # if bitscore threshold provided, hmmsearch will use that instead
         # score_threshold=50,
         extra="",
-    threads: workflow.cores * 0.75
+    threads: round(workflow.cores * 0.75)
     wrapper:
         "0.77.0/bio/hmmer/hmmsearch"
 
@@ -72,7 +72,7 @@ rule diamond:
         db=config["diamond"]["db"],
         max_target_seqs=1,
         output_type=config["diamond"]["output_type"],
-    threads: workflow.cores
+    threads: round(workflow.cores * 0.75)
     log:
         "{output}/logs/annotation/diamond/{sample}.log",
     benchmark:
