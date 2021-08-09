@@ -25,6 +25,9 @@ merge_reads:
 concatenate_contigs:
   sequence_length_cutoff: 1  # the script's default is 2000
 
+megahit:
+  preset: "meta-large"
+
 prodigal:
   mode: "meta"
 

@@ -50,6 +50,14 @@ properties:
     required:
       - sequence_length_cutoff
 
+  megahit:
+    type: object
+    properties:
+      preset:
+        type: string
+    required:
+      - preset
+
   prodigal:
     type: object
     properties:
