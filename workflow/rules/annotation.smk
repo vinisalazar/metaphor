@@ -71,7 +71,7 @@ rule diamond:
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
-        format=5,
+        output_type=config["diamond"]["output_type"],
     threads: workflow.cores
     log:
         "{output}/logs/annotation/diamond/{sample}.log",
@@ -81,12 +81,12 @@ rule diamond:
         "../envs/diamond.yaml"
     shell:
         """
-        {{ diamond blastp -q {input} \
-                   --max-target-seqs {params.max_target_seqs} \
-                   -p {threads} \
-                   -f {params.format} \
-                   -d {params.db} \
-                   | sed 's/\&quot;//g' \
+        {{ diamond blastp -q {input}                            \
+                   --max-target-seqs {params.max_target_seqs}   \
+                   -p {threads}                                 \
+                   -f {params.output_type}                      \
+                   -d {params.db}                               \
+                   | sed 's/\&quot;//g'                         \
                    | sed 's/\&//g' > {output} ; }} &> {log}
         """
 
