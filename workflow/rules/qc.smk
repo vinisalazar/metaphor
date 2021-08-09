@@ -43,13 +43,15 @@ rule cutadapt_pe:
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        extra=f"--minimum-length {config['trimming']['minimum_length']} \
-                --quality-cutoff {config['trimming']['quality_cutoff']} \
-                --quality-base {config['trimming']['phred']}            \
-                -u {config['trimming']['clip_r5']}                      \
-                -u -{config['trimming']['clip_r3']}                     \
-                -U {config['trimming']['clip_r5']}                      \
-                -U -{config['trimming']['clip_r3']}"
+        extra=(
+            f"--minimum-length {config['trimming']['minimum_length']} "
+            + f"--quality-cutoff {config['trimming']['quality_cutoff']} "
+            + f"--quality-base {config['trimming']['phred']} "
+            + f"-u {config['trimming']['clip_r5']} "
+            + f"-u -{config['trimming']['clip_r3']} "
+            + f"-U {config['trimming']['clip_r5']} "
+            + f"-U -{config['trimming']['clip_r3']} "
+        ),
     wrapper:
         "0.77.0/bio/cutadapt/pe"
 
