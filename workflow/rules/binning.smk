@@ -16,7 +16,7 @@ rule vamb:
         binsplit_sep="C",
         minfasta=200000,
     log:
-        "output/log/binning/vamb.log",
+        "output/logs/binning/vamb.log",
     benchmark:
         "output/benchmarks/binning/vamb.txt"
     conda:
