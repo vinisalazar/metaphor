@@ -5,14 +5,10 @@ properties:
   sample_name:
     type: string
     description: sample name/identifier
-  fq1:
+  condition:
     type: string
-    description: fq forward reads
-  fq2:
-    type: string
-    description: fq reverse reads
+    description: any metadata condition associated with the sample
 
 required:
   - sample_name
-  - fq1
-  - fq2
+  - condition

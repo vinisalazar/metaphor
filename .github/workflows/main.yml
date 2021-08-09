@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - stage
   pull_request:
     branches_ignore: []
 
@@ -26,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Linting
-      uses: snakemake/snakemake-github-action@v1.14.0
+      uses: snakemake/snakemake-github-action@v1.22.0
       with:
         directory: .
         snakefile: workflow/Snakefile
@@ -43,15 +44,15 @@ jobs:
     - name: Checkout submodules
       uses: textbook/git-checkout-submodule-action@2.0.0
     - name: Test workflow
-      uses: snakemake/snakemake-github-action@v1.6.0
+      uses: snakemake/snakemake-github-action@v1.22.0
       with:
         directory: .
         snakefile: workflow/Snakefile
         args: "--use-conda --show-failed-logs \
-               --cores 2 --conda-cleanup-pkgs cache"
+               --cores 3 --conda-cleanup-pkgs cache"
     # Report testing is deactivated for now
     # - name: Test report
-    #   uses: snakemake/snakemake-github-action@v1.6.0
+    #   uses: snakemake/snakemake-github-action@v1.22.0
     #   with:
     #     directory: .test
     #     snakefile: workflow/Snakefile

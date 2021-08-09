@@ -1,2 +1,2 @@
-sample_name,fq1,fq2
-readsa,.test/data/readsa-1.fq,.test/data/readsa-2.fq
+sample_name,condition
+readsa,test_data

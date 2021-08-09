@@ -7,6 +7,25 @@ type: object
 properties:
   samples:
     type: string
+  
+  units:
+    type: string
+
+  trimming:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+  merge_reads:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
 
   concatenate_contigs:
     type: object
@@ -24,6 +43,14 @@ properties:
     required:
       - mode
 
+  hmmsearch:
+    type: object
+    properties:
+      db:
+        type: string
+    required:
+      - db
+
   diamond:
     type: object
     properties:
@@ -32,7 +59,32 @@ properties:
     required:
       - db
 
+  hmmer_parser:
+    type: object
+    properties:
+      db:
+        type: string
+      consistent_pathways:
+        type: boolean
+    required:
+      - db
+      - consistent_pathways
+
+  xml_parser:
+    type: object
+    properties:
+      db:
+        type: string
+    required:
+      - db
+
 required:
-  - samples
+  - units
+  - trimming
+  - merge_reads
+  - concatenate_contigs
   - prodigal
   - diamond
+  - hmmsearch
+  - hmmer_parser
+  - xml_parser

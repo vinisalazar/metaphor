@@ -5,6 +5,7 @@ Mapping rules:
     - create_mapping: create mapping file from contig catalogue with minimap2
     - map_reads: map short reads against contigs with minimap2 and samtools
     - sort_reads: sort BAM file with samtools
+    - flagstat: calculate flagstat with samtools
 """
 
 
@@ -50,14 +51,15 @@ rule create_mapping:
 rule map_reads:
     input:
         catalogue_idx="{output}/mapping/catalogue.mmi",
-        reads="{output}/preprocess/interleave/{sample}-clean.fq",
+        fastq1=get_map_reads_input_R1,
+        fastq2=get_map_reads_input_R2,
     output:
         bam="{output}/mapping/bam/{sample}.map.bam",
     params:
-        threads=workflow.cores,
         N=50,
         preset="sr",
         flags=3584,
+    threads: workflow.cores
     log:
         "{output}/logs/mapping/{sample}_map_reads.log",
     benchmark:
@@ -66,9 +68,10 @@ rule map_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {params.threads} -N {params.N} -a -x {params.preset} \
-                 {input.catalogue_idx} {input.reads} | samtools view \
-                 -F {params.flags} -b --threads {params.threads} > {output.bam} ; }} &> {log}
+        {{ minimap2 -t {threads} -N {params.N} -a -x {params.preset} \
+                 {input.catalogue_idx} {input.fastq1} {input.fastq2} \
+                 | samtools view -F {params.flags} -b --threads \
+                   {threads} > {output.bam} ; }} &> {log}
         """
 
 
@@ -77,8 +80,7 @@ rule sort_reads:
         bam="{output}/mapping/bam/{sample}.map.bam",
     output:
         sort="{output}/mapping/bam/{sample}.sorted.bam",
-    params:
-        threads=workflow.cores,
+    threads: round(workflow.cores * 0.75)
     log:
         "{output}/logs/mapping/{sample}_sort_reads.log",
     benchmark:
@@ -87,10 +89,27 @@ rule sort_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ samtools sort -@ {params.threads} -o {output.sort} {input.bam} ; }} &> {log}
+        {{ samtools sort -@ {threads} -o {output.sort} {input.bam} ; }} &> {log}
         """
 
 
+rule flagstat:
+    input:
+        sort="{output}/mapping/bam/{sample}.sorted.bam",
+    output:
+        flagstat="{output}/mapping/bam/{sample}.flagstat.txt",
+    threads: round(workflow.cores * 0.75)
+    log:
+        "{output}/logs/mapping/{sample}_flagstat.log",
+    benchmark:
+        "{output}/benchmarks/mapping/{sample}_flagstat.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        "{{ samtools flagstat -@ {threads} {input.sort} > {output.flagstat} ; }} &> {log}"
+
+
+# WIP - for vamb step
 rule jgi_summarize_bam_contig_depths:
     input:
         expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),

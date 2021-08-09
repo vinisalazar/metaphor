@@ -1,0 +1,3 @@
+sample_name,unit_name,R1,R2
+readsa,S001,.test/data/readsa-S001-R1.fq.gz,.test/data/readsa-S001-R2.fq.gz
+readsa,S002,.test/data/readsa-S002-R1.fq.gz,.test/data/readsa-S002-R2.fq.gz
