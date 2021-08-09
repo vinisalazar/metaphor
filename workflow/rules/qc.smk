@@ -42,19 +42,18 @@ rule cutadapt_pe:
     params:
         others="",
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        minimum_length=config["trimming"]["minimum_length"],
         quality_cutoff=config["trimming"]["quality_cutoff"],
         clip_r5=config["trimming"]["clip_r5"],
         clip_r3=config["trimming"]["clip_r3"],
         phred=config["trimming"]["phred"],
-        # extra="--minimum-length {params.minimum_length} \
+        extra=f"--minimum-length {config['trimming']['minimum_length']}"
         #        --quality-cutoff {params.quality_cutoff}"
         #       --quality-base {params.phred}"
         #        -u {clip_r5}  \
         #        -u -{clip_r3} \
         #        -U {clip_r5}  \
         #        -U -{clip_r3}"
-        extra="--minimum-length 1 -q 20"
+        # extra="--minimum-length 1 -q 20"
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     wrapper:
         "0.77.0/bio/cutadapt/pe"
