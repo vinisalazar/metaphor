@@ -12,6 +12,11 @@ units: config/units.csv
 
 trimming:
   activate: True
+  phred: 33
+  minimum_length: 50
+  quality_cutoff: 30
+  clip_r5: 10
+  clip_r3: 5
 
 merge_reads:
   activate: True
@@ -19,6 +24,9 @@ merge_reads:
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
   sequence_length_cutoff: 1  # the script's default is 2000
+
+megahit:
+  preset: "meta-large"
 
 prodigal:
   mode: "meta"
@@ -28,6 +36,7 @@ hmmsearch:
 
 diamond:
   db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
+  output_type: 5
 
 hmmer_parser:
   db: ".test/data/brite-test.txt"

@@ -38,14 +38,22 @@ rule cutadapt_pe:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
+    threads: round(workflow.cores * 0.25)
     params:
-        others="",  # config["params"]["cutadapt-pe"],
-        adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        extra="--minimum-length 1 -q 20",
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
-    threads: 1
+        others="",
+        adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
+        extra=(
+            f"--minimum-length {config['trimming']['minimum_length']} "
+            + f"--quality-cutoff {config['trimming']['quality_cutoff']} "
+            + f"--quality-base {config['trimming']['phred']} "
+            + f"-u {config['trimming']['clip_r5']} "
+            + f"-u -{config['trimming']['clip_r3']} "
+            + f"-U {config['trimming']['clip_r5']} "
+            + f"-U -{config['trimming']['clip_r3']} "
+        ),
     wrapper:
-        "0.59.2/bio/cutadapt/pe"
+        "0.77.0/bio/cutadapt/pe"
 
 
 rule merge_fastqs:
@@ -53,6 +61,7 @@ rule merge_fastqs:
         get_fastqs,
     output:
         "output/qc/merged/{sample}_{read}.fq.gz",
+    threads: 1
     log:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     benchmark:

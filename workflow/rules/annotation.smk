@@ -29,11 +29,11 @@ rule prodigal:
         "../envs/prodigal.yaml"
     shell:
         """
-        prodigal -p {params.mode} \
-                 -i {input} \
-                 -d {output.genes} \
-                 -a {output.proteins} \
-                 -s {output.scores} \
+        prodigal -p {params.mode}       \
+                 -i {input}             \
+                 -d {output.genes}      \
+                 -a {output.proteins}   \
+                 -s {output.scores}     \
                  -o {output.genbank} &> {log}
         """
 
@@ -58,7 +58,7 @@ rule hmmsearch:
         # if bitscore threshold provided, hmmsearch will use that instead
         # score_threshold=50,
         extra="",
-    threads: workflow.cores * 0.75
+    threads: round(workflow.cores * 0.75)
     wrapper:
         "0.77.0/bio/hmmer/hmmsearch"
 
@@ -71,8 +71,8 @@ rule diamond:
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
-        format=5,
-    threads: workflow.cores
+        output_type=config["diamond"]["output_type"],
+    threads: round(workflow.cores * 0.75)
     log:
         "{output}/logs/annotation/diamond/{sample}.log",
     benchmark:
@@ -81,12 +81,12 @@ rule diamond:
         "../envs/diamond.yaml"
     shell:
         """
-        {{ diamond blastp -q {input} \
-                   --max-target-seqs {params.max_target_seqs} \
-                   -p {threads} \
-                   -f {params.format} \
-                   -d {params.db} \
-                   | sed 's/\&quot;//g' \
+        {{ diamond blastp -q {input}                            \
+                   --max-target-seqs {params.max_target_seqs}   \
+                   -p {threads}                                 \
+                   -f {params.output_type}                      \
+                   -d {params.db}                               \
+                   | sed 's/\&quot;//g'                         \
                    | sed 's/\&//g' > {output} ; }} &> {log}
         """
 

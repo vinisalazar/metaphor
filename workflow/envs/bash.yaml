@@ -4,6 +4,6 @@ channels:
 dependencies:
   - bash
   - perl
-  - python
+  - python>=3.7
   - pandas
   - biopython

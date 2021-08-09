@@ -16,8 +16,23 @@ properties:
     properties:
       activate:
         type: boolean
+      phred:
+        type: integer
+      minimum_length:
+        type: integer
+      quality_cutoff:
+        type: integer
+      clip_r5:
+        type: integer
+      clip_r3:
+        type: integer
     required:
       - activate
+      - phred
+      - minimum_length
+      - quality_cutoff
+      - clip_r5
+      - clip_r3
 
   merge_reads:
     type: object
@@ -34,6 +49,14 @@ properties:
         type: integer
     required:
       - sequence_length_cutoff
+
+  megahit:
+    type: object
+    properties:
+      preset:
+        type: string
+    required:
+      - preset
 
   prodigal:
     type: object
@@ -56,6 +79,8 @@ properties:
     properties:
       db:
         type: string
+      output_type:
+        type: integer
     required:
       - db
 
