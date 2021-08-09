@@ -87,10 +87,8 @@ rule sort_reads:
         "{output}/benchmarks/mapping/{sample}_sort_reads.txt"
     conda:
         "../envs/samtools.yaml"
-    shell:
-        """
-        {{ samtools sort -@ {threads} -o {output.sort} {input.bam} ; }} &> {log}
-        """
+    wrapper:
+        "0.77.0/bio/samtools/sort"
 
 
 rule flagstat:
