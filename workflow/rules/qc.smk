@@ -48,9 +48,9 @@ rule cutadapt_pe:
         clip_r3=config["trimming"]["clip_r3"],
         phred=config["trimming"]["phred"],
         extra="--minimum-length {params.minimum_length} \
-               --quality-cutoff {params.quality_cutoff}"
-        #        --cores {threads} \
-        #        --quality-base {phred} \
+               --quality-cutoff {params.quality_cutoff} \
+               --quality-base {params.phred}"
+        #       --cores {threads}"
         #        -u {clip_r5}  \
         #        -u -{clip_r3} \
         #        -U {clip_r5}  \
