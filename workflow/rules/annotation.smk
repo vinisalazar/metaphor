@@ -29,11 +29,11 @@ rule prodigal:
         "../envs/prodigal.yaml"
     shell:
         """
-        prodigal -p {params.mode} \
-                 -i {input} \
-                 -d {output.genes} \
-                 -a {output.proteins} \
-                 -s {output.scores} \
+        prodigal -p {params.mode}       \
+                 -i {input}             \
+                 -d {output.genes}      \
+                 -a {output.proteins}   \
+                 -s {output.scores}     \
                  -o {output.genbank} &> {log}
         """
 
