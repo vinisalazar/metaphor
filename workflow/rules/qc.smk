@@ -38,7 +38,7 @@ rule cutadapt_pe:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
-    threads: round(workflow.cores * 0.25)
+    threads: 1
     params:
         others="",
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
@@ -47,18 +47,17 @@ rule cutadapt_pe:
         clip_r5=config["trimming"]["clip_r5"],
         clip_r3=config["trimming"]["clip_r3"],
         phred=config["trimming"]["phred"],
-        extra="--minimum-length {params.minimum_length} \
-               --quality-cutoff {params.quality_cutoff} \
-               --quality-base {params.phred}"
-        #       --cores {threads}"
+        # extra="--minimum-length {params.minimum_length} \
+        #        --quality-cutoff {params.quality_cutoff}"
+        #       --quality-base {params.phred}"
         #        -u {clip_r5}  \
         #        -u -{clip_r3} \
         #        -U {clip_r5}  \
         #        -U -{clip_r3}"
-        # extra="--minimum-length 1 -q 20"
+        extra="--minimum-length 1 -q 20"
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     wrapper:
-        "0.59.2/bio/cutadapt/pe"
+        "0.77.0/bio/cutadapt/pe"
 
 
 rule merge_fastqs:
