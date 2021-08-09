@@ -44,6 +44,7 @@ hmmer_parser:
 
 xml_parser:
   db: ".test/data/tax-lineage-test.db"
+  activate: False
 
 vamb:
   activate: False

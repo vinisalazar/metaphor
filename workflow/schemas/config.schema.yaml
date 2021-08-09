@@ -100,8 +100,11 @@ properties:
     properties:
       db:
         type: string
+      activate:
+        type: boolean
     required:
       - db
+      - activate
 
   vamb:
     type: object

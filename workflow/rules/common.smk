@@ -214,6 +214,9 @@ def get_binning_output():
 
 
 def get_annotation_output():
+
+    annotation_output = []
+
     diamond = get_diamond_output()
     hmmsearch = get_hmmsearch_output()
     hmmer_parser = expand(
@@ -221,12 +224,15 @@ def get_annotation_output():
         sample=sample_IDs,
         level=list("123"),
     )
-    xml_parser = [
-        get_xml_parser_output(),
-    ]
+
+    for output in diamond, hmmsearch, hmmer_parser:
+        annotation_output.append(output)
 
     # xml_parser is disabled for now until gdbm problem is solved
-    return diamond + hmmsearch + hmmer_parser  # + xml_parser
+    if is_activated("xml_parser"):
+        annotation_output.append(get_xml_parser_output())
+
+    return annotation_output
 
 
 def get_hmmsearch_output():
