@@ -44,6 +44,11 @@ def is_activated(xpath):
     return bool(c.get("activate", False))
 
 
+def get_parent(path: str) -> str:
+    """Returns parent of path in string form."""
+    return str(Path.parent)
+
+
 def is_paired_end(sample):
     sample_units = units.loc[sample]
     fq2_null = sample_units["R2"].isnull()
@@ -170,13 +175,20 @@ def get_map_reads_input_R2(wildcards):
 
 # Outputs
 def get_final_output():
+    final_output = []
 
-    return (
+    for output in (
         get_qc_output(),
         get_assembly_output(),
         get_mapping_output(),
         get_annotation_output(),
-    )
+    ):
+        final_output.append(output)
+
+    if is_activated("vamb"):
+        final_output.append(get_binning_output())
+
+    return final_output
 
 
 def get_qc_output():
@@ -198,7 +210,7 @@ def get_mapping_output():
 
 
 def get_binning_output():
-    return directory("output/binning/vamb/")
+    return "output/binning/vamb/clusters.tsv"
 
 
 def get_annotation_output():
