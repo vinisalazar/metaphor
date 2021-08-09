@@ -27,9 +27,9 @@ rule vamb:
         """
         rm -rf {output}
 
-        vamb --outdir {output} \
-             --fasta {input.catalogue} \
-             --bamfiles {input.bamfiles} \
-             -o {params.binsplit_sep} \
+        vamb --outdir {output}              \
+             --fasta {input.catalogue}      \
+             --bamfiles {input.bamfiles}    \
+             -o {params.binsplit_sep}       \
              --minfasta {params.minfasta} &> {log}
         """
