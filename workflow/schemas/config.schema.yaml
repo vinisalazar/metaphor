@@ -103,6 +103,14 @@ properties:
     required:
       - db
 
+  vamb:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
 required:
   - units
   - trimming
