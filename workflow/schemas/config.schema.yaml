@@ -79,6 +79,8 @@ properties:
     properties:
       db:
         type: string
+      output_type:
+        type: integer
     required:
       - db
 
