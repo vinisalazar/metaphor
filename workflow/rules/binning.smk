@@ -7,14 +7,12 @@ Binning rules:
 
 rule vamb:
     input:
-        bamfiles=expand(
-            "output/mapping/bam/{sample}",
-            sample=sample_IDs,
-        ),
-        catalogue="{output}/binning/catalogue.fna.gz",
+        bam_contig_depths="output/mapping/bam_contig_depths.txt",
+        catalogue="output/mapping/catalogue.fna.gz",
     output:
-        outdir=directory("output/binning/vamb"),
+        clusters="output/binning/vamb/clusters.tsv",
     params:  # defaults in vamb's README
+        outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
         minfasta=200000,
     log:
@@ -25,11 +23,11 @@ rule vamb:
         "../envs/vamb.yaml"
     shell:
         """
-        rm -rf {output}
+        rm -rf {params.outdir}
 
-        vamb --outdir {output}              \
-             --fasta {input.catalogue}      \
-             --bamfiles {input.bamfiles}    \
-             -o {params.binsplit_sep}       \
+        vamb --outdir {params.outdir}           \
+             --fasta {input.catalogue}          \
+             --jgi {input.bam_contig_depths}    \
+             -o {params.binsplit_sep}           \
              --minfasta {params.minfasta} &> {log}
         """
