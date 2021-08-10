@@ -100,8 +100,19 @@ properties:
     properties:
       db:
         type: string
+      activate:
+        type: boolean
     required:
       - db
+      - activate
+
+  vamb:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
 
 required:
   - units
@@ -113,3 +124,4 @@ required:
   - hmmsearch
   - hmmer_parser
   - xml_parser
+  - vamb

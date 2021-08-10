@@ -4,8 +4,6 @@ Assembly rules:
     - megahit: assemble preprocessed reads with Megahit
 """
 
-from pathlib import Path
-
 
 rule megahit:
     input:
@@ -14,7 +12,7 @@ rule megahit:
     output:
         contigs="{output}/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:
-        out_dir=lambda w, output: str(Path(output.contigs).parent.parent),  # this is equivalent to "{output}/megahit"
+        out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],

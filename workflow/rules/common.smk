@@ -44,6 +44,11 @@ def is_activated(xpath):
     return bool(c.get("activate", False))
 
 
+def get_parent(path: str) -> str:
+    """Returns parent of path in string form."""
+    return str(Path(path).parent)
+
+
 def is_paired_end(sample):
     sample_units = units.loc[sample]
     fq2_null = sample_units["R2"].isnull()
@@ -170,13 +175,20 @@ def get_map_reads_input_R2(wildcards):
 
 # Outputs
 def get_final_output():
+    final_output = []
 
-    return (
+    for output in (
         get_qc_output(),
         get_assembly_output(),
         get_mapping_output(),
         get_annotation_output(),
-    )
+    ):
+        final_output.append(output)
+
+    if is_activated("vamb"):
+        final_output.append(get_binning_output())
+
+    return final_output
 
 
 def get_qc_output():
@@ -198,10 +210,13 @@ def get_mapping_output():
 
 
 def get_binning_output():
-    return directory("output/binning/vamb/")
+    return "output/binning/vamb/clusters.tsv"
 
 
 def get_annotation_output():
+
+    annotation_output = []
+
     diamond = get_diamond_output()
     hmmsearch = get_hmmsearch_output()
     hmmer_parser = expand(
@@ -209,12 +224,15 @@ def get_annotation_output():
         sample=sample_IDs,
         level=list("123"),
     )
-    xml_parser = [
-        get_xml_parser_output(),
-    ]
+
+    for output in diamond, hmmsearch, hmmer_parser:
+        annotation_output.append(output)
 
     # xml_parser is disabled for now until gdbm problem is solved
-    return diamond + hmmsearch + hmmer_parser  # + xml_parser
+    if is_activated("xml_parser"):
+        annotation_output.append(get_xml_parser_output())
+
+    return annotation_output
 
 
 def get_hmmsearch_output():
