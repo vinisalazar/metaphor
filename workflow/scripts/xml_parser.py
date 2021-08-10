@@ -1,6 +1,6 @@
 import re
 import sys
-import shelve
+import pickle
 import logging
 import argparse
 import xml.etree.ElementTree as ET
@@ -10,7 +10,9 @@ import pandas as pd
 
 def main(args):
 
-	tax = shelve.open(args.db)
+	with open(args.db, "rb") as f:
+		tax = pickle.load(f)
+
 	df = pd.DataFrame(columns=("code", "sample_name"))
 
 	sample_names = []
