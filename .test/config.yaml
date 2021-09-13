@@ -45,7 +45,7 @@ hmmer_parser:
 
 diamond_parser:
   db: ".test/data/tax-lineage-test.pickle"
-  activate: True
+  activate: False
 
 vamb:
   activate: False
