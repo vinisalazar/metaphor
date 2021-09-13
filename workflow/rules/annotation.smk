@@ -4,7 +4,7 @@ Annotation rules:
     - prodigal: gene prediction with Prodigal
     - hmmsearch: find KEGG categories with hmmsearch
     - diamond: protein annotation with Diamond
-    - xml_parser: parse collated outputs with custom Python script
+    - diamond_parser: parse collated outputs with custom Python script
     - hmmer_parser: parse the output of hmmsearch with custom Python script
 """
 
@@ -67,11 +67,12 @@ rule diamond:
     input:
         proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
     output:
-        xmlout="{output}/annotation/diamond/{sample}_dmnd.xml",
+        dmnd_out="{output}/annotation/diamond/{sample}_dmnd.out",
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
         output_type=config["diamond"]["output_type"],
+        output_format=config["diamond"]["output_format"],
     threads: round(workflow.cores * 0.75)
     log:
         "{output}/logs/annotation/diamond/{sample}.log",
@@ -84,28 +85,28 @@ rule diamond:
         {{ diamond blastp -q {input}                            \
                    --max-target-seqs {params.max_target_seqs}   \
                    -p {threads}                                 \
-                   -f {params.output_type}                      \
                    -d {params.db}                               \
-                   | sed 's/\&quot;//g'                         \
-                   | sed 's/\&//g' > {output} ; }} &> {log}
+                   -f {params.output_type}                      \
+                   {params.output_format}                       \
+                   -o {output} ; }} &> {log}
         """
 
 
-rule xml_parser:
+rule diamond_parser:
     input:
-        xmls=get_diamond_output(),
+        dmnd_out=get_diamond_output(),
     output:
-        outfile=get_xml_parser_output(),
+        outfile=get_diamond_parser_output(),
     params:
-        db=config["xml_parser"]["db"],
+        db=config["diamond_parser"]["db"],
     log:
-        "output/logs/annotation/xml_parser/xml_parser.log",
+        "output/logs/annotation/diamond_parser/diamond_parser.log",
     benchmark:
-        "output/benchmarks/annotation/xml_parser/xml_parser.txt"
+        "output/benchmarks/annotation/diamond_parser/diamond_parser.txt"
     conda:
         "../envs/bash.yaml"
     script:
-        "../scripts/xml_parser.py"
+        "../scripts/diamond_parser.py"
 
 
 rule hmmer_parser:

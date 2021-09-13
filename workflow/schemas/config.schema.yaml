@@ -95,7 +95,7 @@ properties:
       - db
       - consistent_pathways
 
-  xml_parser:
+  diamond_parser:
     type: object
     properties:
       db:
@@ -123,5 +123,5 @@ required:
   - diamond
   - hmmsearch
   - hmmer_parser
-  - xml_parser
+  - diamond_parser
   - vamb
