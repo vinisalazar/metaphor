@@ -82,13 +82,14 @@ rule diamond:
         "../envs/diamond.yaml"
     shell:
         """
+        echo {params.output_format} | sed -e 's/ /\t/g' > {output}
         {{ diamond blastp -q {input}                            \
                    --max-target-seqs {params.max_target_seqs}   \
                    -p {threads}                                 \
                    -d {params.db}                               \
                    -f {params.output_type}                      \
                    {params.output_format}                       \
-                   -o {output} ; }} &> {log}
+                   >> {output} ; }} &> {log}
         """
 
 
