@@ -81,6 +81,8 @@ properties:
         type: string
       output_type:
         type: integer
+      output_format:
+        type: string
     required:
       - db
 
