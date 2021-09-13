@@ -228,9 +228,9 @@ def get_annotation_output():
     for output in diamond, hmmsearch, hmmer_parser:
         annotation_output.append(output)
 
-    # xml_parser is disabled for now until gdbm problem is solved
-    if is_activated("xml_parser"):
-        annotation_output.append(get_xml_parser_output())
+    # diamond_parser is disabled for now until gdbm problem is solved
+    if is_activated("diamond_parser"):
+        annotation_output.append(get_diamond_parser_output())
 
     return annotation_output
 
@@ -241,9 +241,9 @@ def get_hmmsearch_output():
     )
 
 
-def get_xml_parser_output():
+def get_diamond_parser_output():
     return "output/annotation/brite/brite_OTU_table.tsv"
 
 
 def get_diamond_output():
-    return expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
+    return expand("output/annotation/diamond/{sample}_dmnd.out", sample=sample_IDs)
