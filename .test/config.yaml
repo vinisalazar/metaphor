@@ -35,9 +35,9 @@ hmmsearch:
   db: ".test/data/hmmer-test.hmm"
 
 diamond:
-  db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
+  db: ".test/data/swissprot.dmnd"  # for testing purposes only
   output_type: 6
-  output_format: "qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore"
+  output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 hmmer_parser:
   db: ".test/data/brite-test.txt"
