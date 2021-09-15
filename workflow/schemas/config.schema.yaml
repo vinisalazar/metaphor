@@ -116,6 +116,14 @@ properties:
     required:
       - activate
 
+  metabat2:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
 required:
   - units
   - trimming
@@ -127,3 +135,4 @@ required:
   - hmmer_parser
   - diamond_parser
   - vamb
+  - metabat2
