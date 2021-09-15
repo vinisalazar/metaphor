@@ -64,3 +64,60 @@ rule metabat2:
                  --seed {params.seed}           \
                  -o {params.outfile} &> {log}
         """
+
+
+rule concoct:
+    input:
+        catalogue="output/mapping/catalogue.fna.gz",
+        bams=expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs)
+    output:
+        concoct_output=directory("output/binning/concoct/"),
+    params:
+        contig_size=10000,
+        bed=lambda w, output: output.concoct_output + "/contigs.bed",
+        contigs=lambda w, output: output.concoct_output + "/contigs.fa",
+        coverage_table=lambda w, output: output.concoct_output + "/coverage_table.tsv",
+        fasta_bins=lambda w, output: output.concoct_output + "/fasta_bins",
+        clustering_gt=lambda w, output: output.concoct_output + "/clustering_gt1000.csv
+        clustering_merged=lambda w, output: output.concoct_output + "/clustering_merged.csv
+    log:
+        "output/logs/binning/concoct.log"
+    benchmark:
+        "output/benchmarks/binning/concoct.log"
+    conda:
+        "../envs/concoct.yaml"
+    shell:
+        """
+        { 
+            cut_up_fasta.py {input.catalogue}                 \
+                            -c {params.contig_size}           \
+                            -o 0                              \
+                            -b {params.bed}                   \
+                            --merge_last                      \
+                            > {params.contigs} ; 
+        } &>> {log}
+
+        { 
+            concoct_coverage_table.py {params.bed}            \
+                                      {input.bams}            \
+                                      > {params.coverage_table} ; 
+        } &>> {log}
+
+        { 
+            concoct --composition_file {params.contigs}       \
+                    --coverage_file {params.coverage_table}   \
+                    -b {output.concoct_output} ; 
+        } &>> {log}
+
+        { 
+            merge_cutup_clustering.py                         \
+            {params.clustering_gt} > {params.clustering_merged} ;
+        } &>> {log}
+
+        mkdir {params.fasta_bins}
+        {
+            extract_fasta_bins.py {input.catalogue}           \
+                                  {params.clustering_merged}  \
+                                  --output_path {params.fasta_bins}
+        } ; &>> {log}
+        """
