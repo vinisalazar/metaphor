@@ -78,8 +78,8 @@ rule concoct:
         contigs=lambda w, output: output.concoct_output + "/contigs.fa",
         coverage_table=lambda w, output: output.concoct_output + "/coverage_table.tsv",
         fasta_bins=lambda w, output: output.concoct_output + "/fasta_bins",
-        clustering_gt=lambda w, output: output.concoct_output + "/clustering_gt1000.csv
-        clustering_merged=lambda w, output: output.concoct_output + "/clustering_merged.csv
+        clustering_gt=lambda w, output: output.concoct_output + "/clustering_gt1000.csv",
+        clustering_merged=lambda w, output: output.concoct_output + "/clustering_merged.csv"
     log:
         "output/logs/binning/concoct.log"
     benchmark:
