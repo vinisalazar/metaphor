@@ -130,6 +130,14 @@ properties:
       - seed
       - preffix
 
+  concoct:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
 required:
   - units
   - trimming
@@ -142,3 +150,4 @@ required:
   - diamond_parser
   - vamb
   - metabat2
+  - concoct
