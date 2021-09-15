@@ -13,9 +13,10 @@ rule vamb:
     output:
         get_vamb_output(),
     params:  # defaults in vamb's README
-        outdir=lambda w, output: get_parent(output.clusters),
+        outdir=lambda w, output: get_parent(output[0]),
         binsplit_sep="C",
         minfasta=200000,
+        batchsize=256,
     log:
         "output/logs/binning/vamb.log",
     benchmark:
@@ -30,6 +31,7 @@ rule vamb:
              --fasta {input.catalogue}          \
              --jgi {input.bam_contig_depths}    \
              -o {params.binsplit_sep}           \
+             -t {params.batchsize}              \
              --minfasta {params.minfasta} &> {log}
         """
 
