@@ -43,6 +43,7 @@ rule metabat2:
     params:
         minContig=2500,
         outfile=lambda w, output: str(Path(output.preffix).parent),
+        seed=config["metabat2"]["seed"]
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/metabat2.log",
@@ -56,5 +57,6 @@ rule metabat2:
                  -a {input.depths}              \
                  -m {params.minContig}          \
                  -t {threads}                   \
+                 --seed {params.seed}           \
                  -o {params.outfile} &> {log}
         """

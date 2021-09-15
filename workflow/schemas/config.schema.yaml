@@ -121,8 +121,11 @@ properties:
     properties:
       activate:
         type: boolean
+      seed:
+        type: integer
     required:
       - activate
+      - seed
 
 required:
   - units
