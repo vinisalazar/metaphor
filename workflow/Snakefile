@@ -30,7 +30,7 @@ rule all:
     output:
         benchmarks="output/benchmarks/all_benchmarks.csv",
     params:
-        benchmarks_dir=lambda w, output: str(Path(output.benchmarks.parent)),
+        benchmarks_dir=lambda w, output: str(Path(output.benchmarks).parent),
     log:
         "output/logs/rule_all.log",
     conda:
