@@ -49,3 +49,6 @@ diamond_parser:
 
 vamb:
   activate: True
+
+metabat2:
+  activate: True
