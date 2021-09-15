@@ -194,11 +194,9 @@ def get_final_output():
         get_assembly_output(),
         get_mapping_output(),
         get_annotation_output(),
+        get_binning_output(),
     ):
         final_output.append(output)
-
-    if is_activated("vamb"):
-        final_output.append(get_binning_output())
 
     return final_output
 
@@ -222,7 +220,15 @@ def get_mapping_output():
 
 
 def get_binning_output():
-    return "output/binning/vamb/clusters.tsv"
+    binners = {
+        "vamb": get_vamb_output(),
+        "metabat2": "output/logs/binning/metabat2.log",
+    }
+    return [binners[k] for k, v in binners.items() if is_activated(k)]
+
+
+def get_vamb_output():
+    return ("output/binning/vamb/log.txt",)
 
 
 def get_annotation_output():
