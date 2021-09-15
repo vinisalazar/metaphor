@@ -88,36 +88,25 @@ rule concoct:
         "../envs/concoct.yaml"
     shell:
         """
-        { 
-            cut_up_fasta.py {input.catalogue}                 \
-                            -c {params.contig_size}           \
-                            -o 0                              \
-                            -b {params.bed}                   \
-                            --merge_last                      \
-                            > {params.contigs} ; 
-        } &>> {log}
+        { cut_up_fasta.py {input.catalogue}                 \
+                            -c {params.contig_size}         \
+                            -o 0                            \
+                            -b {params.bed}                 \
+                            --merge_last                    \
+                            > {params.contigs} ; } &>> {log}
 
-        { 
-            concoct_coverage_table.py {params.bed}            \
-                                      {input.bams}            \
-                                      > {params.coverage_table} ; 
-        } &>> {log}
+        { concoct_coverage_table.py {params.bed}            \
+                                    {input.bams}            \
+                                    > {params.coverage_table} ; } &>> {log}
 
-        { 
-            concoct --composition_file {params.contigs}       \
-                    --coverage_file {params.coverage_table}   \
-                    -b {output.concoct_output} ; 
-        } &>> {log}
+        { concoct --composition_file {params.contigs}       \
+                  --coverage_file {params.coverage_table}   \
+                  -b {output.concoct_output} ; } &>> {log}
 
-        { 
-            merge_cutup_clustering.py                         \
-            {params.clustering_gt} > {params.clustering_merged} ;
-        } &>> {log}
+        { merge_cutup_clustering.py {params.clustering_gt} > {params.clustering_merged} ; } &>> {log}
 
         mkdir {params.fasta_bins}
-        {
-            extract_fasta_bins.py {input.catalogue}           \
-                                  {params.clustering_merged}  \
-                                  --output_path {params.fasta_bins}
-        } ; &>> {log}
+        {  extract_fasta_bins.py {input.catalogue}                  \
+                                 {params.clustering_merged}         \
+                                 --output_path {params.fasta_bins} ; } &>> {log}
         """
