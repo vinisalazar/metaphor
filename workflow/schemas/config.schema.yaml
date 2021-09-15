@@ -124,7 +124,7 @@ properties:
       seed:
         type: integer
       preffix:
-        type: str
+        type: string
     required:
       - activate
       - seed
