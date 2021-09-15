@@ -79,7 +79,9 @@ rule concoct:
         coverage_table=lambda w, output: output.outdir + "/coverage_table.tsv",
         fasta_bins=lambda w, output: output.outdir + "/fasta_bins",
         clustering_gt=lambda w, output: output.outdir + "/clustering_gt1000.csv",
-        clustering_merged=lambda w, output: output.outdir + "/clustering_merged.csv"
+        clustering_merged=lambda w, output: output.outdir + "/clustering_merged.csv",
+        uncompressed_catalogue=lambda w, input: input.catalogue.replace(".gz", "")
+    threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/concoct.log"
     benchmark:
@@ -90,13 +92,15 @@ rule concoct:
         """
         rm -rf {output.outdir}
         mkdir {output.outdir} 
-               
-        cut_up_fasta.py {input.catalogue}                       \
-                            -c {params.contig_size}             \
-                            -o 0                                \
-                            -b {params.bed}                     \
-                            --merge_last                        \
-                            > {params.contigs}
+
+        pigz -d -p {threads} -k {input.catalogue}
+
+        cut_up_fasta.py {params.uncompressed_catalogue}         \
+                        -c {params.contig_size}                 \
+                        -o 0                                    \
+                        -b {params.bed}                         \
+                        --merge_last                            \
+                        > {params.contigs}
 
         concoct_coverage_table.py {params.bed}                  \
                                 {input.bams}                    \
@@ -104,12 +108,16 @@ rule concoct:
 
         concoct --composition_file {params.contigs}             \
                 --coverage_file {params.coverage_table}         \
-                -b {output.outdir}
+                -b {output.outdir}                              \
+                -t {threads}
 
         merge_cutup_clustering.py {params.clustering_gt} > {params.clustering_merged}
 
         mkdir {params.fasta_bins}
-        extract_fasta_bins.py {input.catalogue}                 \
-                                {params.clustering_merged}        \
-                                --output_path {params.fasta_bins}
+
+        extract_fasta_bins.py {params.uncompressed_catalogue}   \
+                              {params.clustering_merged}        \
+                              --output_path {params.fasta_bins}
+        
+        rm {params.uncompressed_catalogue}
         """
