@@ -91,6 +91,23 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "0.77.0/bio/fastqc"
 
 
+rule fastqc_trimmed:  # qc on trimmed reads
+    input:
+        get_fastqc_input_trimmed,
+    output:
+        zip="{output}/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
+        html="{output}/qc/fastqc/{sample}-{unit}-{read}-trimmed.html",
+    params:
+        "--quiet",
+    log:
+        "{output}/logs/qc/fastqc/{sample}-{unit}-{read}-fastqc.log",
+    benchmark:
+        "{output}/benchmarks/qc/fastqc/{sample}-{unit}-{read}-fastqc.txt"
+    threads: 1
+    wrapper:
+        "0.77.0/bio/fastqc"
+
+
 rule fastqc_merged:  # qc on trimmed, merged reads
     input:
         get_fastqc_input_merged,
