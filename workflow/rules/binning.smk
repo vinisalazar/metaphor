@@ -41,11 +41,11 @@ rule metabat2:
         contigs="output/mapping/catalogue.fna.gz",
         depths="output/mapping/bam_contig_depths.txt",
     output:
-        preffix="output/binning/metabat2/bins.fasta",
+        outdir="output/binning/metabat2"
     params:
         minContig=2500,
-        outfile=lambda w, output: str(Path(output.preffix).parent),
-        seed=config["metabat2"]["seed"]
+        seed=config["metabat2"]["seed"],
+        outfile=lambda w, output: output.outdir + "/bin"
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/metabat2.log",
@@ -55,10 +55,12 @@ rule metabat2:
         "../envs/metabat2.yaml"
     shell:
         """
+        rm -rf {output} && mkdir {output}
+
         metabat2 -i {input.contigs}             \
                  -a {input.depths}              \
                  -m {params.minContig}          \
                  -t {threads}                   \
                  --seed {params.seed}           \
-                 -o {params.outfile} &> {log}
+                 -o {output} &> {log}
         """
