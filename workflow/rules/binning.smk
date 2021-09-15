@@ -45,7 +45,7 @@ rule metabat2:
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
-        outfile=lambda w, output: output.outdir + "/bin"
+        outfile=lambda w, output: output.outdir + "/" + config["metabat2"]["preffix"]
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/metabat2.log",

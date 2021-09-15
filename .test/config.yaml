@@ -49,3 +49,8 @@ diamond_parser:
 
 vamb:
   activate: False
+
+metabat2:
+  activate: True
+  seed: 0
+  preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
