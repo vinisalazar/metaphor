@@ -123,9 +123,12 @@ properties:
         type: boolean
       seed:
         type: integer
+      preffix:
+        type: str
     required:
       - activate
       - seed
+      - preffix
 
 required:
   - units
