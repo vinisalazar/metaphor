@@ -41,7 +41,7 @@ rule metabat2:
         contigs="output/mapping/catalogue.fna.gz",
         depths="output/mapping/bam_contig_depths.txt",
     output:
-        outdir="output/binning/metabat2"
+        outdir=directory("output/binning/metabat2")
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
@@ -62,5 +62,5 @@ rule metabat2:
                  -m {params.minContig}          \
                  -t {threads}                   \
                  --seed {params.seed}           \
-                 -o {output} &> {log}
+                 -o {params.outfile} &> {log}
         """
