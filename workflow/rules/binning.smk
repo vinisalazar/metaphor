@@ -41,7 +41,7 @@ rule metabat2:
         contigs="output/mapping/catalogue.fna.gz",
         depths="output/mapping/bam_contig_depths.txt",
     output:
-        outdir=directory("output/binning/metabat2")
+        outdir=directory("output/binning/metabat2"),
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
@@ -89,37 +89,36 @@ rule concoct:
     conda:
         "../envs/concoct.yaml"
     shell:
-        """
-        { 
+        """ 
         rm -rf {output.outdir}
         mkdir {output.outdir} 
 
-        { pigz -d -p {threads} -k {input.catalogue} ; } &>> {log}
+        {{ pigz -d -p {threads} -k {input.catalogue} ; }} 2>> {log}
 
-        { cut_up_fasta.py {params.uncompressed_catalogue}           \
+        {{ cut_up_fasta.py {params.uncompressed_catalogue}          \
                         -c {params.contig_size}                     \
                         -o 0                                        \
                         -b {params.bed}                             \
                         --merge_last                                \
-                        > {params.contigs}  ; } &>> {log}
+                        > {params.contigs}  ; }} 2>> {log}
 
-        { concoct_coverage_table.py {params.bed}                    \
+        {{ concoct_coverage_table.py {params.bed}                   \
                                     {input.bams}                    \
-                                    > {params.coverage_table} ; } &>> {log}
+                                    > {params.coverage_table} ; }} 2>> {log}
 
-        { concoct --composition_file {params.contigs}               \
+        {{ concoct --composition_file {params.contigs}              \
                   --coverage_file {params.coverage_table}           \
                   -b {output.outdir}                                \
-                  -t {threads}  ; } &>> {log}
+                  -t {threads}  ; }} 2>> {log}
 
-        { merge_cutup_clustering.py {params.clustering_gt}          \
-            > {params.clustering_merged}  ; } &>> {log}
+        {{ merge_cutup_clustering.py {params.clustering_gt}          \
+            > {params.clustering_merged}  ; }} 2>> {log}
 
         mkdir {params.fasta_bins}
 
-        { extract_fasta_bins.py {params.uncompressed_catalogue}     \
+        {{ extract_fasta_bins.py {params.uncompressed_catalogue}    \
                               {params.clustering_merged}            \
-                              --output_path {params.fasta_bins} ; } &>> {log}
+                              --output_path {params.fasta_bins} ; }} 2>> {log}
         
         rm {params.uncompressed_catalogue}
         mv {output.outdir}/../concoct_* {output.outdir}
