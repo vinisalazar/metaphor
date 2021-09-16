@@ -187,17 +187,13 @@ def get_map_reads_input_R2(wildcards):
 
 # Outputs
 def get_final_output():
-    final_output = []
-
-    for output in (
+    final_output = [
         get_qc_output(),
         get_assembly_output(),
         get_mapping_output(),
         get_annotation_output(),
         get_binning_output(),
-    ):
-        final_output.append(output)
-
+    ]
     return final_output
 
 
@@ -223,7 +219,7 @@ def get_binning_output():
     binners = {
         "vamb": get_vamb_output(),
         "metabat2": "output/binning/metabat2/",
-        "concoct": "output/binning/concoct/"
+        "concoct": "output/binning/concoct/",
     }
     return [binners[k] for k, v in binners.items() if is_activated(k)]
 
