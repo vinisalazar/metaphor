@@ -94,7 +94,7 @@ rule concoct:
         rm -rf {output.outdir}
         mkdir {output.outdir} 
 
-        {{ pigz -d -p {threads} -k {input.catalogue} ; }} 2>> {log}
+        {{ pigz -d -f -p {threads} -k {input.catalogue} ; }} 2>> {log}
 
         {{ cut_up_fasta.py {params.uncompressed_catalogue}          \
                            -c {params.contig_size}                  \
