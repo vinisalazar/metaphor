@@ -107,7 +107,6 @@ rule flagstat:
         "{{ samtools flagstat -@ {threads} {input.sort} > {output.flagstat} ; }} &> {log}"
 
 
-# WIP - for vamb step
 rule jgi_summarize_bam_contig_depths:
     input:
         expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
