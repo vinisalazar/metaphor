@@ -222,7 +222,7 @@ def get_mapping_output():
 def get_binning_output():
     binners = {
         "vamb": get_vamb_output(),
-        "metabat2": "output/logs/binning/metabat2.log",
+        "metabat2": "output/binning/metabat2/",
         "concoct": "output/binning/concoct/"
     }
     return [binners[k] for k, v in binners.items() if is_activated(k)]
