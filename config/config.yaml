@@ -23,13 +23,13 @@ merge_reads:
 
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
-  sequence_length_cutoff: 1  # the script's default is 2000
+  sequence_length_cutoff: 2000
 
 megahit:
   preset: "meta-large"
 
 prodigal:
-  mode: "single"
+  mode: "meta"
 
 hmmsearch:
   db: ".test/data/hmmer-test.hmm"
