@@ -45,7 +45,7 @@ rule metabat2:
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
-        outfile=lambda w, output: output.outdir + "/" + config["metabat2"]["preffix"]
+        outfile=lambda w, output: output.outdir + "/" + config["metabat2"]["preffix"],
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/metabat2.log",
@@ -62,6 +62,7 @@ rule metabat2:
                  -m {params.minContig}          \
                  -t {threads}                   \
                  --seed {params.seed}           \
+                 --saveCls                      \
                  -o {params.outfile} &> {log}
         """
 
@@ -69,7 +70,7 @@ rule metabat2:
 rule concoct:
     input:
         catalogue="output/mapping/catalogue.fna.gz",
-        bams=expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs)
+        bams=expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
     output:
         outdir=directory("output/binning/concoct/"),
     params:
@@ -80,10 +81,10 @@ rule concoct:
         fasta_bins=lambda w, output: output.outdir + "/fasta_bins",
         clustering_gt=lambda w, output: output.outdir + "/clustering_gt1000.csv",
         clustering_merged=lambda w, output: output.outdir + "/clustering_merged.csv",
-        uncompressed_catalogue=lambda w, input: input.catalogue.replace(".gz", "")
+        uncompressed_catalogue=lambda w, input: input.catalogue.replace(".gz", ""),
     threads: round(workflow.cores * 0.75)
     log:
-        "output/logs/binning/concoct.log"
+        "output/logs/binning/concoct.log",
     benchmark:
         "output/benchmarks/binning/concoct.log"
     conda:
@@ -96,30 +97,29 @@ rule concoct:
         {{ pigz -d -p {threads} -k {input.catalogue} ; }} 2>> {log}
 
         {{ cut_up_fasta.py {params.uncompressed_catalogue}          \
-                        -c {params.contig_size}                     \
-                        -o 0                                        \
-                        -b {params.bed}                             \
-                        --merge_last                                \
-                        > {params.contigs}  ; }} 2>> {log}
+                           -c {params.contig_size}                  \
+                           -o 0                                     \
+                           -b {params.bed}                          \
+                           --merge_last                             \
+                           > {params.contigs}  ; }} 2>> {log}
 
         {{ concoct_coverage_table.py {params.bed}                   \
-                                    {input.bams}                    \
-                                    > {params.coverage_table} ; }} 2>> {log}
+                                     {input.bams}                   \
+                                     > {params.coverage_table} ; }} 2>> {log}
 
         {{ concoct --composition_file {params.contigs}              \
-                  --coverage_file {params.coverage_table}           \
-                  -b {output.outdir}                                \
-                  -t {threads}  ; }} 2>> {log}
+                   --coverage_file {params.coverage_table}          \
+                   -b {output.outdir}                               \
+                   -t {threads}  ; }} 2>> {log}
 
-        {{ merge_cutup_clustering.py {params.clustering_gt}          \
-            > {params.clustering_merged}  ; }} 2>> {log}
+        {{ merge_cutup_clustering.py {params.clustering_gt}         \
+                                     > {params.clustering_merged}  ; }} 2>> {log}
 
         mkdir {params.fasta_bins}
 
         {{ extract_fasta_bins.py {params.uncompressed_catalogue}    \
-                              {params.clustering_merged}            \
-                              --output_path {params.fasta_bins} ; }} 2>> {log}
-        
-        rm {params.uncompressed_catalogue}
+                                 {params.clustering_merged}         \
+                                 --output_path {params.fasta_bins} ; }} 2>> {log}
+
         mv {output.outdir}/../concoct_* {output.outdir}
         """
