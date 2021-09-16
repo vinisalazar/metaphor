@@ -68,10 +68,16 @@ rule map_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {threads} -N {params.N} -a -x {params.preset} \
-                 {input.catalogue_idx} {input.fastq1} {input.fastq2} \
-                 | samtools view -F {params.flags} -b --threads \
-                   {threads} > {output.bam} ; }} &> {log}
+        {{ minimap2 -t {threads}                \
+                    -N {params.N}               \
+                    -a -x {params.preset}       \
+                    {input.catalogue_idx}       \
+                    {input.fastq1}              \
+                    {input.fastq2} |
+          samtools view                         \
+                    -F {params.flags}           \
+                    -b --threads                \
+                    {threads} > {output.bam} ; }} &> {log}
         """
 
 
@@ -89,6 +95,22 @@ rule sort_reads:
         "../envs/samtools.yaml"
     wrapper:
         "0.77.0/bio/samtools/sort"
+
+
+rule index_reads:
+    input:
+        sort="{output}/mapping/bam/{sample}.sorted.bam",
+    output:
+        index="{output}/mapping/bam/{sample}.sorted.bam.bai",
+    threads: round(workflow.cores * 0.75)
+    log:
+        "{output}/logs/mapping/{sample}_index_reads.log",
+    benchmark:
+        "{output}/benchmarks/mapping/{sample}_index_reads.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        "samtools index -@ {threads} {input} {output} &> {log}"
 
 
 rule flagstat:
