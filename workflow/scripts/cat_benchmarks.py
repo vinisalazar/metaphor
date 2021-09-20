@@ -11,8 +11,9 @@ Usage:
 
 import sys
 from glob import glob
+from pathlib import Path
 import pandas as pd
-    
+
 
 def create_benchmark_df(file, benchmarks_dir):
     """
@@ -20,12 +21,17 @@ def create_benchmark_df(file, benchmarks_dir):
     """
     df = pd.read_csv(file, sep="\t", skiprows=1, header=None)
     df["file"] = file.replace(benchmarks_dir + "/", "")
+    rules = df["file"].str.split("/", expand=True)
+    rules.iloc[:, -1] = rules.iloc[:, -1].apply(lambda s: str(Path(s).stem))
+    if rules.shape[1] < 3:
+        rules[2] = None
+    df = pd.concat((df, rules), axis=1)
     return df
 
 
 def cat_benchmark_dfs(list_of_dfs):
     df = pd.concat(list_of_dfs)
-    df.columns = "s h:m:s max_rss max_vms max_uss max_pss io_in io_out mean_load cpu_time file".split()
+    df.columns = "s h:m:s max_rss max_vms max_uss max_pss io_in io_out mean_load cpu_time file module rule sample".split()
     return df
 
 
