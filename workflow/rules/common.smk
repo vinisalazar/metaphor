@@ -125,19 +125,19 @@ def get_fastqc_input_merged(wildcards):
 
 def get_multiqc_input(wildcards):
     raw = expand(
-        "output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip",
+        "output/qc/fastqc/{sample}-{unit}-{read}-raw-fastqc.zip",
         sample=sample_IDs,
         unit=unit_names,
         read=["R1", "R2"],
     )
     trimmed = expand(
-        "output/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
+        "output/qc/fastqc/{sample}-{unit}-{read}-trimmed-fastqc.zip",
         sample=sample_IDs,
         unit=unit_names,
         read=["R1", "R2"],
     )
     merged = expand(
-        "output/qc/fastqc/{sample}-{read}_fastqc.zip",
+        "output/qc/fastqc/{sample}-{read}-merged-fastqc.zip",
         sample=sample_IDs,
         read=["R1", "R2"],
     )
