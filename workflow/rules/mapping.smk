@@ -61,9 +61,9 @@ rule map_reads:
         flags=3584,
     threads: workflow.cores
     log:
-        "{output}/logs/mapping/{sample}_map_reads.log",
+        "{output}/logs/mapping/map_reads/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_map_reads.txt"
+        "{output}/benchmarks/mapping/map_reads/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -88,9 +88,9 @@ rule sort_reads:
         sort="{output}/mapping/bam/{sample}.sorted.bam",
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/mapping/{sample}_sort_reads.log",
+        "{output}/logs/mapping/sort_reads/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_sort_reads.txt"
+        "{output}/benchmarks/mapping/sort_reads/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
@@ -104,9 +104,9 @@ rule index_reads:
         index="{output}/mapping/bam/{sample}.sorted.bam.bai",
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/mapping/{sample}_index_reads.log",
+        "{output}/logs/mapping/index_reads/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_index_reads.txt"
+        "{output}/benchmarks/mapping/index_reads/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -120,9 +120,9 @@ rule flagstat:
         flagstat="{output}/mapping/bam/{sample}.flagstat.txt",
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/mapping/{sample}_flagstat.log",
+        "{output}/logs/mapping/flagstat/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_flagstat.txt"
+        "{output}/benchmarks/mapping/flagstat/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
