@@ -42,11 +42,13 @@ rule metabat2:
         depths="output/mapping/bam_contig_depths.txt",
     output:
         outdir=directory("output/binning/metabat2"),
-        scaffolds2bin="output/binning/DAS_tool/metabat2_scaffolds2bin.tsv"
+        scaffolds2bin="output/binning/DAS_tool/metabat2_scaffolds2bin.tsv",
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
-        outfile=lambda w, output: output.outdir + "/" + config["metabat2"]["preffix"],
+        outfile=lambda w, output: str(
+            Path(output.outdir).joinpath(config["metabat2"]["preffix"])
+        ),
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/metabat2.log",
@@ -77,15 +79,21 @@ rule concoct:
         bais=expand("output/mapping/bam/{sample}.sorted.bam.bai", sample=sample_IDs),
     output:
         outdir=directory("output/binning/concoct/"),
-        scaffolds2bin="output/binning/DAS_tool/concoct_scaffolds2bin.tsv"
+        scaffolds2bin="output/binning/DAS_tool/concoct_scaffolds2bin.tsv",
     params:
         contig_size=10000,
-        bed=lambda w, output: output.outdir + "/contigs.bed",
-        contigs=lambda w, output: output.outdir + "/contigs.fa",
-        coverage_table=lambda w, output: output.outdir + "/coverage_table.tsv",
-        fasta_bins=lambda w, output: output.outdir + "/fasta_bins",
-        clustering_gt=lambda w, output: output.outdir + "/clustering_gt1000.csv",
-        clustering_merged=lambda w, output: output.outdir + "/clustering_merged.csv",
+        bed=lambda w, output: str(Path(output.outdir).joinpath("contigs.bed")),
+        contigs=lambda w, output: str(Path(output.outdir).joinpath("contigs.fa")),
+        coverage_table=lambda w, output: str(
+            Path(output.outdir).joinpath("coverage_table.tsv")
+        ),
+        fasta_bins=lambda w, output: str(Path(output.outdir).joinpath("fasta_bins")),
+        clustering_gt=lambda w, output: str(
+            Path(output.outdir).joinpath("clustering_gt1000.csv")
+        ),
+        clustering_merged=lambda w, output: str(
+            Path(output.outdir).joinpath("clustering_merged.csv")
+        ),
         uncompressed_catalogue=lambda w, input: input.catalogue.replace(".gz", ""),
     threads: round(workflow.cores * 0.75)
     log:
@@ -135,13 +143,17 @@ rule DAS_tool:
         contigs="output/mapping/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input,
     output:
-        proteins="output/binning/DAS_tool/DAS_tool_proteins.faa"
+        proteins="output/binning/DAS_tool/DAS_tool_proteins.faa",
     params:
-        binners=lambda w, input_: ",".join(b.split("_")[-2] for b in input_.scaffolds2bin),
-        outpreffix=lambda w, output: str(Path(output.proteins).parent) + "/DAS_tool"
+        binners=lambda w, input_: ",".join(
+            b.split("_")[-2] for b in input_.scaffolds2bin
+        ),
+        outpreffix=lambda w, output: str(
+            Path(output.proteins).parent.joinpath("DAS_tool")
+        ),
     threads: round(workflow.cores * 0.75)
     log:
-        "output/logs/binning/DAS_tool.log"
+        "output/logs/binning/DAS_tool.log",
     benchmark:
         "output/benchmarks/binning/DAS_tool.txt"
     conda:
