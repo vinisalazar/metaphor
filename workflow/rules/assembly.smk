@@ -18,7 +18,7 @@ rule megahit:
         preset=config["megahit"]["preset"],
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/assembly/megahit/{sample}-megahit.log",
+        "{output}/logs/assembly/megahit/{sample}.log",
     benchmark:
         "{output}/benchmarks/assembly/megahit/{sample}.txt"
     conda:
