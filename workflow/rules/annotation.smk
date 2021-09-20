@@ -4,7 +4,7 @@ Annotation rules:
     - prodigal: gene prediction with Prodigal
     - hmmsearch: find KEGG categories with hmmsearch
     - diamond: protein annotation with Diamond
-    - xml_parser: parse collated outputs with custom Python script
+    - diamond_parser: parse collated outputs with custom Python script
     - hmmer_parser: parse the output of hmmsearch with custom Python script
 """
 
@@ -38,17 +38,47 @@ rule prodigal:
         """
 
 
+rule prokka:
+    input:
+        contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
+    output:
+        outfile="output/annotation/prokka/{sample}/{sample}.faa"
+    params:
+        sample=lambda w: w.sample,
+        outdir=lambda w, output: str(Path(output.outfile).parent),
+        kingdom=config["prokka"]["kingdom"],
+        args=config["prokka"]["args"],
+    threads:
+        round(workflow.cores * 0.25)
+    log:
+        "output/logs/annotation/prokka/{sample}.log",
+    benchmark:
+        "output/benchmarks/annotation/prokka/{sample}.txt"
+    conda:
+        "../envs/prokka.yaml"
+    shell:
+        """
+        prokka --outdir {params.outdir}     \
+               --kingdom {params.kingdom}   \
+               --cpus {threads}             \
+               --prefix {params.sample}     \
+               {params.args}                \
+               {input.contigs}          
+        """
+
+
+
 rule hmmsearch:
     input:
         fasta="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
         profile=config["hmmsearch"]["db"],
     output:
         # only one of these is required
-        tblout="{output}/annotation/hmmsearch/{sample}_hmmer.tblout",  # save parseable table of per-sequence hits to file <f>
-        outfile="{output}/annotation/hmmsearch/{sample}_hmmer.out",  # Direct the main human-readable output to a file <f> instead of the default stdout.
         # domtblout="{output}/annotation/hmmsearch/{sample}_hmmer.domtblout", # save parseable table of per-domain hits to file <f>
         # alignment is disabled because it's too big
         # alignment_hits="{output}/annotation/hmmsearch/{sample}_hmmer.aln", # Save a multiple alignment of all significant hits (those satisfying inclusion thresholds) to the file <f>
+        tblout="{output}/annotation/hmmsearch/{sample}_hmmer.tblout",  # save parseable table of per-sequence hits to file <f>
+        outfile="{output}/annotation/hmmsearch/{sample}_hmmer.out",  # Direct the main human-readable output to a file <f> instead of the default stdout.
     log:
         "{output}/logs/annotation/hmmsearch/{sample}.log",
     benchmark:
@@ -67,11 +97,12 @@ rule diamond:
     input:
         proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
     output:
-        xmlout="{output}/annotation/diamond/{sample}_dmnd.xml",
+        dmnd_out="{output}/annotation/diamond/{sample}_dmnd.out",
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
         output_type=config["diamond"]["output_type"],
+        output_format=config["diamond"]["output_format"],
     threads: round(workflow.cores * 0.75)
     log:
         "{output}/logs/annotation/diamond/{sample}.log",
@@ -81,31 +112,32 @@ rule diamond:
         "../envs/diamond.yaml"
     shell:
         """
+        echo {params.output_format} | sed -e 's/ /\t/g' > {output}
         {{ diamond blastp -q {input}                            \
                    --max-target-seqs {params.max_target_seqs}   \
                    -p {threads}                                 \
-                   -f {params.output_type}                      \
                    -d {params.db}                               \
-                   | sed 's/\&quot;//g'                         \
-                   | sed 's/\&//g' > {output} ; }} &> {log}
+                   -f {params.output_type}                      \
+                   {params.output_format}                       \
+                   >> {output} ; }} &> {log}
         """
 
 
-rule xml_parser:
+rule diamond_parser:
     input:
-        xmls=get_diamond_output(),
+        dmnd_out=get_diamond_output(),
     output:
-        outfile=get_xml_parser_output(),
+        outfile=get_diamond_parser_output(),
     params:
-        db=config["xml_parser"]["db"],
+        db=config["diamond_parser"]["db"],
     log:
-        "output/logs/annotation/xml_parser/xml_parser.log",
+        "output/logs/annotation/diamond_parser/diamond_parser.log",
     benchmark:
-        "output/benchmarks/annotation/xml_parser/xml_parser.txt"
+        "output/benchmarks/annotation/diamond_parser/diamond_parser.txt"
     conda:
         "../envs/bash.yaml"
     script:
-        "../scripts/xml_parser.py"
+        "../scripts/diamond_parser.py"
 
 
 rule hmmer_parser:

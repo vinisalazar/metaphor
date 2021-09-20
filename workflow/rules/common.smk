@@ -113,6 +113,11 @@ def get_fastqc_input_raw(wildcards):
     return unit
 
 
+def get_fastqc_input_trimmed(wildcards):
+    sample, unit, read = wildcards.sample, wildcards.unit, wildcards.read
+    return "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz"
+
+
 def get_fastqc_input_merged(wildcards):
     sample, read = wildcards.sample, wildcards.read
     return "output/qc/merged/{sample}_{read}.fq.gz"
@@ -120,17 +125,24 @@ def get_fastqc_input_merged(wildcards):
 
 def get_multiqc_input(wildcards):
     raw = expand(
-        "output/qc/fastqc/{sample}-{unit}-{read}_fastqc.zip",
+        "output/qc/fastqc/{sample}-{unit}-{read}-raw_fastqc.zip",
+        sample=sample_IDs,
+        unit=unit_names,
+        read=["R1", "R2"],
+    )
+    trimmed = expand(
+        "output/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
         sample=sample_IDs,
         unit=unit_names,
         read=["R1", "R2"],
     )
     merged = expand(
-        "output/qc/fastqc/{sample}-{read}_fastqc.zip",
+        "output/qc/fastqc/{sample}-{read}-merged_fastqc.zip",
         sample=sample_IDs,
         read=["R1", "R2"],
     )
-    return raw + merged
+
+    return raw + trimmed + merged
 
 
 def get_map_reads_input_R1(wildcards):
@@ -173,21 +185,22 @@ def get_map_reads_input_R2(wildcards):
     return ""
 
 
+def get_DAS_tool_input():
+    binners = ("concoct", "metabat2", "vamb")
+    scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{binner}_scaffolds2bin.tsv"
+
+    return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
+
+
 # Outputs
 def get_final_output():
-    final_output = []
-
-    for output in (
+    final_output = [
         get_qc_output(),
         get_assembly_output(),
         get_mapping_output(),
         get_annotation_output(),
-    ):
-        final_output.append(output)
-
-    if is_activated("vamb"):
-        final_output.append(get_binning_output())
-
+        get_binning_output(),
+    ]
     return final_output
 
 
@@ -210,28 +223,35 @@ def get_mapping_output():
 
 
 def get_binning_output():
-    return "output/binning/vamb/clusters.tsv"
+    binners = {
+        "vamb": get_vamb_output()[0],
+        "metabat2": "output/binning/metabat2/",
+        "concoct": "output/binning/concoct/",
+    }
+    return sorted(v for k, v in binners.items() if is_activated(k))
+
+
+def get_vamb_output():
+    return ("output/binning/vamb/log.txt",)
 
 
 def get_annotation_output():
+    annotations = {
+        "diamond": get_diamond_output(),
+        "hmmsearch": get_hmmsearch_output(),
+        "hmmer_parser": get_hmmer_parser_output(),
+        "diamond_parser": get_diamond_parser_output(),
+        "prokka": get_prokka_output()
+    }
 
+    needs_activation = ("diamond_parser", "prokka")
     annotation_output = []
 
-    diamond = get_diamond_output()
-    hmmsearch = get_hmmsearch_output()
-    hmmer_parser = expand(
-        "output/annotation/brite/{sample}_brite_Level{level}.tsv",
-        sample=sample_IDs,
-        level=list("123"),
-    )
-
-    for output in diamond, hmmsearch, hmmer_parser:
-        annotation_output.append(output)
-
-    # xml_parser is disabled for now until gdbm problem is solved
-    if is_activated("xml_parser"):
-        annotation_output.append(get_xml_parser_output())
-
+    for k, v in annotations.items():
+        if k in needs_activation and not is_activated(k):
+            continue
+        annotation_output.append(v)
+    
     return annotation_output
 
 
@@ -240,10 +260,19 @@ def get_hmmsearch_output():
         "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
     )
 
+def get_hmmer_parser_output():
+    return expand(
+        "output/annotation/brite/{sample}_brite_Level{level}.tsv",
+        sample=sample_IDs,
+        level=list("123"),
+    )
 
-def get_xml_parser_output():
+def get_diamond_parser_output():
     return "output/annotation/brite/brite_OTU_table.tsv"
 
 
 def get_diamond_output():
-    return expand("output/annotation/diamond/{sample}_dmnd.xml", sample=sample_IDs)
+    return expand("output/annotation/diamond/{sample}_dmnd.out", sample=sample_IDs)
+
+def get_prokka_output():
+    return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)

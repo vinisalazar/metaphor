@@ -66,6 +66,20 @@ properties:
     required:
       - mode
 
+  prokka:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      args:
+        type: string
+      kingdom:
+        type: string
+    required:
+      - activate
+      - args
+      - kingdom
+
   hmmsearch:
     type: object
     properties:
@@ -81,6 +95,8 @@ properties:
         type: string
       output_type:
         type: integer
+      output_format:
+        type: string
     required:
       - db
 
@@ -95,7 +111,7 @@ properties:
       - db
       - consistent_pathways
 
-  xml_parser:
+  diamond_parser:
     type: object
     properties:
       db:
@@ -114,14 +130,39 @@ properties:
     required:
       - activate
 
+  metabat2:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      seed:
+        type: integer
+      preffix:
+        type: string
+    required:
+      - activate
+      - seed
+      - preffix
+
+  concoct:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
 required:
   - units
   - trimming
   - merge_reads
   - concatenate_contigs
   - prodigal
+  - prokka
   - diamond
   - hmmsearch
   - hmmer_parser
-  - xml_parser
+  - diamond_parser
   - vamb
+  - metabat2
+  - concoct

@@ -31,20 +31,34 @@ megahit:
 prodigal:
   mode: "meta"
 
+prokka:
+  activate: True
+  args: "--metagenome --quiet --force"
+  kingdom: "Bacteria"
+
 hmmsearch:
   db: ".test/data/hmmer-test.hmm"
 
 diamond:
   db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
-  output_type: 5
+  output_type: 6
+  output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 hmmer_parser:
   db: ".test/data/brite-test.txt"
   consistent_pathways: True
 
-xml_parser:
+diamond_parser:
   db: ".test/data/tax-lineage-test.pickle"
-  activate: True
+  activate: False
 
 vamb:
+  activate: False
+
+metabat2:
+  activate: True
+  seed: 0
+  preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
+
+concoct:
   activate: False

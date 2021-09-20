@@ -61,17 +61,23 @@ rule map_reads:
         flags=3584,
     threads: workflow.cores
     log:
-        "{output}/logs/mapping/{sample}_map_reads.log",
+        "{output}/logs/mapping/map_reads/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_map_reads.txt"
+        "{output}/benchmarks/mapping/map_reads/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {threads} -N {params.N} -a -x {params.preset} \
-                 {input.catalogue_idx} {input.fastq1} {input.fastq2} \
-                 | samtools view -F {params.flags} -b --threads \
-                   {threads} > {output.bam} ; }} &> {log}
+        {{ minimap2 -t {threads}                \
+                    -N {params.N}               \
+                    -a -x {params.preset}       \
+                    {input.catalogue_idx}       \
+                    {input.fastq1}              \
+                    {input.fastq2} |
+          samtools view                         \
+                    -F {params.flags}           \
+                    -b --threads                \
+                    {threads} > {output.bam} ; }} &> {log}
         """
 
 
@@ -82,13 +88,29 @@ rule sort_reads:
         sort="{output}/mapping/bam/{sample}.sorted.bam",
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/mapping/{sample}_sort_reads.log",
+        "{output}/logs/mapping/sort_reads/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_sort_reads.txt"
+        "{output}/benchmarks/mapping/sort_reads/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
         "0.77.0/bio/samtools/sort"
+
+
+rule index_reads:
+    input:
+        sort="{output}/mapping/bam/{sample}.sorted.bam",
+    output:
+        index="{output}/mapping/bam/{sample}.sorted.bam.bai",
+    threads: round(workflow.cores * 0.75)
+    log:
+        "{output}/logs/mapping/index_reads/{sample}.log",
+    benchmark:
+        "{output}/benchmarks/mapping/index_reads/{sample}.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        "samtools index -@ {threads} {input} {output} &> {log}"
 
 
 rule flagstat:
@@ -98,16 +120,15 @@ rule flagstat:
         flagstat="{output}/mapping/bam/{sample}.flagstat.txt",
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/mapping/{sample}_flagstat.log",
+        "{output}/logs/mapping/flagstat/{sample}.log",
     benchmark:
-        "{output}/benchmarks/mapping/{sample}_flagstat.txt"
+        "{output}/benchmarks/mapping/flagstat/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
         "{{ samtools flagstat -@ {threads} {input.sort} > {output.flagstat} ; }} &> {log}"
 
 
-# WIP - for vamb step
 rule jgi_summarize_bam_contig_depths:
     input:
         expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),

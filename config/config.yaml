@@ -23,28 +23,42 @@ merge_reads:
 
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
-  sequence_length_cutoff: 1  # the script's default is 2000
+  sequence_length_cutoff: 2000
 
 megahit:
   preset: "meta-large"
 
 prodigal:
-  mode: "single"
+  mode: "meta"
+
+prokka:
+  activate: True
+  args: "--metagenome --quiet --force"
+  kingdom: "Bacteria"
 
 hmmsearch:
   db: ".test/data/hmmer-test.hmm"
 
 diamond:
-  db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
-  output_type: 5
+  db: ".test/data/swissprot.dmnd"  # for testing purposes only
+  output_type: 6
+  output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 hmmer_parser:
-  db: ".test/data/brite-test.txt"
+  db: ".test/data/brite.txt"
   consistent_pathways: True
 
-xml_parser:
-  db: ".test/data/tax-lineage-test.pickle"
-  activate: True
+diamond_parser:
+  db: ".test/data/taxonomic_lineages.pickle"
+  activate: False
 
 vamb:
+  activate: True
+
+metabat2:
+  activate: True
+  seed: 0
+  preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
+
+concoct:
   activate: True

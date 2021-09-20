@@ -1,6 +1,9 @@
 # MetaSnakePipe
 # Original MetaGenePipe workflow by Bobbie Shaban
 # Snakemake port by Vini Salazar (with modifications)
+from pathlib import Path
+
+
 configfile: "config/config.yaml"
 
 
@@ -14,5 +17,23 @@ include: "rules/annotation.smk"
 
 
 rule all:
+    """
+    Requires all final outputs.
+
+    Actions:
+        - concatenate benchmarks
+        - remove zero-sized outputs (TODO)
+        - compress big files (TODO)
+    """
     input:
         * get_final_output(),
+    output:
+        benchmarks="output/benchmarks/all_benchmarks.csv",
+    params:
+        benchmarks_dir=lambda w, output: str(Path(output.benchmarks).parent),
+    log:
+        "output/logs/rule_all.log",
+    conda:
+        "envs/bash.yaml"
+    shell:
+        "workflow/scripts/concatenate_benchmarks.py {params.benchmarks_dir} {output.benchmarks}"
