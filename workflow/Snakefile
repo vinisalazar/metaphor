@@ -36,4 +36,4 @@ rule all:
     conda:
         "envs/bash.yaml"
     shell:
-        "workflow/scripts/cat_benchmarks.py {params.benchmarks_dir} {output.benchmarks}"
+        "workflow/scripts/concatenate_benchmarks.py {params.benchmarks_dir} {output.benchmarks}"
