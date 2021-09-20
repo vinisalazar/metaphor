@@ -185,6 +185,13 @@ def get_map_reads_input_R2(wildcards):
     return ""
 
 
+def get_DAS_tool_input():
+    binners = ("concoct", "metabat2", "vamb")
+    scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{binner}_scaffolds2bin.tsv"
+
+    return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
+
+
 # Outputs
 def get_final_output():
     final_output = [
@@ -221,7 +228,7 @@ def get_binning_output():
         "metabat2": "output/binning/metabat2/",
         "concoct": "output/binning/concoct/",
     }
-    return [binners[k] for k, v in binners.items() if is_activated(k)]
+    return sorted(v for k, v in binners.items() if is_activated(k))
 
 
 def get_vamb_output():
