@@ -74,6 +74,7 @@ rule concoct:
     input:
         catalogue="output/mapping/catalogue.fna.gz",
         bams=expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
+        bais=expand("output/mapping/bam/{sample}.sorted.bam.bai", sample=sample_IDs),
     output:
         outdir=directory("output/binning/concoct/"),
         scaffolds2bin="output/binning/DAS_tool/concoct_scaffolds2bin.tsv"
