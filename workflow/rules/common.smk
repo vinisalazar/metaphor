@@ -224,7 +224,7 @@ def get_mapping_output():
 
 def get_binning_output():
     binners = {
-        "vamb": get_vamb_output(),
+        "vamb": get_vamb_output()[0],
         "metabat2": "output/binning/metabat2/",
         "concoct": "output/binning/concoct/",
     }
