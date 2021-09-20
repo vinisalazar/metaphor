@@ -56,7 +56,7 @@ rule metabat2:
         "../envs/metabat2.yaml"
     shell:
         """
-        rm -rf {output} && mkdir {output}
+        rm -rf {output.outdir} && mkdir {output.outdir}
 
         metabat2 -i {input.contigs}             \
                  -a {input.depths}              \
@@ -66,7 +66,7 @@ rule metabat2:
                  --saveCls                      \
                  -o {params.outfile} &> {log}
 
-        mv {params.outfile} {outfile.scaffolds2bin}
+        mv {params.outfile} {output.scaffolds2bin}
         """
 
 
@@ -126,9 +126,7 @@ rule concoct:
                                  {params.clustering_merged}         \
                                  --output_path {params.fasta_bins} ; }} 2>> {log}
 
-        # mv {output.outdir}/../concoct_* {output.outdir}
-
-        sed "s/,/$(echo '\t')/g/" {params.clustering_merged} > {output.scaffolds2bin}
+        sed "s/,/$(echo '\t')/g" {params.clustering_merged} > {output.scaffolds2bin}
         """
 
 
