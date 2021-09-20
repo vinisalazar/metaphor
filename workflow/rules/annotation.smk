@@ -38,6 +38,36 @@ rule prodigal:
         """
 
 
+rule prokka:
+    input:
+        contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
+    output:
+        outfile="output/annotation/prokka/{sample}/{sample}.faa"
+    params:
+        sample=lambda w: w.sample,
+        outdir=lambda w, output: str(Path(output.outfile).parent),
+        kingdom=config["prokka"]["kingdom"],
+        args=config["prokka"]["args"],
+    threads:
+        round(workflow.cores * 0.25)
+    log:
+        "output/logs/annotation/prokka/{sample}.log",
+    benchmark:
+        "output/benchmarks/annotation/prokka/{sample}.txt"
+    conda:
+        "../envs/prokka.yaml"
+    shell:
+        """
+        prokka --outdir {params.outdir}     \
+               --kingdom {params.kingdom}   \
+               --cpus {threads}             \
+               --prefix {params.sample}     \
+               {params.args}                \
+               {input.contigs}          
+        """
+
+
+
 rule hmmsearch:
     input:
         fasta="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
