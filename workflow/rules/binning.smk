@@ -42,6 +42,7 @@ rule metabat2:
         depths="output/mapping/bam_contig_depths.txt",
     output:
         outdir=directory("output/binning/metabat2"),
+        scaffolds2bin="output/binning/DAS_tool/metabat2_scaffolds2bin.tsv"
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
@@ -64,6 +65,8 @@ rule metabat2:
                  --seed {params.seed}           \
                  --saveCls                      \
                  -o {params.outfile} &> {log}
+
+        mv {params.outfile} {outfile.scaffolds2bin}
         """
 
 
@@ -73,6 +76,7 @@ rule concoct:
         bams=expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
     output:
         outdir=directory("output/binning/concoct/"),
+        scaffolds2bin="output/binning/DAS_tool/concoct_scaffolds2bin.tsv"
     params:
         contig_size=10000,
         bed=lambda w, output: output.outdir + "/contigs.bed",
@@ -86,7 +90,7 @@ rule concoct:
     log:
         "output/logs/binning/concoct.log",
     benchmark:
-        "output/benchmarks/binning/concoct.log"
+        "output/benchmarks/binning/concoct.txt"
     conda:
         "../envs/concoct.yaml"
     shell:
@@ -121,5 +125,33 @@ rule concoct:
                                  {params.clustering_merged}         \
                                  --output_path {params.fasta_bins} ; }} 2>> {log}
 
-        mv {output.outdir}/../concoct_* {output.outdir}
+        # mv {output.outdir}/../concoct_* {output.outdir}
+
+        sed "s/,/$(echo '\t')/g/" {params.clustering_merged} > {output.scaffolds2bin}
+        """
+
+
+rule DAS_tool:
+    input:
+        contigs="output/mapping/catalogue.fna",
+        scaffolds2bin=get_DAS_tool_input,
+    output:
+        proteins="output/binning/DAS_tool/DAS_tool_proteins.faa"
+    params:
+        binners=lambda w, input_: ",".join(b.split("_")[-2] for b in input_.scaffolds2bin),
+        outpreffix=lambda w, output: str(Path(output.proteins).parent) + "/DAS_tool"
+    threads: round(workflow.cores * 0.75)
+    log:
+        "output/logs/binning/DAS_tool.log"
+    benchmark:
+        "output/benchmarks/binning/DAS_tool.txt"
+    conda:
+        "../envs/das_tool.yaml"
+    shell:
+        """
+        DAS_tool -i {input.scaffolds2bind}  \
+                 -l {params.binners}        \
+                 -c {input.contigs}         \
+                 -o {params.outpreffix}     \
+                 --threads {threads} &> {log}
         """
