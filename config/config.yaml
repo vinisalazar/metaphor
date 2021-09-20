@@ -31,6 +31,11 @@ megahit:
 prodigal:
   mode: "meta"
 
+prokka:
+  activate: True
+  args: "--force --metagenome"
+  kingdom: "Bacteria"
+
 hmmsearch:
   db: ".test/data/hmmer-test.hmm"
 

@@ -66,6 +66,20 @@ properties:
     required:
       - mode
 
+  prokka:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      args:
+        type: string
+      kingdom:
+        type: string
+    required:
+      - activate
+      - args
+      - kingdom
+
   hmmsearch:
     type: object
     properties:
@@ -144,6 +158,7 @@ required:
   - merge_reads
   - concatenate_contigs
   - prodigal
+  - prokka
   - diamond
   - hmmsearch
   - hmmer_parser
