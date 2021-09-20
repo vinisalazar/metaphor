@@ -2,12 +2,12 @@
 #   https://github.com/snakemake-workflows/rna-seq-star-deseq2/
 
 # Path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: config/samples.csv
+samples: config/patdec_samples.csv
 
 # Path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: config/units.csv
+units: config/patdec_units.csv
 
 
 trimming:
@@ -23,7 +23,7 @@ merge_reads:
 
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
-  sequence_length_cutoff: 2000
+  sequence_length_cutoff: 1
 
 megahit:
   preset: "meta-large"
@@ -35,20 +35,20 @@ hmmsearch:
   db: ".test/data/hmmer-test.hmm"
 
 diamond:
-  db: ".test/data/swissprot-1k.dmnd"  # for testing purposes only
+  db: ".test/data/swissprot.dmnd"  # for testing purposes only
   output_type: 6
   output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 hmmer_parser:
-  db: ".test/data/brite-test.txt"
+  db: ".test/data/brite.txt"
   consistent_pathways: True
 
 diamond_parser:
-  db: ".test/data/tax-lineage-test.pickle"
+  db: ".test/data/taxonomic_lineages.pickle"
   activate: False
 
 vamb:
-  activate: True
+  activate: False
 
 metabat2:
   activate: True
