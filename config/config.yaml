@@ -33,7 +33,7 @@ prodigal:
 
 prokka:
   activate: True
-  args: "--force --metagenome"
+  args: "--metagenome --quiet --force"
   kingdom: "Bacteria"
 
 hmmsearch:
