@@ -236,24 +236,22 @@ def get_vamb_output():
 
 
 def get_annotation_output():
+    annotations = {
+        "diamond": get_diamond_output(),
+        "hmmsearch": get_hmmsearch_output(),
+        "hmmer_parser": get_hmmer_parser_output(),
+        "diamond_parser": get_diamond_parser_output(),
+        "prokka": get_prokka_output()
+    }
 
+    needs_activation = ("diamond_parser", "prokka")
     annotation_output = []
 
-    diamond = get_diamond_output()
-    hmmsearch = get_hmmsearch_output()
-    hmmer_parser = expand(
-        "output/annotation/brite/{sample}_brite_Level{level}.tsv",
-        sample=sample_IDs,
-        level=list("123"),
-    )
-
-    for output in diamond, hmmsearch, hmmer_parser:
-        annotation_output.append(output)
-
-    # diamond_parser is disabled for now until gdbm problem is solved
-    if is_activated("diamond_parser"):
-        annotation_output.append(get_diamond_parser_output())
-
+    for k, v in annotations.items():
+        if k in needs_activation and not is_activated(k):
+            continue
+        annotation_output.append(v)
+    
     return annotation_output
 
 
@@ -262,6 +260,12 @@ def get_hmmsearch_output():
         "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
     )
 
+def get_hmmer_parser_output():
+    return expand(
+        "output/annotation/brite/{sample}_brite_Level{level}.tsv",
+        sample=sample_IDs,
+        level=list("123"),
+    )
 
 def get_diamond_parser_output():
     return "output/annotation/brite/brite_OTU_table.tsv"
@@ -269,3 +273,6 @@ def get_diamond_parser_output():
 
 def get_diamond_output():
     return expand("output/annotation/diamond/{sample}_dmnd.out", sample=sample_IDs)
+
+def get_prokka_output():
+    return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)

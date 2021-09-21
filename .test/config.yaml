@@ -31,6 +31,11 @@ megahit:
 prodigal:
   mode: "meta"
 
+prokka:
+  activate: True
+  args: "--metagenome --quiet --force"
+  kingdom: "Bacteria"
+
 hmmsearch:
   db: ".test/data/hmmer-test.hmm"
 
@@ -56,4 +61,4 @@ metabat2:
   preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
 
 concoct:
-  activate: True
+  activate: False
