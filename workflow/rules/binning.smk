@@ -68,7 +68,7 @@ rule metabat2:
                  --saveCls                      \
                  -o {params.outfile} &> {log}
 
-        mv {params.outfile} {output.scaffolds2bin}
+        sed "s/$(echo '\t')/$(echo '\t')metabat2./g" {params.outfile} > {output.scaffolds2bin}
         """
 
 
@@ -134,7 +134,7 @@ rule concoct:
                                  {params.clustering_merged}         \
                                  --output_path {params.fasta_bins} ; }} 2>> {log}
 
-        sed "s/,/$(echo '\t')/g" {params.clustering_merged} > {output.scaffolds2bin}
+        sed "s/,/$(echo '\t')concoct./g" {params.clustering_merged} | tail -n +2 > {output.scaffolds2bin}
         """
 
 
@@ -145,8 +145,9 @@ rule DAS_tool:
     output:
         proteins="output/binning/DAS_tool/DAS_tool_proteins.faa",
     params:
-        binners=lambda w, input_: ",".join(
-            b.split("_")[-2] for b in input_.scaffolds2bin
+        fmt_scaffolds2bin=lambda w, _input: ",".join(_input.scaffolds2bin),
+        binners=lambda w, _input: ",".join(
+            b.split("_")[-2] for b in _input.scaffolds2bin
         ),
         outpreffix=lambda w, output: str(
             Path(output.proteins).parent.joinpath("DAS_tool")
@@ -160,7 +161,7 @@ rule DAS_tool:
         "../envs/das_tool.yaml"
     shell:
         """
-        DAS_tool -i {input.scaffolds2bind}  \
+        DAS_tool -i {params.fmt_scaffolds2bin}  \
                  -l {params.binners}        \
                  -c {input.contigs}         \
                  -o {params.outpreffix}     \
