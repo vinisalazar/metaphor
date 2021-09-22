@@ -209,9 +209,13 @@ def get_qc_output():
 
 
 def get_assembly_output():
-    return expand(
+    assemblies = expand(
         "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
     )
+    if is_activated('metaquast'):
+        assemblies += directory("output/assembly/metaquast/")
+
+    return assemblies
 
 
 def get_mapping_output():

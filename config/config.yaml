@@ -28,6 +28,9 @@ concatenate_contigs:
 megahit:
   preset: "meta-large"
 
+metaquast:
+  activate: True
+
 prodigal:
   mode: "meta"
 

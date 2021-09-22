@@ -58,6 +58,14 @@ properties:
     required:
       - preset
 
+  metaquast:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
   prodigal:
     type: object
     properties:
@@ -157,6 +165,8 @@ required:
   - trimming
   - merge_reads
   - concatenate_contigs
+  - megahit
+  - metaquast
   - prodigal
   - prokka
   - diamond
