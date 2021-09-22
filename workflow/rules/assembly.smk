@@ -36,3 +36,30 @@ rule megahit:
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
         """
+
+
+rule metaquast:
+    input:
+        assemblies=expand("output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
+    output:
+        outdir=directory("output/assembly/metaquast/"),
+    params:
+        mincontig=500,
+        reference="-r " + config["metaquast"]["reference"],
+        labels=",".join(sample_IDs),
+    threads: round(workflow.cores * 0.75)
+    log:
+        "output/logs/assembly/metaquast.log",
+    benchmark:
+        "output/benchmarks/assembly/metaquast.txt",
+    conda:
+        "../envs/quast.yaml"
+    shell:
+        """
+        metaquast.py -t {threads}               \
+                     -o {output}                \
+                     -l {params.labels}         \
+                     -m {params.mincontig}      \
+                     {params.reference}         \
+                     {input.assemblies}
+        """
