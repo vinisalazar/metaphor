@@ -2,6 +2,7 @@
 Assembly rules:
 
     - megahit: assemble preprocessed reads with Megahit
+    - metaquast: evaluate assembly results with MetaQuast
 """
 
 
@@ -47,6 +48,7 @@ rule metaquast:
         mincontig=500,
         reference="-r " + config["metaquast"]["reference"],
         labels=",".join(sample_IDs),
+        extra_params="--no-icarus"
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/assembly/metaquast.log",
@@ -60,6 +62,7 @@ rule metaquast:
                      -o {output}                \
                      -l {params.labels}         \
                      -m {params.mincontig}      \
+                     --no-icarus                \
                      {params.reference}         \
                      {input.assemblies}
         """

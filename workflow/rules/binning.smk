@@ -17,6 +17,7 @@ rule vamb:
         binsplit_sep="C",
         minfasta=200000,
         batchsize=256,
+    threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/vamb.log",
     benchmark:
@@ -30,6 +31,7 @@ rule vamb:
         vamb --outdir {params.outdir}           \
              --fasta {input.catalogue}          \
              --jgi {input.bam_contig_depths}    \
+             -p {threads}                       \
              -o {params.binsplit_sep}           \
              -t {params.batchsize}              \
              --minfasta {params.minfasta} &> {log}
