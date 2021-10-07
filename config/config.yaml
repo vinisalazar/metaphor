@@ -30,6 +30,7 @@ megahit:
 
 metaquast:
   activate: True
+  reference: ""
 
 prodigal:
   mode: "meta"

@@ -63,6 +63,14 @@ def is_paired_end(sample):
     return all_paired
 
 
+def get_metaquast_reference():
+    reference = config["metaquast"].get("reference", "")
+    if Path(reference).is_file():
+        return "-r " + reference
+    else:
+        return ""
+
+
 # Inputs
 def get_fastqs(wildcards):
     if config["trimming"]["activate"]:

@@ -63,8 +63,11 @@ properties:
     properties:
       activate:
         type: boolean
+      reference:
+        type: string
     required:
       - activate
+      - reference
 
   prodigal:
     type: object

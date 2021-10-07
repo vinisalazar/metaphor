@@ -46,7 +46,7 @@ rule metaquast:
         outdir=directory("output/assembly/metaquast/"),
     params:
         mincontig=500,
-        reference="-r " + config["metaquast"]["reference"],
+        reference=get_metaquast_reference(),
         labels=",".join(sample_IDs),
         extra_params="--no-icarus"
     threads: round(workflow.cores * 0.75)
