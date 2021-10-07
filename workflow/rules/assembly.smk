@@ -43,12 +43,13 @@ rule metaquast:
     input:
         assemblies=expand("output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
     output:
-        outdir=get_metaquast_output(),
+        outfile=get_metaquast_output(),
     params:
         mincontig=500,
         reference=get_metaquast_reference(),
         labels=",".join(sample_IDs),
-        extra_params="--no-icarus"
+        outdir=lambda w, output: str(Path(output.outfile).parent.parent),
+        extra_params="--no-icarus",
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/assembly/metaquast.log",
@@ -59,7 +60,7 @@ rule metaquast:
     shell:
         """
         metaquast.py -t {threads}               \
-                     -o {output}                \
+                     -o {params.outdir}         \
                      -l {params.labels}         \
                      -m {params.mincontig}      \
                      --no-icarus                \

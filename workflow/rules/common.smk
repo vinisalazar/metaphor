@@ -291,4 +291,4 @@ def get_prokka_output():
     return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)
 
 def get_metaquast_output():
-    return directory("output/assembly/metaquast/")
+    return "output/assembly/metaquast/combined_reference/report.html"
