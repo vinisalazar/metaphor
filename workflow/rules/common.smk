@@ -221,7 +221,7 @@ def get_assembly_output():
         "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
     )
     if is_activated('metaquast'):
-        assemblies += directory("output/assembly/metaquast/")
+        assemblies.append(get_metaquast_output())
 
     return assemblies
 
@@ -289,3 +289,6 @@ def get_diamond_output():
 
 def get_prokka_output():
     return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)
+
+def get_metaquast_output():
+    return directory("output/assembly/metaquast/")

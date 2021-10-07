@@ -43,7 +43,7 @@ rule metaquast:
     input:
         assemblies=expand("output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
     output:
-        outdir=directory("output/assembly/metaquast/"),
+        outdir=get_metaquast_output(),
     params:
         mincontig=500,
         reference=get_metaquast_reference(),
