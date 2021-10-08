@@ -143,7 +143,7 @@ rule concoct:
 rule DAS_tool:
     input:
         contigs="output/mapping/catalogue.fna",
-        scaffolds2bin=get_DAS_tool_input,
+        scaffolds2bin=get_DAS_tool_input(),
     output:
         proteins="output/binning/DAS_tool/DAS_tool_proteins.faa",
     params:
