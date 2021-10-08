@@ -65,3 +65,6 @@ metabat2:
 
 concoct:
   activate: False
+
+das_tool:
+  activate: False
