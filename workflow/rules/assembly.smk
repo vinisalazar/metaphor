@@ -41,7 +41,9 @@ rule megahit:
 
 rule metaquast:
     input:
-        assemblies=expand("output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs)
+        assemblies=expand(
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
+        ),
     output:
         outfile=get_metaquast_output(),
     params:
@@ -54,7 +56,7 @@ rule metaquast:
     log:
         "output/logs/assembly/metaquast.log",
     benchmark:
-        "output/benchmarks/assembly/metaquast.txt",
+        "output/benchmarks/assembly/metaquast.txt"
     conda:
         "../envs/quast.yaml"
     shell:
