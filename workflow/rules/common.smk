@@ -252,7 +252,7 @@ def get_binning_output():
         "vamb": get_vamb_output()[0],
         "metabat2": "output/binning/metabat2/",
         "concoct": "output/binning/concoct/",
-        "DAS_tool": "output/binning/DAS_tool/DAS_tool_proteins.faa",
+        "das_tool": "output/binning/DAS_tool/DAS_tool_proteins.faa",
     }
     return sorted(v for k, v in binners.items() if is_activated(k))
 
