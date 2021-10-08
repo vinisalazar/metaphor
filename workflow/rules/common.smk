@@ -66,9 +66,13 @@ def is_paired_end(sample):
 def get_metaquast_reference():
     reference = config["metaquast"].get("reference", "")
     if Path(reference).is_file():
-        return "-r " + reference
+        return f"-r {reference}"
     else:
         return ""
+
+
+def get_cog_db_file(filename):
+    return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
 
 
 # Inputs
@@ -199,18 +203,15 @@ def get_DAS_tool_input():
     return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
 
 
-def get_fasta_bins():
-    binners = {
-        "metabat2": "output/binning/metabat2/*.fa",
-        "concoct": "output/binning/concoct/fasta_bins/*.fa",
-        "vamb": "output/binning/vamb/*.fa"
-    }
+# def get_fasta_bins():
+#     binners = {
+#         "metabat2": "output/binning/metabat2/*.fa",
+#         "concoct": "output/binning/concoct/fasta_bins/*.fa",
+#         "vamb": "output/binning/vamb/*.fa"
+#     }
 
-    bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
-    return bins
-
-
-
+#     bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
+#     return bins
 
 # Outputs
 def get_final_output():
@@ -232,7 +233,7 @@ def get_assembly_output():
     assemblies = expand(
         "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
     )
-    if is_activated('metaquast'):
+    if is_activated("metaquast"):
         assemblies.append(get_metaquast_output())
 
     return assemblies
@@ -251,7 +252,7 @@ def get_binning_output():
         "vamb": get_vamb_output()[0],
         "metabat2": "output/binning/metabat2/",
         "concoct": "output/binning/concoct/",
-        "DAS_tool": "output/binning/DAS_tool/DAS_tool_proteins.faa"
+        "DAS_tool": "output/binning/DAS_tool/DAS_tool_proteins.faa",
     }
     return sorted(v for k, v in binners.items() if is_activated(k))
 
@@ -262,21 +263,22 @@ def get_vamb_output():
 
 def get_annotation_output():
     annotations = {
-        "diamond": get_diamond_output(),
+        "diamond": get_all_diamond_outputs(),
         "hmmsearch": get_hmmsearch_output(),
         "hmmer_parser": get_hmmer_parser_output(),
-        "diamond_parser": get_diamond_parser_output(),
-        "prokka": get_prokka_output()
+        "cog_parser": get_all_cog_parser_outputs(),
+        "prokka": get_prokka_output(),
     }
 
-    needs_activation = ("diamond_parser", "prokka")
+    needs_activation = ("cog_parser", "prokka")
     annotation_output = []
 
     for k, v in annotations.items():
         if k in needs_activation and not is_activated(k):
             continue
-        annotation_output.append(v)
-    
+        else:
+            annotation_output.append(v)
+
     return annotation_output
 
 
@@ -285,6 +287,7 @@ def get_hmmsearch_output():
         "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
     )
 
+
 def get_hmmer_parser_output():
     return expand(
         "output/annotation/brite/{sample}_brite_Level{level}.tsv",
@@ -292,15 +295,27 @@ def get_hmmer_parser_output():
         level=list("123"),
     )
 
-def get_diamond_parser_output():
-    return "output/annotation/brite/brite_OTU_table.tsv"
-
 
 def get_diamond_output():
-    return expand("output/annotation/diamond/{sample}_dmnd.out", sample=sample_IDs)
+    return "output/annotation/diamond/{sample}_dmnd.out"
+
+
+def get_all_diamond_outputs():
+    return expand(get_diamond_output(), sample=sample_IDs)
+
+
+def get_all_cog_parser_outputs():
+    cog_valid_output_kinds = ("categories", "codes")
+    return expand(
+        "output/annotation/cog/{sample}_{kind}.out",
+        sample=sample_IDs,
+        kind=cog_valid_output_kinds,
+    )
+
 
 def get_prokka_output():
     return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)
+
 
 def get_metaquast_output():
     return "output/assembly/metaquast/combined_reference/report.html"

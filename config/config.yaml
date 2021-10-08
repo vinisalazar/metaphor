@@ -52,7 +52,7 @@ hmmer_parser:
   db: ".test/data/brite.txt"
   consistent_pathways: True
 
-diamond_parser:
+cog_parser:
   db: ".test/data/taxonomic_lineages.pickle"
   activate: False
 

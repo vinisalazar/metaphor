@@ -51,7 +51,7 @@ hmmer_parser:
   db: ".test/data/brite-test.txt"
   consistent_pathways: True
 
-diamond_parser:
+cog_parser:
   db: ".test/data/tax-lineage-test.pickle"
   activate: False
 

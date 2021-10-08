@@ -4,7 +4,7 @@ Annotation rules:
     - prodigal: gene prediction with Prodigal
     - hmmsearch: find KEGG categories with hmmsearch
     - diamond: protein annotation with Diamond
-    - diamond_parser: parse collated outputs with custom Python script
+    - cog_parser: parse collated outputs with custom Python script
     - hmmer_parser: parse the output of hmmsearch with custom Python script
 """
 
@@ -42,14 +42,13 @@ rule prokka:
     input:
         contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
     output:
-        outfile="output/annotation/prokka/{sample}/{sample}.faa"
+        outfile="output/annotation/prokka/{sample}/{sample}.faa",
     params:
         sample=lambda w: w.sample,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
-    threads:
-        round(workflow.cores * 0.25)
+    threads: round(workflow.cores * 0.25)
     log:
         "output/logs/annotation/prokka/{sample}.log",
     benchmark:
@@ -65,7 +64,6 @@ rule prokka:
                {params.args}                \
                {input.contigs}          
         """
-
 
 
 rule hmmsearch:
@@ -95,9 +93,9 @@ rule hmmsearch:
 
 rule diamond:
     input:
-        proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
+        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa",
     output:
-        dmnd_out="{output}/annotation/diamond/{sample}_dmnd.out",
+        dmnd_out=get_diamond_output(),
     params:
         db=config["diamond"]["db"],
         max_target_seqs=1,
@@ -105,9 +103,9 @@ rule diamond:
         output_format=config["diamond"]["output_format"],
     threads: round(workflow.cores * 0.75)
     log:
-        "{output}/logs/annotation/diamond/{sample}.log",
+        "output/logs/annotation/diamond/{sample}.log",
     benchmark:
-        "{output}/benchmarks/annotation/diamond/{sample}.txt"
+        "output/benchmarks/annotation/diamond/{sample}.txt"
     conda:
         "../envs/diamond.yaml"
     shell:
@@ -123,21 +121,24 @@ rule diamond:
         """
 
 
-rule diamond_parser:
+rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
     output:
-        outfile=get_diamond_parser_output(),
+        cat_outfile="output/annotation/cog/{sample}_categories.out",
+        codes_outfile="output/annotation/cog/{sample}_codes.out",
     params:
-        db=config["diamond_parser"]["db"],
+        cog_csv=get_cog_db_file("cog-20.cog.csv*"),
+        def_tab=get_cog_db_file("cog-20.def.tab*"),
+        fun_tab=get_cog_db_file("fun-20.tab*"),
     log:
-        "output/logs/annotation/diamond_parser/diamond_parser.log",
+        "output/logs/annotation/cog_parser/{sample}.log",
     benchmark:
-        "output/benchmarks/annotation/diamond_parser/diamond_parser.txt"
+        "output/benchmarks/annotation/cog_parser/{sample}.txt"
     conda:
         "../envs/bash.yaml"
     script:
-        "../scripts/diamond_parser.py"
+        "../scripts/cog_parser.py"
 
 
 rule hmmer_parser:

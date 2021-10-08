@@ -122,7 +122,7 @@ properties:
       - db
       - consistent_pathways
 
-  diamond_parser:
+  cog_parser:
     type: object
     properties:
       db:
@@ -175,7 +175,7 @@ required:
   - diamond
   - hmmsearch
   - hmmer_parser
-  - diamond_parser
+  - cog_parser
   - vamb
   - metabat2
   - concoct
