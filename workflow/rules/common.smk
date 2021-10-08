@@ -196,8 +196,20 @@ def get_map_reads_input_R2(wildcards):
 def get_DAS_tool_input():
     binners = ("concoct", "metabat2", "vamb")
     scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{binner}_scaffolds2bin.tsv"
-
     return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
+
+
+def get_fasta_bins():
+    binners = {
+        "metabat2": "output/binning/metabat2/*.fa",
+        "concoct": "output/binning/concoct/fasta_bins/*.fa",
+        "vamb": "output/binning/vamb/*.fa"
+    }
+
+    bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
+    return bins
+
+
 
 
 # Outputs
