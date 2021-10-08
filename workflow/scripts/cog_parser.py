@@ -3,10 +3,11 @@ Parses tabular output file with COG annotations.
 """
 
 import sys
-import pandas as pd
-
+import logging
 from pathlib import Path
 from functools import lru_cache
+
+import pandas as pd
 
 
 def main(dmnd_out, cog_csv, fun_tab, def_tab):
@@ -46,23 +47,23 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
     ]
 
     # Load data
-    print(f"Loading annotation data: '{dmnd_out}'.")
+    logging.info(f"Loading annotation data: '{dmnd_out}'.")
     df = pd.read_csv(dmnd_out, sep="\t").drop_duplicates("qseqid")
     df["Protein ID"] = (
         df["sseqid"].str[::-1].str.split("_", 1).apply(lambda l: ".".join(l)).str[::-1]
     )
-    print(f"Loaded {len(df)} records.")
+    logging.info(f"Loaded {len(df)} records.")
 
-    print(f"Loading main COG dataframe: '{cog_csv}'.")
+    logging.info(f"Loading main COG dataframe: '{cog_csv}'.")
     cog_csv = pd.read_csv(
         cog_csv, names=cog_csv_names, index_col="Protein ID"
     ).drop_duplicates()
-    print(f"Loading additional dataframes: '{def_tab}', '{fun_tab}'.")
+    logging.info(f"Loading additional dataframes: '{def_tab}', '{fun_tab}'.")
     def_tab = pd.read_csv(def_tab, sep="\t", names=def_tab_names, index_col=0)
     fun_tab = pd.read_csv(fun_tab, sep="\t", names=fun_tab_names, index_col=0)
 
     # Merge data
-    print("Merging dataframes.")
+    logging.info("Merging dataframes.")
     merged_df = df.merge(cog_csv, left_on="Protein ID", right_index=True).reset_index(
         drop=True
     )
@@ -71,10 +72,10 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
     merged_df = merged_df.merge(
         def_tab, left_on="COG ID", right_index=True
     ).drop_duplicates("qseqid")
-    print(f"{len(merged_df)} records after merging.")
+    logging.info(f"{len(merged_df)} records after merging.")
 
     # Formatting
-    print("Applying final formatting.")
+    logging.info("Applying final formatting.")
 
     @lru_cache(128)
     def get_function(func_id):
@@ -88,16 +89,15 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
     )
 
     cat_outfile = Path(dmnd_out.replace("_dmnd.out", "_COG_categories")).with_suffix(
-        ".csv"
+        ".tsv"
     )
     cat_counts = merged_df["COG categories"].explode().value_counts()
     cat_counts = pd.concat(
         (cat_counts, cat_counts / cat_counts.sum()), axis=1
     ).reset_index()
     cat_counts.columns = "COG category", "absolute", "relative"
-    breakpoint()
-    cat_counts.to_csv(cat_outfile, index=False)
-    print(f"Wrote category counts to '{cat_outfile}.'")
+    cat_counts.to_csv(cat_outfile, index=False, sep="\t")
+    logging.info(f"Wrote category counts to '{cat_outfile}.'")
 
     cog_counts = merged_df["COG ID"].value_counts().reset_index()
 
@@ -108,11 +108,12 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
     cog_counts["COG name"] = cog_counts["index"].apply(get_cog_name)
     cog_counts.columns = "COG code", "absolute", "COG name"
     cog_counts["relative"] = cog_counts["absolute"] / cog_counts["absolute"].sum()
+    cog_counts = cog_counts[["COG code", "COG name", "absolute", "relative"]]
     cog_counts_outfile = Path(dmnd_out.replace("_dmnd.out", "_COG_codes")).with_suffix(
-        ".csv"
+        ".tsv"
     )
-    cog_counts.to_csv(cog_counts_outfile, index=False)
-    print(f"Wrote category counts to '{cog_counts_outfile}.'")
+    cog_counts.to_csv(cog_counts_outfile, index=False, sep="\t")
+    logging.info(f"Wrote category counts to '{cog_counts_outfile}.'")
 
 
 def parse_snakemake_args(snakemake):
@@ -126,8 +127,24 @@ def parse_snakemake_args(snakemake):
 
 
 if "snakemake" in locals():
+    logging.basicConfig(
+        filename=str(snakemake.log),
+        encoding="utf-8",
+        level=logging.DEBUG,
+        format="%(asctime)s %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+    )
+    logging.info(f"Starting script {__file__.split('/')[-1]}.")
+    logging.debug(f"Full script path: {__file__}")
     args = run(snakemake)
     main(*args)
-
-if __name__ == "__main__":
+    logging.info("Done.")
+elif __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+    )
+    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
+    logging.debug(f"Full script path: '{__file__}'.")
     main(*sys.argv[1:])
