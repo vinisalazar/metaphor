@@ -4,6 +4,7 @@ Parses tabular output file with COG annotations.
 
 import sys
 import logging
+import argparse
 from pathlib import Path
 from functools import lru_cache
 
@@ -11,6 +12,16 @@ import pandas as pd
 
 
 def main(dmnd_out, cog_csv, fun_tab, def_tab):
+
+    dmnd_out, cog_csv, fun_tab, def_tab, categories_out, codes_out = (
+        args.dmnd_out,
+        args.cog_csv,
+        args.fun_tab,
+        args.def_tab,
+        args.categories_out,
+        args.codes_out,
+    )
+
     for file in (dmnd_out, cog_csv, fun_tab, def_tab):
         assert Path(file).exists(), f"File '{file}' was not found."
 
@@ -77,6 +88,7 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
     # Formatting
     logging.info("Applying final formatting.")
 
+    # Cache function lookup to go faster
     @lru_cache(128)
     def get_function(func_id):
         return fun_tab.loc[func_id, "Description"]
@@ -88,16 +100,13 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
         lambda list_: [item for sublist in list_ for item in sublist]
     )
 
-    cat_outfile = Path(dmnd_out.replace("_dmnd.out", "_COG_categories")).with_suffix(
-        ".tsv"
-    )
     cat_counts = merged_df["COG categories"].explode().value_counts()
     cat_counts = pd.concat(
         (cat_counts, cat_counts / cat_counts.sum()), axis=1
     ).reset_index()
     cat_counts.columns = "COG category", "absolute", "relative"
-    cat_counts.to_csv(cat_outfile, index=False, sep="\t")
-    logging.info(f"Wrote category counts to '{cat_outfile}.'")
+    cat_counts.to_csv(categories_out, index=False, sep="\t")
+    logging.info(f"Wrote category counts to '{categories_out}.'")
 
     cog_counts = merged_df["COG ID"].value_counts().reset_index()
 
@@ -109,16 +118,11 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
     cog_counts.columns = "COG code", "absolute", "COG name"
     cog_counts["relative"] = cog_counts["absolute"] / cog_counts["absolute"].sum()
     cog_counts = cog_counts[["COG code", "COG name", "absolute", "relative"]]
-    cog_counts_outfile = Path(dmnd_out.replace("_dmnd.out", "_COG_codes")).with_suffix(
-        ".tsv"
-    )
-    cog_counts.to_csv(cog_counts_outfile, index=False, sep="\t")
-    logging.info(f"Wrote category counts to '{cog_counts_outfile}.'")
+    cog_counts.to_csv(codes_out, index=False, sep="\t")
+    logging.info(f"Wrote category counts to '{codes_out}.'")
 
 
 def parse_snakemake_args(snakemake):
-    import argparse
-
     args = argparse.Namespace()
     args_dict = vars(args)
 
@@ -128,6 +132,22 @@ def parse_snakemake_args(snakemake):
     for rule_param in ("cog_csv", "fun_tab", "def_tab"):
         args_dict[rule_param] = snakemake.params[rule_param]
 
+    for rule_output in ("cog_csv", "fun_tab", "def_tab"):
+        args_dict[rule_rule_output] = snakemake.output[rule_output]
+
+    return args
+
+
+def parse_args():
+    # TODO: improve these arguments and add parser description
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dmnd_out")
+    parser.add_argument("--cog_csv")
+    parser.add_argument("--fun_tab")
+    parser.add_argument("--def_tab")
+    parser.add_argument("--categories_out")
+    parser.add_argument("--codes_out")
+    args = parser.parse_args()
     return args
 
 
@@ -142,7 +162,7 @@ if "snakemake" in locals():
     logging.info(f"Starting script {__file__.split('/')[-1]}.")
     logging.debug(f"Full script path: {__file__}")
     args = parse_snakemake_args(snakemake)
-    main(*vars(args).values())
+    main(args)
     logging.info("Done.")
 elif __name__ == "__main__":
     logging.basicConfig(
@@ -152,5 +172,6 @@ elif __name__ == "__main__":
     )
     logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
     logging.debug(f"Full script path: '{__file__}'.")
-    main(*sys.argv[1:])
+    args = parse_args()
+    main(args)
     logging.info("Done.")

@@ -125,8 +125,8 @@ rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
     output:
-        cat_outfile="output/annotation/cog/{sample}_categories.out",
-        codes_outfile="output/annotation/cog/{sample}_codes.out",
+        categories_out="output/annotation/cog/{sample}_categories.out",
+        codes_out="output/annotation/cog/{sample}_codes.out",
     params:
         cog_csv=get_cog_db_file("cog-20.cog.csv*"),
         def_tab=get_cog_db_file("cog-20.def.tab*"),

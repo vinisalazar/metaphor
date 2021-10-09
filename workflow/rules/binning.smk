@@ -148,7 +148,7 @@ rule DAS_tool:
         proteins="output/binning/DAS_tool/DAS_tool_proteins.faa",
     params:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
-        binners=','.join(binners),
+        binners=",".join(binners),
         outpreffix=lambda w, output: str(
             Path(output.proteins).parent.joinpath("DAS_tool")
         ),
