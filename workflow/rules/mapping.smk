@@ -31,6 +31,25 @@ rule concatenate_contigs:
         """
 
 
+rule concatenate_proteins:
+    """
+    Used by DAS_Tool (skips the Prodigal run).
+    """
+    input:
+        proteins=expand(
+            "output/annotation/prodigal/{sample}/{sample}_proteins.faa",
+            sample=sample_IDs,
+        ),
+    output:
+        prot_catalogue="output/mapping/proteins_catalogue.faa",
+    log:
+        "output/logs/mapping/concatenate_proteins.log",
+    benchmark:
+        "output/benchmarks/mapping/concatenate_proteins.txt"
+    shell:
+        """cat {input} > {output}"""
+
+
 rule create_index:
     input:
         catalogue_fna="{output}/mapping/catalogue.fna.gz",
