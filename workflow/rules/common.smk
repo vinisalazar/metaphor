@@ -214,13 +214,14 @@ def get_DAS_tool_input():
 
 def get_fasta_bins():
     binners = {
-        "metabat2": "output/binning/metabat2/*.fa",
+        "metabat2": "output/binning/metabat2/*.fa",
         "concoct": "output/binning/concoct/fasta_bins/*.fa",
-        "vamb": "output/binning/vamb/bins/*.fna"
+        "vamb": "output/binning/vamb/bins/*.fna",
     }
 
     bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
     return bins
+
 
 # Outputs
 def get_final_output():

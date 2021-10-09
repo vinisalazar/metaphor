@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - bash
+  - biopython
+  - pandas
   - perl
   - python>=3.7
-  - pandas
-  - biopython
