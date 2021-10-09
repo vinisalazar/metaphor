@@ -212,15 +212,15 @@ def get_DAS_tool_input():
     return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
 
 
-# def get_fasta_bins():
-#     binners = {
-#         "metabat2": "output/binning/metabat2/*.fa",
-#         "concoct": "output/binning/concoct/fasta_bins/*.fa",
-#         "vamb": "output/binning/vamb/*.fa"
-#     }
+def get_fasta_bins():
+    binners = {
+        "metabat2": "output/binning/metabat2/*.fa",
+        "concoct": "output/binning/concoct/fasta_bins/*.fa",
+        "vamb": "output/binning/vamb/bins/*.fna"
+    }
 
-#     bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
-#     return bins
+    bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
+    return bins
 
 # Outputs
 def get_final_output():
@@ -267,7 +267,7 @@ def get_binning_output():
 
 
 def get_vamb_output():
-    return ("output/binning/vamb/log.txt",)
+    return ("output/binning/vamb/clusters.tsv", "output/binning/vamb/log.txt")
 
 
 def get_annotation_output():

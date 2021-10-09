@@ -11,9 +11,9 @@ rule vamb:
         bam_contig_depths="output/mapping/bam_contig_depths.txt",
         catalogue="output/mapping/catalogue.fna.gz",
     output:
-        get_vamb_output(),
+        clusters=get_vamb_output()[0],
     params:  # defaults in vamb's README
-        outdir=lambda w, output: get_parent(output[0]),
+        outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
         minfasta=200000,
         batchsize=256,
@@ -35,6 +35,10 @@ rule vamb:
              -o {params.binsplit_sep}           \
              -t {params.batchsize}              \
              --minfasta {params.minfasta} &> {log}
+
+        {{ awk -v OFS='\t' '{ print $2, $1 }' { output.clusters } |  \
+        sed "s/$(echo '\t')/$(echo '\t')vamb./g" >          \
+        {output.scaffolds2bin} ; }} &>> {log}
         """
 
 
