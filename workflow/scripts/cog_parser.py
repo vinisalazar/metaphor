@@ -117,6 +117,8 @@ def main(dmnd_out, cog_csv, fun_tab, def_tab):
 
 
 def parse_snakemake_args(snakemake):
+    import argparse
+
     args = argparse.Namespace()
     args_dict = vars(args)
 
