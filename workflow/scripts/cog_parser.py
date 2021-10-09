@@ -142,7 +142,7 @@ if "snakemake" in locals():
     logging.info(f"Starting script {__file__.split('/')[-1]}.")
     logging.debug(f"Full script path: {__file__}")
     args = parse_snakemake_args(snakemake)
-    main(*args)
+    main(*vars(args).values())
     logging.info("Done.")
 elif __name__ == "__main__":
     logging.basicConfig(
