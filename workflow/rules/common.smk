@@ -317,7 +317,7 @@ def get_all_diamond_outputs():
 def get_all_cog_parser_outputs():
     cog_valid_output_kinds = ("categories", "codes")
     return expand(
-        "output/annotation/cog/{sample}_{kind}.out",
+        "output/annotation/cog/{sample}_{kind}.tsv",
         sample=sample_IDs,
         kind=cog_valid_output_kinds,
     )
