@@ -53,7 +53,7 @@ hmmer_parser:
   consistent_pathways: True
 
 cog_parser:
-  db: ".test/data/taxonomic_lineages.pickle"
+  db: ".test/data/COG2020"
   activate: False
 
 vamb:
