@@ -141,6 +141,31 @@ rule cog_parser:
         "../scripts/cog_parser.py"
 
 
+rule concatenate_cog:
+    input:
+        categories=expand(
+            "output/annotation/cog/{sample}_categories.tsv", sample=sample_IDs
+        ),
+        codes=expand("output/annotation/cog/{sample}_codes.tsv", sample=sample_IDs),
+    output:
+        concat_categories_absolute=(
+            "output/annotation/cog/concat_categories_absolute.tsv"
+        ),
+        concat_categories_relative=(
+            "output/annotation/cog/concat_categories_relative.tsv"
+        ),
+        concat_codes_absolute="output/annotation/cog/concat_codes_absolute.tsv",
+        concat_codes_relative="output/annotation/cog/concat_codes_relative.tsv",
+    log:
+        "output/logs/annotation/concatenate_cog.log",
+    benchmark:
+        "output/benchmarks/annotation/concatenate_cog.txt"
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/concatenate_cog.py"
+
+
 rule hmmer_parser:
     input:
         hmm_tbls=get_hmmsearch_output(),

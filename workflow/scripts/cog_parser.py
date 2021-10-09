@@ -133,7 +133,7 @@ def parse_snakemake_args(snakemake):
         args_dict[rule_param] = snakemake.params[rule_param]
 
     for rule_output in ("cog_csv", "fun_tab", "def_tab"):
-        args_dict[rule_rule_output] = snakemake.output[rule_output]
+        args_dict[rule_output] = snakemake.output[rule_output]
 
     return args
 
