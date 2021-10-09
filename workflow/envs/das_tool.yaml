@@ -3,3 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - das_tool
+  - diamond

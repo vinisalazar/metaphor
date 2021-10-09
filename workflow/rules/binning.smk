@@ -165,5 +165,6 @@ rule DAS_tool:
                  -l {params.binners}            \
                  -c {input.contigs}             \
                  -o {params.outpreffix}         \
+                 --search_engine diamond        \
                  --threads {threads} &> {log}
         """
