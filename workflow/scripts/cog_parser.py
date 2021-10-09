@@ -11,7 +11,7 @@ from functools import lru_cache
 import pandas as pd
 
 
-def main(dmnd_out, cog_csv, fun_tab, def_tab):
+def main(args):
 
     dmnd_out, cog_csv, fun_tab, def_tab, categories_out, codes_out = (
         args.dmnd_out,
