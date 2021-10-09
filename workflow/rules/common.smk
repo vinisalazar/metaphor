@@ -72,7 +72,11 @@ def get_metaquast_reference():
 
 
 def get_cog_db_file(filename):
-    return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
+    try:
+        return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
+    except IndexError as e:
+        print(f"Could not find input file {filename}.\n", e)
+        pass
 
 
 # Inputs
@@ -197,8 +201,8 @@ def get_map_reads_input_R2(wildcards):
     return ""
 
 
+binners = ("concoct", "metabat2", "vamb")
 def get_DAS_tool_input():
-    binners = ("concoct", "metabat2", "vamb")
     scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{binner}_scaffolds2bin.tsv"
     return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
 
