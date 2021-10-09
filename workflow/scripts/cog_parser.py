@@ -70,8 +70,18 @@ def main(args):
         cog_csv, names=cog_csv_names, index_col="Protein ID"
     ).drop_duplicates()
     logging.info(f"Loading additional dataframes: '{def_tab}', '{fun_tab}'.")
-    def_tab = pd.read_csv(def_tab, sep="\t", names=def_tab_names, index_col=0)
-    fun_tab = pd.read_csv(fun_tab, sep="\t", names=fun_tab_names, index_col=0)
+
+    try:
+        def_tab = pd.read_csv(def_tab, sep="\t", names=def_tab_names, index_col=0)
+        fun_tab = pd.read_csv(fun_tab, sep="\t", names=fun_tab_names, index_col=0)
+    except UnicodeDecodeError:
+        logging.info("Couldn't load as utf-8. Using 'latin-1' encoding.")
+        def_tab = pd.read_csv(
+            def_tab, sep="\t", names=def_tab_names, index_col=0, encoding="latin-1"
+        )
+        fun_tab = pd.read_csv(
+            fun_tab, sep="\t", names=fun_tab_names, index_col=0, encoding="latin-1"
+        )
 
     # Merge data
     logging.info("Merging dataframes.")
