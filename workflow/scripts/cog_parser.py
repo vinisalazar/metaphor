@@ -155,7 +155,7 @@ if "snakemake" in locals():
     logging.basicConfig(
         filename=str(snakemake.log),
         encoding="utf-8",
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
     )
