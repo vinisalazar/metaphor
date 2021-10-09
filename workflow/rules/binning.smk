@@ -161,9 +161,9 @@ rule DAS_tool:
         "../envs/das_tool.yaml"
     shell:
         """
-        DAS_tool -i {params.fmt_scaffolds2bin}  \
-                 -l {params.binners}        \
-                 -c {input.contigs}         \
-                 -o {params.outpreffix}     \
+        DAS_Tool -i {params.fmt_scaffolds2bin}  \
+                 -l {params.binners}            \
+                 -c {input.contigs}             \
+                 -o {params.outpreffix}         \
                  --threads {threads} &> {log}
         """
