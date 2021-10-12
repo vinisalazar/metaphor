@@ -131,6 +131,7 @@ rule cog_parser:
         cog_csv=get_cog_db_file("cog-20.cog.csv*"),
         def_tab=get_cog_db_file("cog-20.def.tab*"),
         fun_tab=get_cog_db_file("fun-20.tab*"),
+        org_csv=get_cog_db_file("cog-20.org.csv*"),
     log:
         "output/logs/annotation/cog_parser/{sample}.log",
     benchmark:

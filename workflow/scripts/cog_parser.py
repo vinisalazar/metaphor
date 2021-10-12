@@ -5,6 +5,7 @@ Parses tabular output file with COG annotations.
 import sys
 import logging
 import argparse
+import subprocess
 from pathlib import Path
 from functools import lru_cache
 
@@ -65,41 +66,31 @@ def main(args):
     )
     logging.info(f"Loaded {len(df)} records.")
 
+    # Save this variable for later
+    cog_dir = Path(cog_csv).parent.joinpath("fasta")
+
     logging.info(f"Loading main COG dataframe: '{cog_csv}'.")
     cog_csv = pd.read_csv(
         cog_csv, names=cog_csv_names, index_col="Protein ID"
     ).drop_duplicates()
-    logging.info(f"Loading additional dataframes: '{def_tab}', '{fun_tab}'.")
-
-    try:
-        def_tab = pd.read_csv(def_tab, sep="\t", names=def_tab_names, index_col=0)
-        fun_tab = pd.read_csv(fun_tab, sep="\t", names=fun_tab_names, index_col=0)
-    except UnicodeDecodeError:
-        logging.info("Couldn't load as utf-8. Using 'latin-1' encoding.")
-        def_tab = pd.read_csv(
-            def_tab, sep="\t", names=def_tab_names, index_col=0, encoding="latin-1"
-        )
-        fun_tab = pd.read_csv(
-            fun_tab, sep="\t", names=fun_tab_names, index_col=0, encoding="latin-1"
-        )
 
     # Merge data
     logging.info("Merging dataframes.")
     merged_df = df.merge(cog_csv, left_on="Protein ID", right_index=True).reset_index(
         drop=True
     )
-    del cog_csv
-    del df
+    def_tab = load_dataframe(def_tab, sep="\t", names=def_tab_names, index_col=0)
     merged_df = merged_df.merge(
         def_tab, left_on="COG ID", right_index=True
     ).drop_duplicates("qseqid")
     logging.info(f"{len(merged_df)} records after merging.")
 
-    # Formatting
+    # Write COG categories
     logging.info("Applying final formatting.")
+    fun_tab = load_dataframe(fun_tab, sep="\t", names=fun_tab_names, index_col=0)
 
     # Cache function lookup to go faster
-    @lru_cache(128)
+    @lru_cache(1024)
     def get_function(func_id):
         return fun_tab.loc[func_id, "Description"]
 
@@ -118,9 +109,10 @@ def main(args):
     cat_counts.to_csv(categories_out, index=False, sep="\t")
     logging.info(f"Wrote category counts to '{categories_out}.'")
 
+    # Write COG codes
     cog_counts = merged_df["COG ID"].value_counts().reset_index()
 
-    @lru_cache(128)
+    @lru_cache(1024)
     def get_cog_name(cog_name):
         return def_tab.loc[cog_name, "COG name"]
 
@@ -129,7 +121,19 @@ def main(args):
     cog_counts["relative"] = cog_counts["absolute"] / cog_counts["absolute"].sum()
     cog_counts = cog_counts[["COG code", "COG name", "absolute", "relative"]]
     cog_counts.to_csv(codes_out, index=False, sep="\t")
-    logging.info(f"Wrote category counts to '{codes_out}.'")
+    logging.info(f"Wrote code counts to '{codes_out}.'")
+
+
+
+def load_dataframe(file, **kwargs):
+    logging.info(f"Loading dataframe: '{file}'.")
+    try:
+        df_ = pd.read_csv(file, **kwargs)
+    except UnicodeDecodeError:
+        logging.info("Couldn't load as utf-8. Using 'latin-1' encoding.")
+        df_ = pd.read_csv(file, **kwargs, encoding="latin-1")
+
+    return df_
 
 
 def parse_snakemake_args(snakemake):
@@ -142,7 +146,7 @@ def parse_snakemake_args(snakemake):
     for rule_param in ("cog_csv", "fun_tab", "def_tab"):
         args_dict[rule_param] = snakemake.params[rule_param]
 
-    for rule_output in ("cog_csv", "fun_tab", "def_tab"):
+    for rule_output in ("categories_out", "codes_out"):
         args_dict[rule_output] = snakemake.output[rule_output]
 
     return args
