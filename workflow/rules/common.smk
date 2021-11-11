@@ -274,8 +274,6 @@ def get_vamb_output():
 def get_annotation_output():
     annotations = {
         "diamond": get_all_diamond_outputs(),
-        "hmmsearch": get_hmmsearch_output(),
-        "hmmer_parser": get_hmmer_parser_output(),
         "cog_parser": get_all_cog_parser_outputs(),
         "prokka": get_prokka_output(),
     }
@@ -290,20 +288,6 @@ def get_annotation_output():
             annotation_output.append(v)
 
     return annotation_output
-
-
-def get_hmmsearch_output():
-    return expand(
-        "output/annotation/hmmsearch/{sample}_hmmer.tblout", sample=sample_IDs
-    )
-
-
-def get_hmmer_parser_output():
-    return expand(
-        "output/annotation/brite/{sample}_brite_Level{level}.tsv",
-        sample=sample_IDs,
-        level=list("123"),
-    )
 
 
 def get_diamond_output():
