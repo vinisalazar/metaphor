@@ -86,6 +86,7 @@ rule concoct:
     output:
         outdir=directory("output/binning/concoct/"),
         scaffolds2bin="output/binning/DAS_tool/concoct_scaffolds2bin.tsv",
+        uncompressed_catalogue="output/mapping/catalogue.fna",
     params:
         contig_size=10000,
         bed=lambda w, output: str(Path(output.outdir).joinpath("contigs.bed")),
@@ -100,7 +101,6 @@ rule concoct:
         clustering_merged=lambda w, output: str(
             Path(output.outdir).joinpath("clustering_merged.csv")
         ),
-        uncompressed_catalogue=lambda w, input: input.catalogue.replace(".gz", ""),
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/binning/concoct.log",
@@ -115,7 +115,7 @@ rule concoct:
 
         {{ pigz -d -f -p {threads} -k {input.catalogue} ; }} 2>> {log}
 
-        {{ cut_up_fasta.py {params.uncompressed_catalogue}          \
+        {{ cut_up_fasta.py {output.uncompressed_catalogue}          \
                            -c {params.contig_size}                  \
                            -o 0                                     \
                            -b {params.bed}                          \
