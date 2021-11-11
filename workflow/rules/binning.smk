@@ -38,7 +38,7 @@ rule vamb:
 
         {{ awk -v OFS='\t' '{ print $2, $1 }' { output.clusters } |  \
         sed "s/$(echo '\t')/$(echo '\t')vamb./g" >          \
-        {output.scaffolds2bin} ; }} &>> {log}
+        {output.scaffolds2bin} ; }} >> {log} 2>&1
         """
 
 
@@ -136,7 +136,7 @@ rule concoct:
 
         mkdir {params.fasta_bins}
 
-        {{ extract_fasta_bins.py {params.uncompressed_catalogue}    \
+        {{ extract_fasta_bins.py {output.uncompressed_catalogue}    \
                                  {params.clustering_merged}         \
                                  --output_path {params.fasta_bins} ; }} 2>> {log}
 

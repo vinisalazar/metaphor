@@ -38,5 +38,5 @@ rule all:
     shell:
         """
         workflow/scripts/concatenate_benchmarks.py {params.benchmarks_dir} {output.benchmarks} &> {log}
-        workflow/scripts/plot_benchmarks.py {output.benchmarks} &>> {log}
+        workflow/scripts/plot_benchmarks.py {output.benchmarks} >> {log} 2>&1
         """

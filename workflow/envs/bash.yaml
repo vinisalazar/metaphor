@@ -2,8 +2,9 @@
 channels:
   - conda-forge
 dependencies:
-  - bash
+  - bash>=4
   - biopython
   - pandas
   - perl
   - python>=3.7
+  - seaborn
