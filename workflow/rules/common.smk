@@ -72,14 +72,20 @@ def get_metaquast_reference():
 
 
 def get_cog_db_file(filename):
-    try:
-        return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
-    except IndexError as e:
-        print(f"Could not find input file {filename}.")
-        print(
-            f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
-        )
-        raise
+    if is_activated("cog_parser"):
+        try:
+            return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
+        except IndexError as e:
+            print(f"Could not find input file {filename}.")
+            print(
+                f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
+            )
+            print(
+                "This should point to the directory containing the appropriate COG files."
+            )
+            raise
+    else:
+        pass
 
 
 # Inputs
