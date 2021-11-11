@@ -5,3 +5,4 @@ dependencies:
   - mamba               # recommended for use with conda
   - pandas
   - snakemake-minimal
+  - snakefmt            # required for development
