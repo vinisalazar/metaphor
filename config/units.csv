@@ -1,3 +1,3 @@
 sample_name,unit_name,R1,R2
-readsa,S001,.test/data/readsa-S001-R1.fq.gz,.test/data/readsa-S001-R2.fq.gz
-readsa,S002,.test/data/readsa-S002-R1.fq.gz,.test/data/readsa-S002-R2.fq.gz
+patmg_CAMI2,S001,.test/patmg_CAMI2_short_read_R1_S001_subset.fastq,.test/patmg_CAMI2_short_read_R2_S001_subset.fastq
+patmg_CAMI2,S002,.test/patmg_CAMI2_short_read_R1_S002_subset.fastq,.test/patmg_CAMI2_short_read_R2_S002_subset.fastq
