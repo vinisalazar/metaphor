@@ -89,13 +89,13 @@ def main(args):
     logging.info("Applying final formatting.")
     fun_tab = load_dataframe(fun_tab, sep="\t", names=fun_tab_names, index_col=0)
 
-    # Cache function lookup to go faster
+    # Cache COG function lookup to go faster
     @lru_cache(1024)
-    def get_function(func_id):
+    def get_COG_function(func_id):
         return fun_tab.loc[func_id, "Description"]
 
     merged_df["COG categories"] = merged_df["COG functional category"].apply(
-        lambda s: [[get_function(c) for c in list(string)] for string in s]
+        lambda s: [[get_COG_function(c) for c in list(string)] for string in s]
     )
     merged_df["COG categories"] = merged_df["COG categories"].apply(
         lambda list_: [item for sublist in list_ for item in sublist]
@@ -123,6 +123,33 @@ def main(args):
     cog_counts.to_csv(codes_out, index=False, sep="\t")
     logging.info(f"Wrote code counts to '{codes_out}.'")
 
+    # Write taxonomies
+    @lru_cache(None)
+    def get_taxid_and_name(protein_id, cog_code):
+        try:
+            suffix = ".tsv.gz"
+            cog_tsv_file = cog_dir.joinpath(Path(cog_code).with_suffix(suffix))
+            if not cog_tsv_file.exists():
+                suffix = ".tsv"
+                cog_tsv_file = cog_dir.joinpath(Path(cog_code).with_suffix(suffix))
+            protid, plen, taxid, name, footprint = subprocess.getoutput(
+                f"zgrep '{protein_id}' {cog_tsv_file}"
+            ).split("\t")
+            fmt_name = name.replace("_", " ") + f" {footprint}"
+            return taxid, fmt_name
+        except:
+            logging.info(f"Couldn't find tax ID for {cog_code} : {protein_id}.")
+            logging.info(
+                "Please check you have all correct files in the fasta/ directory of the COG database."
+            )
+            # raise
+            return None, None
+
+    logging.info("Matching Protein IDs to Tax IDs.")
+    merged_df[["taxid", "taxname"]] = merged_df.apply(
+        lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
+    )
+    # breakpoint()
 
 
 def load_dataframe(file, **kwargs):
