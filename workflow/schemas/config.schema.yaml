@@ -152,6 +152,29 @@ properties:
     required:
       - activate
 
+  postprocessing:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      runtime_unit:
+        type: string
+      runtime_cutoff:
+        type: integer
+      memory_unit:
+        type: string
+      memory_cutoff:
+        type: integer
+      memory_gb:
+        type: boolean
+    required:
+      - activate
+      - runtime_unit
+      - runtime_cutoff
+      - memory_unit
+      - memory_cutoff
+      - memory_gb
+
 required:
   - units
   - trimming
@@ -167,3 +190,4 @@ required:
   - metabat2
   - concoct
   - das_tool
+  - postprocessing

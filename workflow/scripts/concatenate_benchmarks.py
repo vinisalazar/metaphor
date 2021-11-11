@@ -49,9 +49,11 @@ def main(benchmarks_dir):
     except IndexError:
         outfile = benchmarks_dir + "/all_benchmarks.csv"
 
-    print(f"Writing {len(files)} benchmarks to {outfile}.")
+    print(f"Writing {len(files)} benchmarks to {outfile}.\n")
     df.to_csv(outfile, index=False)
 
 
 if __name__ == "__main__":
+    print(f"Starting execution of {__file__}.\n")
     main(sys.argv[1])
+    print(f"Finished execution of {__file__}.\n")

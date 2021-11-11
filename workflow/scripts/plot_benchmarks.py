@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import argparse
 from pathlib import Path
 
 import pandas as pd
@@ -15,11 +16,12 @@ def load_data(filepath):
     return df
 
 
-def runtime_barplot_sum(df, outfile=None, time_unit="m", cutoff=5):
+def runtime_barplot_sum(df, **kwargs):
     """
     Generates barplot of sum of rules' runtimes.
     """
     fig, ax = plt.subplots(figsize=(4, 8))
+    outfile, time_unit, cutoff = kwargs["outfile"], kwargs["time_unit"], kwargs["time_cutoff"]
     plot_data = (
         (df.groupby(by=["module", "rule"])[time_unit].sum())
         .reset_index()
@@ -45,13 +47,14 @@ def runtime_barplot_sum(df, outfile=None, time_unit="m", cutoff=5):
         plt.savefig(outfile, bbox_inches="tight")
 
 
-def runtime_barplot_errorbar(df, outfile=None, time_unit="m", cutoff=1):
+def runtime_barplot_errorbar(df, **kwargs):
     """
     Generates barplot of rules' runtimes for each sample.
 
     The time-per-sample is corrected in rules that run once for all samples.
     """
     fig, ax = plt.subplots(figsize=(4, 8))
+    outfile, time_unit, cutoff = kwargs["outfile"], kwargs["time_unit"], kwargs["time_cutoff"]
     df[time_unit + "_corrected"] = df.apply(
         lambda row: row["m"] / df["sample"].str[:6].value_counts().shape[0]
         if not isinstance(row["sample"], str)
@@ -80,16 +83,18 @@ def runtime_barplot_errorbar(df, outfile=None, time_unit="m", cutoff=1):
         plt.savefig(outfile, bbox_inches="tight")
 
 
-def memory_barplot_sum(df, outfile=None, memory_unit="max_vms", cutoff=1, gb=True):
+def memory_barplot_sum(df, **kwargs):
 
     """
     Generates barplot of sum of rules' memory usage.
     """
+    outfile, memory_unit, cutoff, gb = kwargs["outfile"], kwargs["memory_unit"],  kwargs["memory_cutoff"],  kwargs["gb"]
     if df[memory_unit].all() == "-":
         print("Skipping plot, no memory stats recorded.")
         return
     fig, ax = plt.subplots(figsize=(4, 8))
     df_ = df.copy()
+    df_[memory_unit]
     if gb:
         df_[memory_unit] = df_[memory_unit] / 2 ** 10
     plot_data = (
@@ -124,10 +129,11 @@ def memory_barplot_sum(df, outfile=None, memory_unit="max_vms", cutoff=1, gb=Tru
         plt.savefig(outfile, bbox_inches="tight")
 
 
-def memory_barplot_errorbar(df, outfile=None, memory_unit="max_vms", cutoff=0, gb=True):
+def memory_barplot_errorbar(df, **kwargs):
     """
     Generates barplot of sum of rules' memory usage.
     """
+    outfile, memory_unit, cutoff, gb = kwargs["outfile"], kwargs["memory_unit"],  kwargs["memory_cutoff"],  kwargs["gb"]
     if df[memory_unit].all() == "-":
         print("Skipping plot, no memory stats recorded.")
         return
@@ -165,7 +171,7 @@ def memory_barplot_errorbar(df, outfile=None, memory_unit="max_vms", cutoff=0, g
 
 
 def main(args):
-    df = load_data(args[1])
+    df = load_data(args.benchmarks_df)
     plots = (
         runtime_barplot_sum,
         runtime_barplot_errorbar,
@@ -174,14 +180,26 @@ def main(args):
     )
     for plot in plots:
         try:
-            outfile = Path(args[1]).parent.joinpath(plot.__name__ + ".png")
-            plot(df, outfile)
+            outfile = Path(args.benchmarks_df).parent.joinpath(plot.__name__ + ".png")
+            plot(df, outfile=outfile, time_unit=args.time_unit, memory_unit=args.memory_unit, time_cutoff=args.time_cutoff, memory_cutoff=args.memory_cutoff, gb=args.gb)
         except Exception as error:
-            print(f"Could not generate {outfile}. The following error occurred:\n")
+            print(f"Could not generate {outfile}. The following error occurred:")
             print(error)
+            if 'memory' in plot.__name__:
+                print("It is possible that your OS does not support capture of memory usage.")
+                print("Therefore, only runtime plots will be generated.\n")
             pass
 
 
 if __name__ == "__main__":
-    args = sys.argv
+    print(f"Starting execution of {__file__}.\n")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--benchmarks_df")
+    parser.add_argument("--time_unit", default="m")
+    parser.add_argument("--memory_unit", default="max_vms")
+    parser.add_argument("--time_cutoff", default=0)
+    parser.add_argument("--memory_cutoff", default=0)
+    parser.add_argument("--gb", action="store_true")
+    args = parser.parse_args()
     main(args)
+    print(f"Finished execution of {__file__}.\n")

@@ -23,13 +23,13 @@ merge_reads:
 
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
-  sequence_length_cutoff: 2000
+  sequence_length_cutoff: 1
 
 megahit:
   preset: "meta-large"
 
 metaquast:
-  activate: True
+  activate: False
   reference: ""
 
 prodigal:
@@ -40,20 +40,13 @@ prokka:
   args: "--metagenome --quiet --force"
   kingdom: "Bacteria"
 
-hmmsearch:
-  db: ".test/data/hmmer-test.hmm"
-
 diamond:
-  db: ".test/data/swissprot.dmnd"  # for testing purposes only
+  db: ".test/cog-20-patmg.dmnd"  # for testing purposes only
   output_type: 6
   output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
-hmmer_parser:
-  db: ".test/data/brite.txt"
-  consistent_pathways: True
-
 cog_parser:
-  db: ".test/data/COG2020"
+  db: ".test/COG2020"
   activate: False
 
 vamb:
@@ -65,7 +58,15 @@ metabat2:
   preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
 
 concoct:
-  activate: True
+  activate: False
 
 das_tool:
+  activate: False
+
+postprocessing:
   activate: True
+  runtime_unit: "m"
+  runtime_cutoff: 0
+  memory_unit: "max_vms"
+  memory_cutoff: 0
+  memory_gb: True
