@@ -91,14 +91,6 @@ properties:
       - args
       - kingdom
 
-  hmmsearch:
-    type: object
-    properties:
-      db:
-        type: string
-    required:
-      - db
-
   diamond:
     type: object
     properties:
@@ -110,17 +102,6 @@ properties:
         type: string
     required:
       - db
-
-  hmmer_parser:
-    type: object
-    properties:
-      db:
-        type: string
-      consistent_pathways:
-        type: boolean
-    required:
-      - db
-      - consistent_pathways
 
   cog_parser:
     type: object
@@ -181,8 +162,6 @@ required:
   - prodigal
   - prokka
   - diamond
-  - hmmsearch
-  - hmmer_parser
   - cog_parser
   - vamb
   - metabat2
