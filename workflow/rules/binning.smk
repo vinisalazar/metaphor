@@ -12,6 +12,7 @@ rule vamb:
         catalogue="output/mapping/catalogue.fna.gz",
     output:
         clusters=get_vamb_output()[0],
+        scaffolds2bin="output/binning/DAS_tool/vamb_scaffolds2bin.tsv",
     params:  # defaults in vamb's README
         outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
