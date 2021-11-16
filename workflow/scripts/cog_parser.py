@@ -14,13 +14,14 @@ import pandas as pd
 
 def main(args):
 
-    dmnd_out, cog_csv, fun_tab, def_tab, categories_out, codes_out = (
+    dmnd_out, cog_csv, fun_tab, def_tab, categories_out, codes_out, tax_out = (
         args.dmnd_out,
         args.cog_csv,
         args.fun_tab,
         args.def_tab,
         args.categories_out,
         args.codes_out,
+        args.tax_out
     )
 
     for file in (dmnd_out, cog_csv, fun_tab, def_tab):
@@ -132,9 +133,10 @@ def main(args):
             if not cog_tsv_file.exists():
                 suffix = ".tsv"
                 cog_tsv_file = cog_dir.joinpath(Path(cog_code).with_suffix(suffix))
-            protid, plen, taxid, name, footprint = subprocess.getoutput(
-                f"zgrep '{protein_id}' {cog_tsv_file}"
-            ).split("\t")
+            zgrep_out = subprocess.getoutput(f"zgrep '{protein_id}' {cog_tsv_file}")
+            # Only get first occurrence as sometimes entries appear twice
+            zgrep_out = zgrep_out.split("\n")[0]
+            protid, plen, taxid, name, footprint = zgrep_out.split("\t")
             fmt_name = name.replace("_", " ") + f" {footprint}"
             return taxid, fmt_name
         except:
@@ -149,6 +151,7 @@ def main(args):
     merged_df[["taxid", "taxname"]] = merged_df.apply(
         lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
     )
+    merged_df.to_csv(tax_out, sep="\t")
     # breakpoint()
 
 
@@ -173,7 +176,7 @@ def parse_snakemake_args(snakemake):
     for rule_param in ("cog_csv", "fun_tab", "def_tab"):
         args_dict[rule_param] = snakemake.params[rule_param]
 
-    for rule_output in ("categories_out", "codes_out"):
+    for rule_output in ("categories_out", "codes_out", "tax_out"):
         args_dict[rule_output] = snakemake.output[rule_output]
 
     return args
@@ -188,6 +191,7 @@ def parse_args():
     parser.add_argument("--def_tab")
     parser.add_argument("--categories_out")
     parser.add_argument("--codes_out")
+    parser.add_argument("--tax_out")
     args = parser.parse_args()
     return args
 

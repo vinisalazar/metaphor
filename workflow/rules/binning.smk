@@ -37,7 +37,7 @@ rule vamb:
              -t {params.batchsize}              \
              --minfasta {params.minfasta} &> {log}
 
-        {{ awk -v OFS='\t' '{ print $2, $1 }' { output.clusters } |  \
+        {{ awk -v OFS='\t' '{ print $2, $1 }' {output.clusters} |  \
         sed "s/$(echo '\t')/$(echo '\t')vamb./g" >          \
         {output.scaffolds2bin} ; }} >> {log} 2>&1
         """
