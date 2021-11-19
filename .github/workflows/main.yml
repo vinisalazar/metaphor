@@ -40,10 +40,10 @@ jobs:
       - linting
       - formatting
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v1
-    - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@2.0.0
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Test workflow
       uses: snakemake/snakemake-github-action@v1.22.0
       with:
