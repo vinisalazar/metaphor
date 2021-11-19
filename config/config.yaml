@@ -36,7 +36,7 @@ prodigal:
   mode: "meta"
 
 prokka:
-  activate: True
+  activate: False
   args: "--metagenome --quiet --force"
   kingdom: "Bacteria"
 
