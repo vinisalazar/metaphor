@@ -12,9 +12,10 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@2.0.0
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Formatting
       uses: github/super-linter@v3
       env:
@@ -49,10 +50,9 @@ jobs:
         directory: .
         snakefile: workflow/Snakefile
         args: "--use-conda                    \
-              --show-failed-logs              \
-              --configfile .test/config.yaml  \
               --cores 3                       \ 
-              --conda-cleanup-pkgs cache"
+              --conda-cleanup-pkgs cache      \
+              --dryrun"
     # Report testing is deactivated for now
     # - name: Test report
     #   uses: snakemake/snakemake-github-action@v1.22.0
