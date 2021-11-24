@@ -47,8 +47,12 @@ diamond:
   output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 cog_parser:
-  db: ".test/COG2020"
   activate: False
+  db: ".test/COG2020"
+
+lineage_parser:
+  activate: False
+  db: ".test/taxonomy"
 
 vamb:
   activate: False

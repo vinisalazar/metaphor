@@ -137,3 +137,27 @@ rule concatenate_cog:
         "../envs/bash.yaml"
     script:
         "../scripts/concatenate_cog.py"
+
+
+rule lineage_parser:
+    input:
+        tax_out="output/annotation/cog/{sample}_tax.tsv",
+        rankedlineages=str(Path(config["lineage_parser"]["db"]).joinpath("rankedlineages.dmp")),
+    output:
+        # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
+        species="{sample}_species.tsv",
+        genus="{sample}_genus.tsv",
+        family="{sample}_family.tsv",
+        order="{sample}_order.tsv",
+        klass="{sample}_class.tsv",
+        phylum="{sample}_phylum.tsv",
+        kingdom="{sample}_kingdom.tsv",
+        domain="{sample}_domain.tsv",
+    log:
+        "output/logs/annotation/lineage_parser/{sample}.log",
+    benchmark:
+        "output/benchmarks/annotation/lineage_parser/{sample}.txt",
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/lineage_parser.py"
