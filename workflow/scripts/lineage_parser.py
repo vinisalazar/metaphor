@@ -30,7 +30,7 @@ def main(args):
         rank_df = tax.groupby(rank).sum()
         rank_df = pd.concat((rank_df, rank_df / rank_df.sum()), axis=1)
         rank_df.columns = "absolute", "relative"
-        rank_df.to_csv(eval(f"args.{rank}"), sep="\t")
+        rank_df.to_csv(vars(args).get(rank), sep="\t")
 
 
 def parse_snakemake_args(snakemake):
