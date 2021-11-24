@@ -3,10 +3,10 @@ import logging
 import pandas as pd
 
 
-rankedlineages_names = (
+rankedlineage_names = (
     "taxid tax_name species genus family order class phylum kingdom domain nan".split()
 )
-ranks = rankedlineages_names[2:-1]
+ranks = rankedlineage_names[2:-1]
 
 
 def main(args):
@@ -15,16 +15,16 @@ def main(args):
         sep="\t",
         index_col=0,
     )
-    rankedlineages = pd.read_csv(
-        args.rankedlineages,
+    rankedlineage = pd.read_csv(
+        args.rankedlineage,
         sep="|",
         index_col=0,
-        names=rankedlineages_names,
+        names=rankedlineage_names,
     )
-    rankedlineages = rankedlineages.applymap(
+    rankedlineage = rankedlineage.applymap(
         lambda x: x.strip() if isinstance(x, str) else x
     ).dropna(how="all", axis=1)
-    tax = tax.join(rankedlineages)
+    tax = tax.join(rankedlineage)
 
     for rank in ranks:
         rank_df = tax.groupby(rank).sum()
@@ -37,7 +37,7 @@ def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for rule_input in ("tax_out", "rankedlineages"):
+    for rule_input in ("tax_out", "rankedlineage"):
         args_dict[rule_input] = snakemake.input[rule_input]
 
     for rank in ranks:
@@ -64,8 +64,8 @@ def parse_args():
         "--tax_out", help="Output file of Metaphor's COG_parser script."
     )
     parser.add_argument(
-        "--rankedlineages",
-        help="NCBI Taxonomy rankedlineages.dmp file. Available at: https://ftp.ncbi.nih.gov/pub/taxonomy/",
+        "--rankedlineage",
+        help="NCBI Taxonomy rankedlineage.dmp file. Available at: https://ftp.ncbi.nih.gov/pub/taxonomy/",
     )
     for rank in ranks:
         parser.add_argument(
