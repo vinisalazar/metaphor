@@ -103,6 +103,7 @@ rule cog_parser:
         categories_out="output/annotation/cog/{sample}_categories.tsv",
         codes_out="output/annotation/cog/{sample}_codes.tsv",
         tax_out="output/annotation/cog/{sample}_tax.tsv",
+        pathways_out="output/annotation/cog/{sample}_pathways.tsv",
     params:
         cog_csv=get_cog_db_file("cog-20.cog.csv*"),
         def_tab=get_cog_db_file("cog-20.def.tab*"),
@@ -124,8 +125,8 @@ rule concatenate_cog:
         ),
         codes=expand("output/annotation/cog/{sample}_codes.tsv", sample=sample_IDs),
     output:
-        concat_categories_absolute=("output/annotation/cog/COG_categories_absolute.tsv"),
-        concat_categories_relative=("output/annotation/cog/COG_categories_relative.tsv"),
+        concat_categories_absolute="output/annotation/cog/COG_categories_absolute.tsv",
+        concat_categories_relative="output/annotation/cog/COG_categories_relative.tsv",
         concat_codes_absolute="output/annotation/cog/COG_codes_absolute.tsv",
         concat_codes_relative="output/annotation/cog/COG_codes_relative.tsv",
     log:
