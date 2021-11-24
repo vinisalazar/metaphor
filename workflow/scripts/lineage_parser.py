@@ -5,57 +5,30 @@ from functools import lru_cache
 
 def main():
 
-    lin = pd.read_csv(
-        "/Users/vini/Bio/MGP/databases/taxonomy/taxidlineage.dmp",
-        sep="|",
-        index_col=0,
-        names=["NCBI_taxname", "lineage", ""],
-    ).dropna(how="all", axis=1)
-    lin = lin.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     tax = pd.read_csv(
         "/Users/vini/Bio/MGP/databases/COG2020/H_S001_tax_out.tsv",
         sep="\t",
         index_col=0,
     )
-    tax = tax.join(lin)
-
-    nodes_names = [
-        "taxid",
-        "parent_tax_id",
-        "rank",
-    ]
-
-    nodes = pd.read_csv(
-        "/Users/vini/Bio/MGP/databases/taxonomy/nodes.dmp",
+    rankedlineages_names = "taxid tax_name species genus family order class phylum kingdom domain nan".split()
+    rankedlineages = pd.read_csv(
+        "/Users/vini/Bio/MGP/databases/taxonomy/rankedlineage.dmp",
         sep="|",
-        names=nodes_names,
-        usecols=["taxid", "parent_tax_id", "rank"],
         index_col=0,
+        names=rankedlineages_names,
     )
-    nodes = nodes.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    rankedlineages = rankedlineages.applymap(
+        lambda x: x.strip() if isinstance(x, str) else x
+    ).dropna(how="all", axis=1)
+    tax = tax.join(rankedlineages)
 
-    @lru_cache(1024)
-    def get_rank(taxid):
-        try:
-            return nodes.loc[int(taxid), "rank"]
-        except (KeyError, TypeError):
-            return None
+    ranks = rankedlineages_names[2:-1]
 
-    ranks = "superkingdom phylum class order family genus species".split()
-
-    def parse_lineage(lineage):
-        output = dict()
-        if isinstance(lineage, str):
-            lineage = lineage.split()
-
-        for taxid in lineage:
-            if (rank := get_rank(taxid)) in ranks:
-                output[rank] = taxid
-
-        return pd.Series(output)
-
-    tax = tax.join(tax["lineage"].apply(parse_lineage))
-    tax.to_csv("parsed_tax.csv")
+    for rank in ranks:
+        rank_df = tax.groupby(rank).sum()
+        rank_df = pd.concat((rank_df, rank_df / rank_df.sum()), axis=1)
+        rank_df.columns = "absolute", "relative"
+        rank_df.to_csv(f"{rank}.tsv", sep="\t")
 
 
 if __name__ == "__main__":
