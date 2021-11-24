@@ -145,14 +145,14 @@ rule lineage_parser:
         rankedlineages=str(Path(config["lineage_parser"]["db"]).joinpath("rankedlineages.dmp")),
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species="{sample}_species.tsv",
-        genus="{sample}_genus.tsv",
-        family="{sample}_family.tsv",
-        order="{sample}_order.tsv",
-        klass="{sample}_class.tsv",
-        phylum="{sample}_phylum.tsv",
-        kingdom="{sample}_kingdom.tsv",
-        domain="{sample}_domain.tsv",
+        species="output/annotation/cog/{sample}_species.tsv",
+        genus="output/annotation/cog/{sample}_genus.tsv",
+        family="output/annotation/cog/{sample}_family.tsv",
+        order="output/annotation/cog/{sample}_order.tsv",
+        klass="output/annotation/cog/{sample}_class.tsv",
+        phylum="output/annotation/cog/{sample}_phylum.tsv",
+        kingdom="output/annotation/cog/{sample}_kingdom.tsv",
+        domain="output/annotation/cog/{sample}_domain.tsv",
     log:
         "output/logs/annotation/lineage_parser/{sample}.log",
     benchmark:

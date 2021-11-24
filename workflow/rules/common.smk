@@ -281,11 +281,15 @@ def get_annotation_output():
     annotations = {
         "diamond": get_all_diamond_outputs(),
         "cog_parser": get_all_cog_parser_outputs(),
+        "lineage_parser": get_all_lineage_parser_outputs(),
         "prokka": get_prokka_output(),
     }
 
     needs_activation = ("cog_parser", "prokka")
     annotation_output = []
+
+    if is_activated("cog_parser"):
+        config["lineage_parser"]["activate"] = True
 
     for k, v in annotations.items():
         if k in needs_activation and not is_activated(k):
@@ -305,12 +309,21 @@ def get_all_diamond_outputs():
 
 
 def get_all_cog_parser_outputs():
-    cog_valid_output_kinds = ("categories", "codes")
+    cog_valid_output_kinds = ("categories", "codes", "tax")
     return expand(
         "output/annotation/cog/{sample}_{kind}.tsv",
         sample=sample_IDs,
         kind=cog_valid_output_kinds,
     )
+
+
+def get_lineage_parser_outputs():
+    ranks = "species genus family order class phylum kingdom domain".split()
+    return ("output/annotation/cog/{sample}_" + rank + ".tsv" for rank in ranks)
+
+
+def get_all_lineage_parser_outputs():
+    return expand(get_lineage_parser_outputs(), sample=sample_IDs)
 
 
 def get_prokka_output():
