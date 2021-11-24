@@ -19,6 +19,7 @@ rule prodigal:
         genbank="{output}/annotation/prodigal/{sample}/{sample}_genbank.gbk",
     params:
         mode=config["prodigal"]["mode"],
+        quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
         "{output}/logs/annotation/prodigal/{sample}.log",
     benchmark:
@@ -27,7 +28,8 @@ rule prodigal:
         "../envs/prodigal.yaml"
     shell:
         """
-        prodigal -p {params.mode}       \
+        prodigal {params.quiet}         \
+                 -p {params.mode}       \
                  -i {input}             \
                  -d {output.genes}      \
                  -a {output.proteins}   \
