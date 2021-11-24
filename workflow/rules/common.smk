@@ -280,7 +280,7 @@ def get_vamb_output():
 def get_annotation_output():
     annotations = {
         "diamond": get_all_diamond_outputs(),
-        "cog_parser": get_all_cog_parser_outputs(),
+        "cog_parser": (get_all_cog_parser_outputs(), get_concatenate_cog_outputs()),
         "lineage_parser": get_all_lineage_parser_outputs(),
         "prokka": get_prokka_output(),
     }
@@ -316,6 +316,14 @@ def get_all_cog_parser_outputs():
         kind=cog_valid_output_kinds,
     )
 
+
+def get_concatenate_cog_outputs():
+    return (
+        "output/annotation/cog/COG_categories_absolute.tsv",
+        "output/annotation/cog/COG_categories_relative.tsv",
+        "output/annotation/cog/COG_codes_absolute.tsv",
+        "output/annotation/cog/COG_codes_relative.tsv",
+    )
 
 def get_lineage_parser_outputs():
     ranks = "species genus family order class phylum kingdom domain".split()
