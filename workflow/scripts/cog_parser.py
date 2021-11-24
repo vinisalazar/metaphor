@@ -29,7 +29,7 @@ def main(args):
         codes_out,
         tax_out,
         pathways_out,
-        threads
+        threads,
     ) = (
         args.dmnd_out,
         args.cog_csv,
@@ -39,7 +39,7 @@ def main(args):
         args.codes_out,
         args.tax_out,
         args.pathways_out,
-        args.threads
+        args.threads,
     )
 
     for file in (dmnd_out, cog_csv, fun_tab, def_tab):
@@ -114,7 +114,7 @@ def main(args):
     # The following code blocks follow a similar structure.
     # They format the merged_df variable to write different informations,
     # respectively the COG pathways, categories, and codes.
-    # 
+    #
     # Notice that each block starts and ends with a logging call,
     # with the latter logging call being followed by deletion of the
     # DataFrame that was just processed.
@@ -232,7 +232,7 @@ def parse_snakemake_args(snakemake):
     for rule_output in ("categories_out", "codes_out", "tax_out", "pathways_out"):
         args_dict[rule_output] = snakemake.output[rule_output]
 
-    # args_dict["threads"] = snakemake.threads
+    args_dict["threads"] = snakemake.threads
 
     return args
 
