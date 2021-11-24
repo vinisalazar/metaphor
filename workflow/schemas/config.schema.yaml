@@ -72,12 +72,16 @@ properties:
   prodigal:
     type: object
     properties:
+      activate:
+        type: boolean
       mode:
         type: string
       quiet:
         type: boolean
     required:
+      - activate
       - mode
+      - quiet
 
   prokka:
     type: object

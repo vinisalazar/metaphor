@@ -33,6 +33,7 @@ metaquast:
   reference: ""
 
 prodigal:
+  activate: True
   mode: "meta"
   quiet: True
 
