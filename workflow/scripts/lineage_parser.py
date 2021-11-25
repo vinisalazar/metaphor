@@ -50,7 +50,7 @@ def parse_snakemake_args(snakemake):
             pass
         args_dict[rank] = snakemake.output[rank_]
 
-    # args_dict["threads"] = snakemake.threads
+    args_dict["threads"] = snakemake.threads
 
     return args
 
