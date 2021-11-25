@@ -1,5 +1,5 @@
 $schema: "http://json-schema.org/draft-04/schema#"
-description: row of the units.tsv, representing a sequencing unit, i.e. single-end or paired-end data
+description: row of the units.csv, representing a sequencing unit, i.e. single-end or paired-end data
 type: object
 properties:
   sample_name:
@@ -17,4 +17,4 @@ properties:
 
 required:
   - sample_name
-  - unit_name
+  - R1
