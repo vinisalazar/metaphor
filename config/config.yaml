@@ -10,6 +10,11 @@ samples: config/samples.csv
 units: config/units.csv
 
 
+# Snakemake wrapper version
+# This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
+wrapper_version: v0.80.1
+
+
 trimming:
   activate: True
   phred: 33

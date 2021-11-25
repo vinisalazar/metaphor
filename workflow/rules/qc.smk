@@ -53,7 +53,7 @@ rule cutadapt_pe:
             + f"-U -{config['trimming']['clip_r3']} "
         ),
     wrapper:
-        "0.77.0/bio/cutadapt/pe"
+        config["wrapper_version"] + "/bio/cutadapt/pe"
 
 
 rule merge_fastqs:
@@ -88,7 +88,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "{output}/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
     threads: 1
     wrapper:
-        "0.77.0/bio/fastqc"
+        config["wrapper_version"] + "/bio/fastqc"
 
 
 rule fastqc_trimmed:  # qc on trimmed reads
@@ -105,7 +105,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "{output}/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
     threads: 1
     wrapper:
-        "0.77.0/bio/fastqc"
+        config["wrapper_version"] + "/bio/fastqc"
 
 
 rule fastqc_merged:  # qc on trimmed, merged reads
@@ -122,7 +122,7 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         "{output}/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
     threads: 1
     wrapper:
-        "0.77.0/bio/fastqc"
+        config["wrapper_version"] + "/bio/fastqc"
 
 
 rule multiqc:
@@ -135,4 +135,4 @@ rule multiqc:
     benchmark:
         "output/benchmarks/qc/multiqc.txt"
     wrapper:
-        "0.77.0/bio/multiqc"
+        config["wrapper_version"] + "/bio/multiqc"

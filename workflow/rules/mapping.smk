@@ -115,7 +115,7 @@ rule sort_reads:
     conda:
         "../envs/samtools.yaml"
     wrapper:
-        "0.77.0/bio/samtools/sort"
+        config["wrapper_version"] + "/bio/samtools/sort"
 
 
 rule index_reads:

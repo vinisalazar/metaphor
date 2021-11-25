@@ -11,6 +11,9 @@ properties:
   units:
     type: string
 
+  wrapper_version:
+    type: string
+
   trimming:
     type: object
     properties:
@@ -194,6 +197,7 @@ properties:
 
 required:
   - units
+  - wrapper_version
   - trimming
   - merge_reads
   - concatenate_contigs
