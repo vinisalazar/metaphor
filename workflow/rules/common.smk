@@ -311,7 +311,7 @@ def get_all_diamond_outputs():
 def get_all_cog_parser_outputs():
     cog_valid_output_kinds = ("categories", "codes", "tax")
     return expand(
-        "output/annotation/cog/{sample}_{kind}.tsv",
+        "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
         sample=sample_IDs,
         kind=cog_valid_output_kinds,
     )
@@ -328,7 +328,7 @@ def get_concatenate_cog_outputs():
 
 def get_lineage_parser_outputs():
     ranks = "species genus family order class phylum kingdom domain".split()
-    return (f"output/annotation/cog/{{sample}}_{rank}.tsv" for rank in ranks)
+    return (f"output/annotation/cog/{{sample}}/{{sample}}_{rank}.tsv" for rank in ranks)
 
 
 def get_all_lineage_parser_outputs():

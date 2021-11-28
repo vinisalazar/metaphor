@@ -100,10 +100,10 @@ rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
     output:
-        categories_out="output/annotation/cog/{sample}_categories.tsv",
-        codes_out="output/annotation/cog/{sample}_codes.tsv",
-        tax_out="output/annotation/cog/{sample}_tax.tsv",
-        pathways_out="output/annotation/cog/{sample}_pathways.tsv",
+        categories_out="output/annotation/cog/{sample}/{sample}_categories.tsv",
+        codes_out="output/annotation/cog/{sample}/{sample}_codes.tsv",
+        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
+        pathways_out="output/annotation/cog/{sample}/{sample}_pathways.tsv",
     params:
         cog_csv=get_cog_db_file("cog-20.cog.csv*"),
         def_tab=get_cog_db_file("cog-20.def.tab*"),
@@ -121,9 +121,9 @@ rule cog_parser:
 rule concatenate_cog:
     input:
         categories=expand(
-            "output/annotation/cog/{sample}_categories.tsv", sample=sample_IDs
+            "output/annotation/cog/{sample}/{sample}_categories.tsv", sample=sample_IDs
         ),
-        codes=expand("output/annotation/cog/{sample}_codes.tsv", sample=sample_IDs),
+        codes=expand("output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs),
     output:
         concat_categories_absolute="output/annotation/cog/COG_categories_absolute.tsv",
         concat_categories_relative="output/annotation/cog/COG_categories_relative.tsv",
@@ -141,20 +141,20 @@ rule concatenate_cog:
 
 rule lineage_parser:
     input:
-        tax_out="output/annotation/cog/{sample}_tax.tsv",
+        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
         rankedlineage=str(
             Path(config["lineage_parser"]["db"]).joinpath("rankedlineage.dmp")
         ),
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species="output/annotation/cog/{sample}_species.tsv",
-        genus="output/annotation/cog/{sample}_genus.tsv",
-        family="output/annotation/cog/{sample}_family.tsv",
-        order="output/annotation/cog/{sample}_order.tsv",
-        klass="output/annotation/cog/{sample}_class.tsv",
-        phylum="output/annotation/cog/{sample}_phylum.tsv",
-        kingdom="output/annotation/cog/{sample}_kingdom.tsv",
-        domain="output/annotation/cog/{sample}_domain.tsv",
+        species="output/annotation/cog/{sample}/{sample}_species.tsv",
+        genus="output/annotation/cog/{sample}/{sample}_genus.tsv",
+        family="output/annotation/cog/{sample}/{sample}_family.tsv",
+        order="output/annotation/cog/{sample}/{sample}_order.tsv",
+        klass="output/annotation/cog/{sample}/{sample}_class.tsv",
+        phylum="output/annotation/cog/{sample}/{sample}_phylum.tsv",
+        kingdom="output/annotation/cog/{sample}/{sample}_kingdom.tsv",
+        domain="output/annotation/cog/{sample}/{sample}_domain.tsv",
     log:
         "output/logs/annotation/lineage_parser/{sample}.log",
     benchmark:
