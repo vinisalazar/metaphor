@@ -58,7 +58,7 @@ cog_parser:
 
 lineage_parser:
   activate: False
-  db: ".test/taxonomy"
+  db: ".test/taxonomy/rankedlineage.dmp"
 
 vamb:
   activate: False

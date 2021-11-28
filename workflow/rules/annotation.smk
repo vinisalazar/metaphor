@@ -142,9 +142,7 @@ rule concatenate_cog:
 rule lineage_parser:
     input:
         tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
-        rankedlineage=str(
-            Path(config["lineage_parser"]["db"]).joinpath("rankedlineage.dmp")
-        ),
+        rankedlineage=config["lineage_parser"]["db"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
         species="output/annotation/cog/{sample}/{sample}_species.tsv",
