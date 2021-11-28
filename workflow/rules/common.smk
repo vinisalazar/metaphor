@@ -325,9 +325,10 @@ def get_concatenate_cog_outputs():
         "output/annotation/cog/COG_codes_relative.tsv",
     )
 
+
 def get_lineage_parser_outputs():
     ranks = "species genus family order class phylum kingdom domain".split()
-    return ("output/annotation/cog/{sample}_" + rank + ".tsv" for rank in ranks)
+    return (f"output/annotation/cog/{{sample}}_{rank}.tsv" for rank in ranks)
 
 
 def get_all_lineage_parser_outputs():
