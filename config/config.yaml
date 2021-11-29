@@ -11,6 +11,7 @@ samples: config/samples.csv
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
 wrapper_version: v0.80.1
 
+coassembly: True
 
 trimming:
   activate: True
