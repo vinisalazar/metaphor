@@ -18,9 +18,7 @@ from snakemake.utils import validate
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = (
-    pd.read_csv(config["samples"], dtype={"sample_name": str, "unit_name": str})
-)
+samples = pd.read_csv(config["samples"], dtype={"sample_name": str, "unit_name": str})
 samples = samples.fillna("")
 samples = samples.set_index(["sample_name", "unit_name"], drop=False).sort_index()
 
@@ -65,20 +63,17 @@ def get_metaquast_reference():
 
 
 def get_cog_db_file(filename):
-    if is_activated("cog_parser"):
-        try:
-            return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
-        except IndexError as e:
-            print(f"Could not find input file {filename}.")
-            print(
-                f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
-            )
-            print(
-                "This should point to the directory containing the appropriate COG files."
-            )
-            raise
-    else:
-        pass
+    try:
+        return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
+    except IndexError as e:
+        print(f"Could not find input file {filename}.")
+        print(
+            f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
+        )
+        print(
+            "This should point to the directory containing the appropriate COG files."
+        )
+        raise
 
 
 # Inputs
@@ -204,13 +199,15 @@ def get_map_reads_input_R2(wildcards):
 
 
 def get_contigs_input():
-    if is_activated("coassembly"):
-        contigs="output/assembly/megahit/coassembly.contigs.fa"        
+    if config["coassembly"]:
+        contigs = "output/assembly/megahit/coassembly.contigs.fa"
     else:
-        contigs=expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-            sample=sample_IDs,
-        ),
+        contigs = (
+            expand(
+                "output/assembly/megahit/{sample}/{sample}.contigs.fa",
+                sample=sample_IDs,
+            ),
+        )
     return contigs
 
 
@@ -250,8 +247,10 @@ def get_qc_output():
 
 
 def get_all_assembly_outputs():
-    if is_activated("coassembly"):
-        assemblies = ["output/assembly/megahit/coassembly.contigs.fa",]
+    if config["coassembly"]:
+        assemblies = [
+            "output/assembly/megahit/coassembly.contigs.fa",
+        ]
     else:
         assemblies = expand(
             "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
@@ -292,14 +291,14 @@ def get_annotation_output():
         "prokka": get_prokka_output(),
     }
 
-    needs_activation = ("cog_parser", "prokka")
+    needs_activation = ("cog_parser", "lineage_parser", "prokka")
     annotation_output = []
 
-    if is_activated("cog_parser"):
-        config["lineage_parser"]["activate"] = True
+    if not is_activated("cog_parser"):
+        config["lineage_parser"]["activate"] = False
 
     for k, v in annotations.items():
-        if k in needs_activation and not is_activated(k):
+        if not is_activated(k) and k in needs_activation:
             continue
         else:
             annotation_output.append(v)
@@ -308,7 +307,11 @@ def get_annotation_output():
 
 
 def get_diamond_output():
-    return "output/annotation/diamond/{sample}_dmnd.out"
+    return (
+        "output/annotation/diamond/{sample}_dmnd.out"
+        if not config["coassembly"]
+        else "output/annotation/diamond/coassembly_dmnd.out"
+    )
 
 
 def get_all_diamond_outputs():
@@ -317,25 +320,41 @@ def get_all_diamond_outputs():
 
 def get_all_cog_parser_outputs():
     cog_valid_output_kinds = ("categories", "codes", "tax")
-    return expand(
-        "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
-        sample=sample_IDs,
-        kind=cog_valid_output_kinds,
+    return (
+        expand(
+            "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
+            sample=sample_IDs,
+            kind=cog_valid_output_kinds,
+        )
+        if not config["coassembly"]
+        else expand(
+            "output/annotation/cog/coassembly_{kind}.tsv",
+            sample=sample_IDs,
+            kind=cog_valid_output_kinds,
+        )
     )
 
 
 def get_concatenate_cog_outputs():
     return (
-        "output/annotation/cog/COG_categories_absolute.tsv",
-        "output/annotation/cog/COG_categories_relative.tsv",
-        "output/annotation/cog/COG_codes_absolute.tsv",
-        "output/annotation/cog/COG_codes_relative.tsv",
+        (
+            "output/annotation/cog/COG_categories_absolute.tsv",
+            "output/annotation/cog/COG_categories_relative.tsv",
+            "output/annotation/cog/COG_codes_absolute.tsv",
+            "output/annotation/cog/COG_codes_relative.tsv",
+        )
+        if not config["coassembly"]
+        else ""
     )
 
 
 def get_lineage_parser_outputs():
     ranks = "species genus family order class phylum kingdom domain".split()
-    return (f"output/annotation/cog/{{sample}}/{{sample}}_{rank}.tsv" for rank in ranks)
+    return (
+        (f"output/annotation/cog/{{sample}}/{{sample}}_{rank}.tsv" for rank in ranks)
+        if not config["coassembly"]
+        else (f"output/annotation/cog/coassembly_{rank}.tsv" for rank in ranks)
+    )
 
 
 def get_all_lineage_parser_outputs():
