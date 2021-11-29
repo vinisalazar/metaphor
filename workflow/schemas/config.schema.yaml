@@ -11,6 +11,9 @@ properties:
   units:
     type: string
 
+  wrapper_version:
+    type: string
+
   trimming:
     type: object
     properties:
@@ -72,10 +75,16 @@ properties:
   prodigal:
     type: object
     properties:
+      activate:
+        type: boolean
       mode:
         type: string
+      quiet:
+        type: boolean
     required:
+      - activate
       - mode
+      - quiet
 
   prokka:
     type: object
@@ -104,6 +113,17 @@ properties:
       - db
 
   cog_parser:
+    type: object
+    properties:
+      db:
+        type: string
+      activate:
+        type: boolean
+    required:
+      - db
+      - activate
+      
+  lineage_parser:
     type: object
     properties:
       db:
@@ -177,6 +197,7 @@ properties:
 
 required:
   - units
+  - wrapper_version
   - trimming
   - merge_reads
   - concatenate_contigs
@@ -186,6 +207,7 @@ required:
   - prokka
   - diamond
   - cog_parser
+  - lineage_parser
   - vamb
   - metabat2
   - concoct

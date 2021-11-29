@@ -10,6 +10,11 @@ samples: config/samples.csv
 units: config/units.csv
 
 
+# Snakemake wrapper version
+# This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
+wrapper_version: v0.80.1
+
+
 trimming:
   activate: True
   phred: 33
@@ -33,7 +38,9 @@ metaquast:
   reference: ""
 
 prodigal:
+  activate: True
   mode: "meta"
+  quiet: True
 
 prokka:
   activate: False
@@ -46,8 +53,12 @@ diamond:
   output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 cog_parser:
-  db: ".test/COG2020"
   activate: False
+  db: ".test/COG2020"
+
+lineage_parser:
+  activate: False
+  db: ".test/taxonomy/rankedlineage.dmp"
 
 vamb:
   activate: False

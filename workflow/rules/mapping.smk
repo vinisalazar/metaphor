@@ -7,6 +7,7 @@ Mapping rules:
     - sort_reads: sort BAM file with samtools
     - flagstat: calculate flagstat with samtools
 """
+from pathlib import Path
 
 
 rule concatenate_contigs:
@@ -115,7 +116,7 @@ rule sort_reads:
     conda:
         "../envs/samtools.yaml"
     wrapper:
-        "0.77.0/bio/samtools/sort"
+        str(Path(config["wrapper_version"]).joinpath("bio/samtools/sort"))
 
 
 rule index_reads:

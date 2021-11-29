@@ -19,6 +19,7 @@ rule prodigal:
         genbank="{output}/annotation/prodigal/{sample}/{sample}_genbank.gbk",
     params:
         mode=config["prodigal"]["mode"],
+        quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
         "{output}/logs/annotation/prodigal/{sample}.log",
     benchmark:
@@ -27,7 +28,8 @@ rule prodigal:
         "../envs/prodigal.yaml"
     shell:
         """
-        prodigal -p {params.mode}       \
+        prodigal {params.quiet}         \
+                 -p {params.mode}       \
                  -i {input}             \
                  -d {output.genes}      \
                  -a {output.proteins}   \
@@ -98,9 +100,10 @@ rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
     output:
-        categories_out="output/annotation/cog/{sample}_categories.tsv",
-        codes_out="output/annotation/cog/{sample}_codes.tsv",
-        tax_out="output/annotation/cog/{sample}_tax.tsv",
+        categories_out="output/annotation/cog/{sample}/{sample}_categories.tsv",
+        codes_out="output/annotation/cog/{sample}/{sample}_codes.tsv",
+        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
+        pathways_out="output/annotation/cog/{sample}/{sample}_pathways.tsv",
     params:
         cog_csv=get_cog_db_file("cog-20.cog.csv*"),
         def_tab=get_cog_db_file("cog-20.def.tab*"),
@@ -118,12 +121,14 @@ rule cog_parser:
 rule concatenate_cog:
     input:
         categories=expand(
-            "output/annotation/cog/{sample}_categories.tsv", sample=sample_IDs
+            "output/annotation/cog/{sample}/{sample}_categories.tsv", sample=sample_IDs
         ),
-        codes=expand("output/annotation/cog/{sample}_codes.tsv", sample=sample_IDs),
+        codes=expand(
+            "output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs
+        ),
     output:
-        concat_categories_absolute=("output/annotation/cog/COG_categories_absolute.tsv"),
-        concat_categories_relative=("output/annotation/cog/COG_categories_relative.tsv"),
+        concat_categories_absolute="output/annotation/cog/COG_categories_absolute.tsv",
+        concat_categories_relative="output/annotation/cog/COG_categories_relative.tsv",
         concat_codes_absolute="output/annotation/cog/COG_codes_absolute.tsv",
         concat_codes_relative="output/annotation/cog/COG_codes_relative.tsv",
     log:
@@ -134,3 +139,27 @@ rule concatenate_cog:
         "../envs/bash.yaml"
     script:
         "../scripts/concatenate_cog.py"
+
+
+rule lineage_parser:
+    input:
+        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
+        rankedlineage=config["lineage_parser"]["db"],
+    output:
+        # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
+        species="output/annotation/cog/{sample}/{sample}_species.tsv",
+        genus="output/annotation/cog/{sample}/{sample}_genus.tsv",
+        family="output/annotation/cog/{sample}/{sample}_family.tsv",
+        order="output/annotation/cog/{sample}/{sample}_order.tsv",
+        klass="output/annotation/cog/{sample}/{sample}_class.tsv",
+        phylum="output/annotation/cog/{sample}/{sample}_phylum.tsv",
+        kingdom="output/annotation/cog/{sample}/{sample}_kingdom.tsv",
+        domain="output/annotation/cog/{sample}/{sample}_domain.tsv",
+    log:
+        "output/logs/annotation/lineage_parser/{sample}.log",
+    benchmark:
+        "output/benchmarks/annotation/lineage_parser/{sample}.txt"
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/lineage_parser.py"
