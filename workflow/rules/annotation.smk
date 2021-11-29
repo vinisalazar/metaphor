@@ -123,7 +123,9 @@ rule concatenate_cog:
         categories=expand(
             "output/annotation/cog/{sample}/{sample}_categories.tsv", sample=sample_IDs
         ),
-        codes=expand("output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs),
+        codes=expand(
+            "output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs
+        ),
     output:
         concat_categories_absolute="output/annotation/cog/COG_categories_absolute.tsv",
         concat_categories_relative="output/annotation/cog/COG_categories_relative.tsv",

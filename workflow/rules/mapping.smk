@@ -10,7 +10,6 @@ Mapping rules:
 from pathlib import Path
 
 
-
 rule concatenate_contigs:
     input:
         contigs=expand(
