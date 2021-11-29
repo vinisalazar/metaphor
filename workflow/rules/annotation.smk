@@ -13,17 +13,29 @@ rule prodigal:
     input:
         contigs=get_contigs_input(),
     output:
-        genes="output/annotation/prodigal/{sample}/{sample}_genes.fna",
-        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa",
-        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds",
-        genbank="output/annotation/prodigal/{sample}/{sample}_genbank.gbk",
+        genes="output/annotation/prodigal/{sample}/{sample}_genes.fna"
+        if not config["coassembly"]
+        else "output/annotation/prodigal/coassembly_genes.fna",
+        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
+        if not config["coassembly"]
+        else "output/annotation/prodigal/coassembly_proteins.faa",
+        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds"
+        if not config["coassembly"]
+        else "output/annotation/prodigal/coassembly_scores.cds",
+        genbank="output/annotation/prodigal/{sample}/{sample}_genbank.gbk"
+        if not config["coassembly"]
+        else "output/annotation/prodigal/coassembly_genbank.gbk",
     params:
         mode=config["prodigal"]["mode"],
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
-        "output/logs/annotation/prodigal/{sample}.log",
+        "output/logs/annotation/prodigal/{sample}.log"
+        if not config["coassembly"]
+        else "output/logs/annotation/prodigal/coassembly.log",
     benchmark:
-        "output/benchmarks/annotation/prodigal/{sample}.txt"
+        "output/benchmarks/annotation/prodigal/{sample}.txt" if not config[
+        "coassembly"
+        ] else "output/benchmarks/annotation/prodigal/coassembly.txt"
     conda:
         "../envs/prodigal.yaml"
     shell:
@@ -68,7 +80,9 @@ rule prokka:
 
 rule diamond:
     input:
-        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa",
+        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
+        if not config["coassembly"]
+        else "output/annotation/prodigal/coassembly_proteins.faa",
     output:
         dmnd_out=get_diamond_output(),
     params:
@@ -78,9 +92,13 @@ rule diamond:
         output_format=config["diamond"]["output_format"],
     threads: round(workflow.cores * 0.75)
     log:
-        "output/logs/annotation/diamond/{sample}.log",
+        "output/logs/annotation/diamond/{sample}.log"
+        if not config["coassembly"]
+        else "output/logs/annotation/diamond/coassembly.log",
     benchmark:
-        "output/benchmarks/annotation/diamond/{sample}.txt"
+        "output/benchmarks/annotation/diamond/{sample}.txt" if not config[
+        "coassembly"
+        ] else "output/benchmarks/annotation/diamond/coassembly.txt"
     conda:
         "../envs/diamond.yaml"
     shell:
@@ -100,18 +118,30 @@ rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
     output:
-        categories_out="output/annotation/cog/{sample}/{sample}_categories.tsv",
-        codes_out="output/annotation/cog/{sample}/{sample}_codes.tsv",
-        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
-        pathways_out="output/annotation/cog/{sample}/{sample}_pathways.tsv",
+        categories_out="output/annotation/cog/{sample}/{sample}_categories.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_categories.tsv",
+        codes_out="output/annotation/cog/{sample}/{sample}_codes.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_codes.tsv",
+        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_tax.tsv",
+        pathways_out="output/annotation/cog/{sample}/{sample}_pathways.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_pathways.tsv",
     params:
         cog_csv=get_cog_db_file("cog-20.cog.csv*"),
         def_tab=get_cog_db_file("cog-20.def.tab*"),
         fun_tab=get_cog_db_file("fun-20.tab*"),
     log:
-        "output/logs/annotation/cog_parser/{sample}.log",
+        "output/logs/annotation/cog_parser/{sample}.log"
+        if not config["coassembly"]
+        else "output/logs/annotation/cog_parser/coassembly.log",
     benchmark:
-        "output/benchmarks/annotation/cog_parser/{sample}.txt"
+        "output/benchmarks/annotation/cog_parser/{sample}.txt" if not config[
+        "coassembly"
+        ] else "output/benchmarks/annotation/cog_parser/coassembly.txt"
     conda:
         "../envs/bash.yaml"
     script:
@@ -143,22 +173,44 @@ rule concatenate_cog:
 
 rule lineage_parser:
     input:
-        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv",
+        tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_tax.tsv",
         rankedlineage=config["lineage_parser"]["db"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species="output/annotation/cog/{sample}/{sample}_species.tsv",
-        genus="output/annotation/cog/{sample}/{sample}_genus.tsv",
-        family="output/annotation/cog/{sample}/{sample}_family.tsv",
-        order="output/annotation/cog/{sample}/{sample}_order.tsv",
-        klass="output/annotation/cog/{sample}/{sample}_class.tsv",
-        phylum="output/annotation/cog/{sample}/{sample}_phylum.tsv",
-        kingdom="output/annotation/cog/{sample}/{sample}_kingdom.tsv",
-        domain="output/annotation/cog/{sample}/{sample}_domain.tsv",
+        species="output/annotation/cog/{sample}/{sample}_species.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_species.tsv",
+        genus="output/annotation/cog/{sample}/{sample}_genus.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_genus.tsv",
+        family="output/annotation/cog/{sample}/{sample}_family.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_family.tsv",
+        order="output/annotation/cog/{sample}/{sample}_order.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_order.tsv",
+        klass="output/annotation/cog/{sample}/{sample}_class.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_class.tsv",
+        phylum="output/annotation/cog/{sample}/{sample}_phylum.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_phylum.tsv",
+        kingdom="output/annotation/cog/{sample}/{sample}_kingdom.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_kingdom.tsv",
+        domain="output/annotation/cog/{sample}/{sample}_domain.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_domain.tsv",
     log:
-        "output/logs/annotation/lineage_parser/{sample}.log",
+        "output/logs/annotation/lineage_parser/{sample}.log"
+        if not config["coassembly"]
+        else "output/logs/annotation/lineage_parser/coassembly_suffix.log",
     benchmark:
-        "output/benchmarks/annotation/lineage_parser/{sample}.txt"
+        "output/benchmarks/annotation/lineage_parser/{sample}.txt" if not config[
+        "coassembly"
+        ] else "output/benchmarks/annotation/lineage_parser/coassembly_suffix.txt"
     conda:
         "../envs/bash.yaml"
     script:
