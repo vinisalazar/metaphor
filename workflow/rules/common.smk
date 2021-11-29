@@ -203,6 +203,17 @@ def get_map_reads_input_R2(wildcards):
     return ""
 
 
+def get_contigs_input():
+    if is_activated("coassembly"):
+        contigs="output/assembly/megahit/coassembly.contigs.fa"        
+    else:
+        contigs=expand(
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
+            sample=sample_IDs,
+        ),
+    return contigs
+
+
 binners = ("concoct", "metabat2", "vamb")
 
 
@@ -226,7 +237,7 @@ def get_fasta_bins():
 def get_final_output():
     final_output = [
         get_qc_output(),
-        get_assembly_output(),
+        get_all_assembly_outputs(),
         get_mapping_output(),
         get_annotation_output(),
         get_binning_output(),
@@ -238,10 +249,13 @@ def get_qc_output():
     return "output/qc/multiqc.html"
 
 
-def get_assembly_output():
-    assemblies = expand(
-        "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
-    )
+def get_all_assembly_outputs():
+    if is_activated("coassembly"):
+        assemblies = ["output/assembly/megahit/coassembly.contigs.fa",]
+    else:
+        assemblies = expand(
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
+        )
     if is_activated("metaquast"):
         assemblies.append(get_metaquast_output())
 

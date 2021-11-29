@@ -79,14 +79,14 @@ rule fastqc_raw:  # qc on raw, unmerged reads
     input:
         get_fastqc_input_raw,
     output:
-        zip="{output}/qc/fastqc/{sample}-{unit}-{read}-raw_fastqc.zip",
-        html="{output}/qc/fastqc/{sample}-{unit}-{read}-raw.html",
+        zip="output/qc/fastqc/{sample}-{unit}-{read}-raw_fastqc.zip",
+        html="output/qc/fastqc/{sample}-{unit}-{read}-raw.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
+        "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
+        "output/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
     threads: 1
     wrapper:
         str(Path(config["wrapper_version"]).joinpath("bio/fastqc"))
@@ -96,14 +96,14 @@ rule fastqc_trimmed:  # qc on trimmed reads
     input:
         get_fastqc_input_trimmed,
     output:
-        zip="{output}/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
-        html="{output}/qc/fastqc/{sample}-{unit}-{read}-trimmed.html",
+        zip="output/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
+        html="output/qc/fastqc/{sample}-{unit}-{read}-trimmed.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
+        "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
+        "output/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
     threads: 1
     wrapper:
         str(Path(config["wrapper_version"]).joinpath("bio/fastqc"))
@@ -113,14 +113,14 @@ rule fastqc_merged:  # qc on trimmed, merged reads
     input:
         get_fastqc_input_merged,
     output:
-        zip="{output}/qc/fastqc/{sample}-{read}-merged_fastqc.zip",
-        html="{output}/qc/fastqc/{sample}-{read}-merged.html",
+        zip="output/qc/fastqc/{sample}-{read}-merged_fastqc.zip",
+        html="output/qc/fastqc/{sample}-{read}-merged.html",
     params:
         "--quiet",
     log:
-        "{output}/logs/qc/fastqc_merged/{sample}-{read}.log",
+        "output/logs/qc/fastqc_merged/{sample}-{read}.log",
     benchmark:
-        "{output}/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
+        "output/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
     threads: 1
     wrapper:
         str(Path(config["wrapper_version"]).joinpath("bio/fastqc"))

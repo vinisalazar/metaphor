@@ -11,19 +11,19 @@ from pathlib import Path
 
 rule prodigal:
     input:
-        contigs="{output}/assembly/megahit/{sample}/{sample}.contigs.fa",
+        contigs=get_contigs_input(),
     output:
-        genes="{output}/annotation/prodigal/{sample}/{sample}_genes.fna",
-        proteins="{output}/annotation/prodigal/{sample}/{sample}_proteins.faa",
-        scores="{output}/annotation/prodigal/{sample}/{sample}_scores.cds",
-        genbank="{output}/annotation/prodigal/{sample}/{sample}_genbank.gbk",
+        genes="output/annotation/prodigal/{sample}/{sample}_genes.fna",
+        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa",
+        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds",
+        genbank="output/annotation/prodigal/{sample}/{sample}_genbank.gbk",
     params:
         mode=config["prodigal"]["mode"],
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
-        "{output}/logs/annotation/prodigal/{sample}.log",
+        "output/logs/annotation/prodigal/{sample}.log",
     benchmark:
-        "{output}/benchmarks/annotation/prodigal/{sample}.txt"
+        "output/benchmarks/annotation/prodigal/{sample}.txt"
     conda:
         "../envs/prodigal.yaml"
     shell:
@@ -40,7 +40,7 @@ rule prodigal:
 
 rule prokka:
     input:
-        contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
+        contigs=get_contigs_input(),
     output:
         outfile="output/annotation/prokka/{sample}/{sample}.faa",
     params:
