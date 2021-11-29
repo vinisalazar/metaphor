@@ -1,27 +1,28 @@
 """
 Assembly rules:
-
+    - concatenate_merged_reads: prepare MegaHIT input if there coassembly is True in config file
     - megahit: assemble preprocessed reads with Megahit
     - metaquast: evaluate assembly results with MetaQuast
 """
 
+
 rule concatenate_merged_reads:
     input:
-        R1=get_map_reads_input_R1,
-        R2=get_map_reads_input_R2,
+        R1=expand("output/qc/merged/{sample}_R1.fq.gz", sample=sample_IDs),
+        R2=expand("output/qc/merged/{sample}_R2.fq.gz", sample=sample_IDs),
     output:
-        R1_concat="output/assembly/all_samples_R1.fq.gz",
-        R2_concat="output/assembly/all_samples_R2.fq.gz",
+        R1_concat="output/qc/merged/all_samples_R1.fq.gz",
+        R2_concat="output/qc/merged/all_samples_R2.fq.gz",
     log:
-        "output/logs/assembly/concatenate_merged_reads.log"
+        "output/logs/assembly/concatenate_merged_reads.log",
     benchmark:
-        "output/logs/assembly/concatenate_merged_reads.txt"
+        "output/benchmarks/assembly/concatenate_merged_reads.txt"
     conda:
         "../envs/bash.yaml"
     shell:
         """
-        cat {input.R1} > {output.R1} >> {log} 2>&1
-        cat {input.R2} > {output.R2} >> {log} 2>&1
+        {{ cat {input.R1} > {output.R1_concat} ; }} > {log}
+        {{ cat {input.R2} > {output.R2_concat} ; }} >> {log}
         """
 
 
@@ -60,12 +61,12 @@ rule megahit:
 
 rule megahit_coassembly:
     input:
-        fastq1="output/assembly/all_samples_R1.fq.gz",
-        fastq2="output/assembly/all_samples_R2.fq.gz",
+        fastq1="output/qc/merged/all_samples_R1.fq.gz",
+        fastq2="output/qc/merged/all_samples_R2.fq.gz",
     output:
         contigs="output/assembly/megahit/coassembly.contigs.fa",
     params:
-        out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
+        out_dir=lambda w, output: get_parent(output.contigs),
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
@@ -93,7 +94,9 @@ rule megahit_coassembly:
 
 rule metaquast:
     input:
-        assemblies=get_contigs_input() if is_activated("coassembly") else expand(
+        assemblies=get_contigs_input()
+        if config["coassembly"]
+        else expand(
             "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
         ),
     output:
