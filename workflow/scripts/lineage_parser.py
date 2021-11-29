@@ -84,18 +84,24 @@ if "snakemake" in locals():
         datefmt="%m/%d/%Y %H:%M:%S",
     )
     logging.info(f"Starting script {__file__.split('/')[-1]}.")
-    logging.debug(f"Full script path: {__file__}")
-    args = parse_snakemake_args(snakemake)
-    main(args)
-    logging.info("Done.")
+    logging.debug(f"Full script path: {__file__}.")
+    try:
+        args = parse_snakemake_args(snakemake)
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)
 elif __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
     )
-    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
-    logging.debug(f"Full script path: '{__file__}'.")
-    args = parse_args()
-    main(args)
-    logging.info("Done.")
+    logging.info(f"Starting script {__file__.split('/')[-1]}.")
+    logging.debug(f"Full script path: {__file__}.")
+    try:
+        args = parse_args()
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)

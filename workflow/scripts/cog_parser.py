@@ -196,16 +196,22 @@ def main(args):
     # The `zip(*df.apply(...))` expands the result of the apply into two columns.
     # Source:
     #   https://stackoverflow.com/questions/29550414/how-can-i-split-a-column-of-tuples-in-a-pandas-dataframe
-    merged_df["taxid"], merged_df["taxname"] = zip(
-        *merged_df.apply(
-            lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
+    try:
+        merged_df["taxid"], merged_df["taxname"] = zip(
+            *merged_df.apply(
+                lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
+            )
         )
-    )
-    merged_df = merged_df[["taxid", "taxname"]].value_counts()
-    merged_df.name = "absolute"
-    merged_df.to_csv(tax_out, sep="\t")
-    logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
-    del merged_df
+        merged_df = merged_df[["taxid", "taxname"]].value_counts()
+        merged_df.name = "absolute"
+        logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
+        del merged_df
+    except Exception as e:
+        logging.info(
+            "Couldn't write taxonomies. Writing empty file so workflow continues."
+        )
+        logging.error(e)
+        merged_df.to_csv(tax_out, sep="\t")
 
 
 def load_dataframe(file, **kwargs):
@@ -262,18 +268,26 @@ if "snakemake" in locals():
         datefmt="%m/%d/%Y %H:%M:%S",
     )
     logging.info(f"Starting script {__file__.split('/')[-1]}.")
-    logging.debug(f"Full script path: {__file__}")
-    args = parse_snakemake_args(snakemake)
-    main(args)
-    logging.info("Done.")
+    logging.debug(f"Full script path: {__file__}.")
+    try:
+        args = parse_snakemake_args(snakemake)
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        breakpoint()
+        logging.error(e)
 elif __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
     )
-    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
+    logging.info(f"Starting script {__file__.split('/')[-1]}.")
     logging.debug(f"Full script path: '{__file__}'.")
-    args = parse_args()
-    main(args)
-    logging.info("Done.")
+    try:
+        args = parse_args()
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        breakpoint()
+        logging.error(e)
