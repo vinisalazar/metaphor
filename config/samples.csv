@@ -1,2 +1,3 @@
-sample_name,condition
-mock,test_data
+sample_name,unit_name,R1,R2
+mock,S001,.test/mock_short_read_R1_S001.fastq.gz,.test/mock_short_read_R2_S001.fastq.gz
+mock,S002,.test/mock_short_read_R1_S001.fastq.gz,.test/mock_short_read_R2_S001.fastq.gz

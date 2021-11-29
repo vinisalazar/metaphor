@@ -196,7 +196,7 @@ properties:
       - memory_gb
 
 required:
-  - units
+  - samples
   - wrapper_version
   - trimming
   - merge_reads

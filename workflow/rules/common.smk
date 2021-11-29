@@ -19,21 +19,14 @@ from snakemake.utils import validate
 validate(config, schema="../schemas/config.schema.yaml")
 
 samples = (
-    pd.read_csv(config["samples"], dtype={"sample_name": str})
-    .set_index("sample_name", drop=False)
-    .sort_index()
+    pd.read_csv(config["samples"], dtype={"sample_name": str, "unit_name": str})
 )
+samples = samples.fillna("")
+samples = samples.set_index(["sample_name", "unit_name"], drop=False).sort_index()
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 sample_IDs = samples["sample_name"].drop_duplicates().to_list()
-
-units = (
-    pd.read_csv(config["units"], dtype={"sample_name": str, "unit_name": str})
-    .set_index(["sample_name", "unit_name"], drop=False)
-    .sort_index()
-)
-validate(units, schema="../schemas/units.schema.yaml")
-unit_names = units["unit_name"].drop_duplicates().to_list()
+unit_names = samples["unit_name"].drop_duplicates().to_list()
 
 
 # Helpers
@@ -50,7 +43,7 @@ def get_parent(path: str) -> str:
 
 
 def is_paired_end(sample):
-    sample_units = units.loc[sample]
+    sample_units = samples.loc[sample]
     fq2_null = sample_units["R2"].isnull()
     paired = ~fq2_null
     all_paired = paired.all()
@@ -93,25 +86,25 @@ def get_fastqs(wildcards):
     if config["trimming"]["activate"]:
         return expand(
             "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz",
-            unit=units.loc[wildcards.sample, "unit_name"],
+            unit=samples.loc[wildcards.sample, "unit_name"],
             sample=wildcards.sample,
             read=wildcards.read,
         )
-    unit = units.loc[wildcards.sample]
+    unit = samples.loc[wildcards.sample]
     fq = "R{}".format(wildcards.read[-1])
-    return units.loc[wildcards.sample, fq].tolist()
+    return samples.loc[wildcards.sample, fq].tolist()
 
 
 def get_cutadapt_pipe_input(wildcards):
     files = list(
-        sorted(glob(units.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
+        sorted(glob(samples.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
     )
     assert len(files) > 0, "No files were found!"
     return files
 
 
 def get_cutadapt_input(wildcards):
-    unit = units.loc[wildcards.sample].loc[wildcards.unit]
+    unit = samples.loc[wildcards.sample].loc[wildcards.unit]
 
     if unit["R1"].endswith("gz"):
         ending = ".gz"
@@ -134,7 +127,7 @@ def get_cutadapt_input(wildcards):
 
 
 def get_fastqc_input_raw(wildcards):
-    unit = units.loc[wildcards.sample].loc[wildcards.unit][wildcards.read]
+    unit = samples.loc[wildcards.sample].loc[wildcards.unit][wildcards.read]
     return unit
 
 
@@ -175,15 +168,15 @@ def get_map_reads_input_R1(wildcards):
         if config["trimming"]["activate"]:
             return expand(
                 "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
-                unit=units.loc[wildcards.sample, "unit_name"],
+                unit=samples.loc[wildcards.sample, "unit_name"],
                 sample=wildcards.sample,
             )
-        unit = units.loc[wildcards.sample]
+        unit = samples.loc[wildcards.sample]
         if all(pd.isna(unit["R1"])):
             # SRA sample (always paired-end for now)
             accession = unit["sra"]
             return expand("sra/{accession}_R1.fq", accession=accession)
-        sample_units = units.loc[wildcards.sample]
+        sample_units = samples.loc[wildcards.sample]
         return sample_units["R1"]
     if is_paired_end(wildcards.sample):
         return "output/qc/merged/{sample}_R1.fq.gz"
@@ -196,15 +189,15 @@ def get_map_reads_input_R2(wildcards):
             if config["trimming"]["activate"]:
                 return expand(
                     "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
-                    unit=units.loc[wildcards.sample, "unit_name"],
+                    unit=samples.loc[wildcards.sample, "unit_name"],
                     sample=wildcards.sample,
                 )
-            unit = units.loc[wildcards.sample]
+            unit = samples.loc[wildcards.sample]
             if all(pd.isna(unit["R1"])):
                 # SRA sample (always paired-end for now)
                 accession = unit["sra"]
                 return expand("sra/{accession}_R2.fq", accession=accession)
-            sample_units = units.loc[wildcards.sample]
+            sample_units = samples.loc[wildcards.sample]
             return sample_units["R2"]
         return ("output/qc/merged/{sample}_R2.fq.gz",)
     return ""
