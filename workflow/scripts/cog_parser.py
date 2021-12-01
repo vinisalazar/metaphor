@@ -205,13 +205,14 @@ def main(args):
         merged_df = merged_df[["taxid", "taxname"]].value_counts()
         merged_df.name = "absolute"
         logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
-        del merged_df
     except Exception as e:
         logging.info(
             "Couldn't write taxonomies. Writing empty file so workflow continues."
         )
         logging.error(e)
-        merged_df.to_csv(tax_out, sep="\t")
+
+    merged_df.to_csv(tax_out, sep="\t")
+    del merged_df
 
 
 def load_dataframe(file, **kwargs):
