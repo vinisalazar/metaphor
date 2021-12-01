@@ -344,8 +344,12 @@ def get_concatenate_cog_outputs():
             "output/annotation/cog/COG_codes_relative.tsv",
         )
         if not config["coassembly"]
-        else ""
+        else ()
     )
+
+
+def get_mem_mb(wildcards, threads):
+    return threads * 10000
 
 
 def get_lineage_parser_outputs():
