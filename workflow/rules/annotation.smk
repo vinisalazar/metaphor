@@ -9,6 +9,7 @@ Annotation rules:
 from pathlib import Path
 
 
+
 rule prodigal:
     input:
         contigs=get_contigs_input(),
@@ -77,16 +78,45 @@ rule prokka:
                {input.contigs}          
         """
 
+rule download_COG_database:
+    output:
+        cog_csv=get_cog_db_file("cog-20.cog.csv"),
+        def_tab=get_cog_db_file("cog-20.def.tab"),
+        fun_tab=get_cog_db_file("fun-20.tab"),        
+    params:
+    log:
+    benchmark:
+    conda:
+    shell:
+
+
+# rule create_diamond_database:
+#     output:
+#     params:
+#     log:
+#     benchmark:
+#     conda:
+#     shell:
+
+
+# rule download_taxonomy_database:
+#     output:
+#     params:
+#     log:
+#     benchmark:
+#     conda:
+#     shell:
+
 
 rule diamond:
     input:
         proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_proteins.faa",
+        db=config["diamond"]["db"],
     output:
         dmnd_out=get_diamond_output(),
     params:
-        db=config["diamond"]["db"],
         max_target_seqs=1,
         output_type=config["diamond"]["output_type"],
         output_format=config["diamond"]["output_format"],
@@ -107,7 +137,7 @@ rule diamond:
         {{ diamond blastp -q {input}                            \
                    --max-target-seqs {params.max_target_seqs}   \
                    -p {threads}                                 \
-                   -d {params.db}                               \
+                   -d {input.db}                                \
                    -f {params.output_type}                      \
                    {params.output_format}                       \
                    >> {output} ; }} &> {log}
