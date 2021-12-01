@@ -274,7 +274,6 @@ if "snakemake" in locals():
         main(args)
         logging.info("Done.")
     except Exception as e:
-        breakpoint()
         logging.error(e)
 elif __name__ == "__main__":
     logging.basicConfig(
@@ -289,5 +288,4 @@ elif __name__ == "__main__":
         main(args)
         logging.info("Done.")
     except Exception as e:
-        breakpoint()
         logging.error(e)
