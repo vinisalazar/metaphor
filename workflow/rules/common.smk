@@ -348,6 +348,10 @@ def get_concatenate_cog_outputs():
     )
 
 
+def get_mem_mb(wildcards, threads):
+    return threads * 10000
+
+
 def get_lineage_parser_outputs():
     ranks = "species genus family order class phylum kingdom domain".split()
     return (
