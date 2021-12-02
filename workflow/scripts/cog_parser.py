@@ -230,11 +230,8 @@ def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for rule_input in ("dmnd_out",):
+    for rule_input in ("dmnd_out", "cog_csv", "fun_tab", "def_tab"):
         args_dict[rule_input] = snakemake.input[rule_input]
-
-    for rule_param in ("cog_csv", "fun_tab", "def_tab"):
-        args_dict[rule_param] = snakemake.params[rule_param]
 
     for rule_output in ("categories_out", "codes_out", "tax_out", "pathways_out"):
         args_dict[rule_output] = snakemake.output[rule_output]

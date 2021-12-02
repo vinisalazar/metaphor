@@ -117,6 +117,9 @@ rule diamond:
 rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
+        cog_csv=get_cog_db_file("cog-20.cog.csv*"),
+        def_tab=get_cog_db_file("cog-20.def.tab*"),
+        fun_tab=get_cog_db_file("fun-20.tab*"),
     output:
         categories_out="output/annotation/cog/{sample}/{sample}_categories.tsv"
         if not config["coassembly"]
@@ -130,10 +133,6 @@ rule cog_parser:
         pathways_out="output/annotation/cog/{sample}/{sample}_pathways.tsv"
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_pathways.tsv",
-    params:
-        cog_csv=get_cog_db_file("cog-20.cog.csv*"),
-        def_tab=get_cog_db_file("cog-20.def.tab*"),
-        fun_tab=get_cog_db_file("fun-20.tab*"),
     log:
         "output/logs/annotation/cog_parser/{sample}.log"
         if not config["coassembly"]
