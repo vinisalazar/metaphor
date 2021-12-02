@@ -46,17 +46,18 @@ prokka:
   kingdom: "Bacteria"
 
 diamond:
-  db: ".test/cog-20.dmnd"  # for testing purposes only
+  db: "data/COG2020/cog-20.dmnd"  # for testing purposes only
   output_type: 6
   output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
 cog_parser:
   activate: False
-  db: ".test/COG2020"
+  db: "data/COG2020"
 
 lineage_parser:
   activate: False
-  db: ".test/taxonomy/rankedlineage.dmp"
+  db: "data/taxonomy/rankedlineage.dmp"
+  download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
 
 vamb:
   activate: False

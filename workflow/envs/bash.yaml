@@ -8,3 +8,4 @@ dependencies:
   - perl
   - python>=3.7
   - seaborn
+  - wget

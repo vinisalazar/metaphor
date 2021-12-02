@@ -63,17 +63,38 @@ def get_metaquast_reference():
 
 
 def get_cog_db_file(filename):
+    output = Path(config["cog_parser"]["db"]).joinpath(filename)
+
     try:
-        return glob(str(Path(config["cog_parser"]["db"]).joinpath(filename)))[0]
-    except IndexError as e:
-        print(f"Could not find input file {filename}.")
-        print(
-            f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
-        )
-        print(
-            "This should point to the directory containing the appropriate COG files."
-        )
+        assert output.exists()
+    except AssertionError as e:
+        # Ignore the error if linting or on dry-runs
+        import sys
+        allow_on = ("--lint", "--dry-run", "--dryrun", "-n")
+        if any(term in sys.argv for term in allow_on):
+            return filename
+
+        # Else, raise the error
+        message = f"Could not find input file {filename}.\n" \
+                  f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
+
+        if 'logging' in locals():
+            logging.error(message)
+        else:
+            print(message)
         raise
+
+
+    # Convert to string rather than Path
+    output = str(output)
+
+    # The following block prevents the function from returning an empty (test) file,
+    # which is the default value in the config/config.yaml file.
+    # It is a bit hacky, but it will do for now.
+    if ".test/" in output:
+        output.replace(".test/", "data/")
+
+    return output
 
 
 # Inputs

@@ -129,13 +129,16 @@ properties:
   lineage_parser:
     type: object
     properties:
-      db:
-        type: string
       activate:
         type: boolean
+      db:
+        type: string
+      download_url:
+        type: string
     required:
       - db
       - activate
+      - download_url
 
   vamb:
     type: object

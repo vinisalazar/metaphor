@@ -78,48 +78,75 @@ rule prokka:
                {input.contigs}          
         """
 
+
 rule download_COG_database:
     output:
+        cog_fasta=get_cog_db_file("cog-20.fa.gz"),
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),        
-    params:
     log:
+        "output/logs/annotation/download_COG_database.log"
     benchmark:
+        "output/benchmarks/annotation/download_COG_database.txt"
     conda:
+        "../envs/bash.yaml"
     shell:
+        """
+        for file in {output}; do
+            wget https://ftp.ncbi.nih.gov/pub/COG/COG2020/data/$(basename $file) -O $file 2>> {log};
+        done
+        """
 
 
-# rule create_diamond_database:
-#     output:
-#     params:
-#     log:
-#     benchmark:
-#     conda:
-#     shell:
+rule diamond_makedb:
+    input:
+        fname=get_cog_db_file("cog-20.fa.gz"),
+    output:
+        fname=get_cog_db_file("cog-20.fa.gz".replace(".fa.gz", ".dmnd"))
+    log:
+        "output/logs/annotation/diamond/diamond_makedb.log"
+    threads: round(workflow.cores * 0.25)
+    wrapper:
+        str(Path(config["wrapper_version"]).joinpath("bio/diamond/makedb"))
 
 
-# rule download_taxonomy_database:
-#     output:
-#     params:
-#     log:
-#     benchmark:
-#     conda:
-#     shell:
+rule download_taxonomy_database:
+    output:
+        # Replace the .test/ directory with data/ directory if it is set like so
+        rankedlineage=config["lineage_parser"]["db"],
+    params:
+        download_url=config["lineage_parser"]["download_url"],
+        output_dir=lambda w, input_: str(Path(input_.rankedlineage).parent)
+    log:
+        "output/logs/annotation/cog/download_taxonomy_database.log"
+    conda:
+        "../envs/bash.yaml"
+    shell:
+        """
+        mkdir -p {params.output_dir} 2>> {log}
+
+        DST={params.output_dir}/$(basename {params.download_url})
+
+        wget {params.download_url} -O $DST 2>> {log}
+
+        tar zxvf $DST -C {params.output_dir} 2>> {log}
+
+        ls {output.rankedlineage} 2>> {log}
+        """
 
 
 rule diamond:
     input:
-        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
+        fname_fasta="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_proteins.faa",
-        db=config["diamond"]["db"],
+        fname_db=config["diamond"]["db"],
     output:
-        dmnd_out=get_diamond_output(),
+        fname=get_diamond_output(),
     params:
-        max_target_seqs=1,
-        output_type=config["diamond"]["output_type"],
-        output_format=config["diamond"]["output_format"],
+        extra=f"--header --max-target-seqs 1 " \
+              f"-f {config['diamond']['output_type']} {config['diamond']['output_format']}"
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/annotation/diamond/{sample}.log"
@@ -129,27 +156,16 @@ rule diamond:
         "output/benchmarks/annotation/diamond/{sample}.txt" if not config[
         "coassembly"
         ] else "output/benchmarks/annotation/diamond/coassembly.txt"
-    conda:
-        "../envs/diamond.yaml"
-    shell:
-        """
-        echo {params.output_format} | sed -e 's/ /\t/g' > {output}
-        {{ diamond blastp -q {input}                            \
-                   --max-target-seqs {params.max_target_seqs}   \
-                   -p {threads}                                 \
-                   -d {input.db}                                \
-                   -f {params.output_type}                      \
-                   {params.output_format}                       \
-                   >> {output} ; }} &> {log}
-        """
+    wrapper:
+        str(Path(config["wrapper_version"]).joinpath("bio/diamond/blastp"))
 
 
 rule cog_parser:
     input:
         dmnd_out=get_diamond_output(),
-        cog_csv=get_cog_db_file("cog-20.cog.csv*"),
-        def_tab=get_cog_db_file("cog-20.def.tab*"),
-        fun_tab=get_cog_db_file("fun-20.tab*"),
+        cog_csv=get_cog_db_file("cog-20.cog.csv"),
+        def_tab=get_cog_db_file("cog-20.def.tab"),
+        fun_tab=get_cog_db_file("fun-20.tab"),
     output:
         categories_out="output/annotation/cog/{sample}/{sample}_categories.tsv"
         if not config["coassembly"]
