@@ -103,7 +103,7 @@ rule diamond_makedb:
     input:
         fname=get_cog_db_file("cog-20.fa.gz"),
     output:
-        fname=get_cog_db_file("cog-20.fa.gz".replace(".fa.gz", ".dmnd"))
+        fname=config["diamond"]["db"]
     log:
         "output/logs/annotation/diamond/diamond_makedb.log"
     threads: round(workflow.cores * 0.25)

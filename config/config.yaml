@@ -46,7 +46,7 @@ prokka:
   kingdom: "Bacteria"
 
 diamond:
-  db: "data/COG2020/cog-20.dmnd"  # for testing purposes only
+  db: ".test/cog-20.dmnd"  # for testing purposes only
   output_type: 6
   output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
 
