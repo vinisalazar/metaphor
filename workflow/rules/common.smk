@@ -70,20 +70,22 @@ def get_cog_db_file(filename):
     except AssertionError as e:
         # Ignore the error if linting or on dry-runs
         import sys
+
         allow_on = ("--lint", "--dry-run", "--dryrun", "-n")
         if any(term in sys.argv for term in allow_on):
             return filename
 
         # Else, raise the error
-        message = f"Could not find input file {filename}.\n" \
-                  f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
+        message = (
+            f"Could not find input file {filename}.\n"
+            f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
+        )
 
-        if 'logging' in locals():
+        if "logging" in locals():
             logging.error(message)
         else:
             print(message)
         raise
-
 
     # Convert to string rather than Path
     output = str(output)
@@ -253,13 +255,13 @@ def get_fasta_bins():
 
 # Outputs
 def get_final_output():
-    final_output = [
+    final_output = (
         get_qc_output(),
         get_all_assembly_outputs(),
         get_mapping_output(),
         get_annotation_output(),
         get_binning_output(),
-    ]
+    )
     return final_output
 
 
@@ -370,7 +372,7 @@ def get_concatenate_cog_outputs():
 
 
 def get_mem_mb(wildcards, threads):
-    return threads * 10000
+    return threads * config["resources"]["mb_per_thread"]
 
 
 def get_lineage_parser_outputs():
@@ -392,3 +394,16 @@ def get_prokka_output():
 
 def get_metaquast_output():
     return "output/assembly/metaquast/combined_reference/report.html"
+
+
+def get_postprocessing_output():
+    if is_activated("postprocessing"):
+        return (
+            "output/benchmarks/processing_benchmarks.csv",
+            "output/postprocessing/runtime_barplot_sum.png",
+            "output/postprocessing/runtime_barplot_errorbar.png",
+            "output/postprocessing/memory_barplot_sum.png",
+            "output/postprocessing/memory_barplot_errorbar.png",
+        )
+    else:
+        return ()

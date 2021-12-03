@@ -13,11 +13,13 @@ this way they are submitted to a single node and can be run in succession.
 
 rule concatenate_benchmarks:
     input:
-        *get_final_output(),
+        get_final_output(),
     output:
         benchmarks="output/benchmarks/processing_benchmarks.csv",
     params:
         benchmarks_dir=lambda w, output: str(Path(output.benchmarks).parent),
+    group:
+        "postprocessing"
     log:
         "output/logs/postprocessing/concatenate_benchmarks.log",
     benchmark:
@@ -42,6 +44,8 @@ rule plot_benchmarks:
         memory_unit=config["postprocessing"]["memory_unit"],
         memory_cutoff=config["postprocessing"]["memory_cutoff"],
         memory_gb="--gb" if config["postprocessing"]["memory_gb"] else "",
+    group:
+        "postprocessing"
     log:
         "output/logs/postprocessing/plot_benchmarks.log",
     benchmark:
@@ -61,8 +65,6 @@ rule plot_benchmarks:
 #     benchmark:
 #     conda:
 #     shell:
-
-
 # rule compress_outputs:
 #     input:
 #     output:

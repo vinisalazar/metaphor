@@ -20,34 +20,9 @@ include: "rules/postprocessing.smk"
 rule all:
     """
     Requires all final outputs.
-
-    Actions:
-        - concatenate benchmarks
-        - remove zero-sized outputs (TODO)
-        - compress big files (TODO)
     """
     input:
-        *get_final_output(),
-    output:
-        benchmarks="output/benchmarks/all_benchmarks.csv",
-    params:
-        benchmarks_dir=lambda w, output: str(Path(output.benchmarks).parent),
-        time_unit=config["postprocessing"]["runtime_unit"],
-        time_cutoff=config["postprocessing"]["runtime_cutoff"],
-        memory_unit=config["postprocessing"]["memory_unit"],
-        memory_cutoff=config["postprocessing"]["memory_cutoff"],
-        memory_gb="--gb" if config["postprocessing"]["memory_gb"] else "",
-    log:
-        "output/logs/rule_all.log",
-    conda:
-        "envs/bash.yaml"
-    shell:
-        """
-        workflow/scripts/concatenate_benchmarks.py {params.benchmarks_dir} {output.benchmarks} &> {log}
-        workflow/scripts/plot_benchmarks.py --benchmarks_df {output.benchmarks} \
-            --time_unit {params.time_unit}                                      \
-            --time_cutoff {params.time_cutoff}                                  \
-            --memory_unit {params.memory_unit}                                  \
-            --memory_cutoff {params.memory_cutoff}                              \
-            {params.memory_gb} >> {log} 2>&1
-        """
+        final_output=get_final_output(),
+        postprocessing=get_postprocessing_output()
+        if is_activated("postprocessing")
+        else None,
