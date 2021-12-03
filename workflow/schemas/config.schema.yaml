@@ -17,6 +17,14 @@ properties:
   coassembly:
     type: boolean
 
+  resources:
+    type: object
+    properties:
+      mb_per_thread:
+        type: integer
+    required:
+      - mb_per_thread
+
   trimming:
     type: object
     properties:
@@ -205,6 +213,7 @@ required:
   - samples
   - wrapper_version
   - coassembly
+  - resources
   - trimming
   - merge_reads
   - concatenate_contigs

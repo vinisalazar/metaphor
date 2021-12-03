@@ -1,17 +1,28 @@
 # Based on the Snakemake RNASeq workflow:
 #   https://github.com/snakemake-workflows/rna-seq-star-deseq2/
 
+###############################################################
+# TOP LEVEL
+# These settings are valid for all steps in the workflow.
+###############################################################
+
 # Path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
 samples: config/samples.csv
-
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
 wrapper_version: v0.80.1
 
 coassembly: False
+
+resources:
+  mb_per_thread: 8192  # how many GBs per processor
+
+###############################################################
+# QC
+###############################################################
 
 trimming:
   activate: True
@@ -24,6 +35,10 @@ trimming:
 merge_reads:
   activate: True
 
+###############################################################
+# Assembly
+###############################################################
+
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
   sequence_length_cutoff: 1
@@ -34,6 +49,10 @@ megahit:
 metaquast:
   activate: False
   reference: ""
+
+###############################################################
+# Annotation
+###############################################################
 
 prodigal:
   activate: True
@@ -59,6 +78,10 @@ lineage_parser:
   db: "data/taxonomy/rankedlineage.dmp"
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
 
+###############################################################
+# Binning
+###############################################################
+
 vamb:
   activate: False
 
@@ -72,6 +95,10 @@ concoct:
 
 das_tool:
   activate: False
+
+###############################################################
+# Postprocessing
+###############################################################
 
 postprocessing:
   activate: True
