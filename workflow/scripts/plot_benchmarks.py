@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import sys
 import argparse
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -21,7 +21,11 @@ def runtime_barplot_sum(df, **kwargs):
     Generates barplot of sum of rules' runtimes.
     """
     fig, ax = plt.subplots(figsize=(4, 8))
-    outfile, time_unit, cutoff = kwargs["outfile"], kwargs["time_unit"], kwargs["time_cutoff"]
+    outfile, time_unit, cutoff = (
+        kwargs["outfile"],
+        kwargs["time_unit"],
+        kwargs["time_cutoff"],
+    )
     plot_data = (
         (df.groupby(by=["module", "rule"])[time_unit].sum())
         .reset_index()
@@ -54,7 +58,11 @@ def runtime_barplot_errorbar(df, **kwargs):
     The time-per-sample is corrected in rules that run once for all samples.
     """
     fig, ax = plt.subplots(figsize=(4, 8))
-    outfile, time_unit, cutoff = kwargs["outfile"], kwargs["time_unit"], kwargs["time_cutoff"]
+    outfile, time_unit, cutoff = (
+        kwargs["outfile"],
+        kwargs["time_unit"],
+        kwargs["time_cutoff"],
+    )
     df[time_unit + "_corrected"] = df.apply(
         lambda row: row["m"] / df["sample"].str[:6].value_counts().shape[0]
         if not isinstance(row["sample"], str)
@@ -88,7 +96,12 @@ def memory_barplot_sum(df, **kwargs):
     """
     Generates barplot of sum of rules' memory usage.
     """
-    outfile, memory_unit, cutoff, gb = kwargs["outfile"], kwargs["memory_unit"],  kwargs["memory_cutoff"],  kwargs["gb"]
+    outfile, memory_unit, cutoff, gb = (
+        kwargs["outfile"],
+        kwargs["memory_unit"],
+        kwargs["memory_cutoff"],
+        kwargs["gb"],
+    )
     if df[memory_unit].all() == "-":
         print("Skipping plot, no memory stats recorded.")
         return
@@ -133,7 +146,12 @@ def memory_barplot_errorbar(df, **kwargs):
     """
     Generates barplot of sum of rules' memory usage.
     """
-    outfile, memory_unit, cutoff, gb = kwargs["outfile"], kwargs["memory_unit"],  kwargs["memory_cutoff"],  kwargs["gb"]
+    outfile, memory_unit, cutoff, gb = (
+        kwargs["outfile"],
+        kwargs["memory_unit"],
+        kwargs["memory_cutoff"],
+        kwargs["gb"],
+    )
     if df[memory_unit].all() == "-":
         print("Skipping plot, no memory stats recorded.")
         return
@@ -181,18 +199,41 @@ def main(args):
     for plot in plots:
         try:
             outfile = Path(args.benchmarks_df).parent.joinpath(plot.__name__ + ".png")
-            plot(df, outfile=outfile, time_unit=args.time_unit, memory_unit=args.memory_unit, time_cutoff=args.time_cutoff, memory_cutoff=args.memory_cutoff, gb=args.gb)
+            plot(
+                df,
+                outfile=outfile,
+                time_unit=args.time_unit,
+                memory_unit=args.memory_unit,
+                time_cutoff=args.time_cutoff,
+                memory_cutoff=args.memory_cutoff,
+                gb=args.gb,
+            )
         except Exception as error:
             print(f"Could not generate {outfile}. The following error occurred:")
             print(error)
-            if 'memory' in plot.__name__:
-                print("It is possible that your OS does not support capture of memory usage.")
+            if "memory" in plot.__name__:
+                print(
+                    "It is possible that your OS does not support capture of memory usage."
+                )
                 print("Therefore, only runtime plots will be generated.\n")
             pass
 
 
-if __name__ == "__main__":
-    print(f"Starting execution of {__file__}.\n")
+def parse_snakemake_args(snakemake):
+    args = argparse.Namespace()
+    args_dict = vars(args)
+
+    for directive in "input", "output", "params":
+        try:
+            for k, v in getattr(snakemake, directive).items():
+                args_dict[k] = v
+        except AttributeError:
+            pass
+
+    return args
+
+
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--benchmarks_df")
     parser.add_argument("--time_unit", default="m")
@@ -201,5 +242,24 @@ if __name__ == "__main__":
     parser.add_argument("--memory_cutoff", default=0)
     parser.add_argument("--gb", action="store_true")
     args = parser.parse_args()
-    main(args)
-    print(f"Finished execution of {__file__}.\n")
+    return args
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+    )
+    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
+    logging.debug(f"Full script path: '{__file__}'.")
+    if "snakemake" in locals():
+        logging.basicConfig(filename=str(snakemake.log))
+        args = parse_snakemake_args(snakemake)
+    else:
+        args = parse_args()
+    try:
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)

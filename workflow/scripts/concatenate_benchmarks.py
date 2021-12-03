@@ -9,7 +9,8 @@ Usage:
 """
 
 
-import sys
+import argparse
+import logging
 from glob import glob
 from pathlib import Path
 import pandas as pd
@@ -40,20 +41,54 @@ def get_benchmark_files(benchmarks_dir):
     return files
 
 
-def main(benchmarks_dir):
+def main(args):
+    benchmarks_dir, outfile = args.benchmarks_dir, args.outfile
     files = get_benchmark_files(benchmarks_dir)
     list_of_dfs = [create_benchmark_df(file, benchmarks_dir) for file in files]
     df = cat_benchmark_dfs(list_of_dfs)
-    try:
-        outfile = sys.argv[2]
-    except IndexError:
-        outfile = benchmarks_dir + "/all_benchmarks.csv"
 
     print(f"Writing {len(files)} benchmarks to {outfile}.\n")
     df.to_csv(outfile, index=False)
 
 
+def parse_snakemake_args(snakemake):
+    args = argparse.Namespace()
+    args_dict = vars(args)
+
+    for directive in "input", "output", "params":
+        try:
+            for k, v in getattr(snakemake, directive).items():
+                args_dict[k] = v
+        except AttributeError:
+            pass
+
+    return args
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--benchmarks_dir")
+    parser.add_argument("--outfile")
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
-    print(f"Starting execution of {__file__}.\n")
-    main(sys.argv[1])
-    print(f"Finished execution of {__file__}.\n")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+    )
+    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
+    logging.debug(f"Full script path: '{__file__}'.")
+    if "snakemake" in locals():
+        logging.basicConfig(filename=str(snakemake.log))
+        args = parse_snakemake_args(snakemake)
+    else:
+        args = parse_args()
+    try:
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)
+
