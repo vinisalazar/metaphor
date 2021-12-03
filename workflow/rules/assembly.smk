@@ -96,7 +96,7 @@ rule megahit_coassembly:
 
 rule metaquast:
     input:
-        assemblies=get_contigs_input()
+        assemblies="output/assembly/megahit/coassembly.contigs.fa"
         if config["coassembly"]
         else expand(
             "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs

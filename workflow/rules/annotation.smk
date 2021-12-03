@@ -50,6 +50,7 @@ rule prodigal:
         """
 
 
+# TODO: refactor for coassembly
 rule prokka:
     input:
         contigs=get_contigs_input(),

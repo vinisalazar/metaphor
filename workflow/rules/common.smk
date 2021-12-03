@@ -222,15 +222,11 @@ def get_map_reads_input_R2(wildcards):
 
 
 def get_contigs_input():
+    """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
     if config["coassembly"]:
         contigs = "output/assembly/megahit/coassembly.contigs.fa"
     else:
-        contigs = (
-            expand(
-                "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-                sample=sample_IDs,
-            ),
-        )
+        contigs = "output/assembly/megahit/{sample}/{sample}.contigs.fa"
     return contigs
 
 
