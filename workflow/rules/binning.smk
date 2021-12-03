@@ -19,6 +19,8 @@ rule vamb:
         minfasta=200000,
         batchsize=256,
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/vamb.log",
     benchmark:
@@ -57,6 +59,8 @@ rule metabat2:
             Path(output.outdir).joinpath(config["metabat2"]["preffix"])
         ),
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/metabat2.log",
     benchmark:

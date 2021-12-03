@@ -9,7 +9,6 @@ Annotation rules:
 from pathlib import Path
 
 
-
 rule prodigal:
     input:
         contigs=get_contigs_input(),
@@ -84,9 +83,9 @@ rule download_COG_database:
         cog_fasta=get_cog_db_file("cog-20.fa.gz"),
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
-        fun_tab=get_cog_db_file("fun-20.tab"),        
+        fun_tab=get_cog_db_file("fun-20.tab"),
     log:
-        "output/logs/annotation/download_COG_database.log"
+        "output/logs/annotation/download_COG_database.log",
     benchmark:
         "output/benchmarks/annotation/download_COG_database.txt"
     conda:
@@ -103,9 +102,9 @@ rule diamond_makedb:
     input:
         fname=get_cog_db_file("cog-20.fa.gz"),
     output:
-        fname=config["diamond"]["db"]
+        fname=config["diamond"]["db"],
     log:
-        "output/logs/annotation/diamond/diamond_makedb.log"
+        "output/logs/annotation/diamond/diamond_makedb.log",
     threads: round(workflow.cores * 0.25)
     wrapper:
         str(Path(config["wrapper_version"]).joinpath("bio/diamond/makedb"))
@@ -117,9 +116,9 @@ rule download_taxonomy_database:
         rankedlineage=config["lineage_parser"]["db"],
     params:
         download_url=config["lineage_parser"]["download_url"],
-        output_dir=lambda w, input_: str(Path(input_.rankedlineage).parent)
+        output_dir=lambda w, input_: str(Path(input_.rankedlineage).parent),
     log:
-        "output/logs/annotation/cog/download_taxonomy_database.log"
+        "output/logs/annotation/cog/download_taxonomy_database.log",
     conda:
         "../envs/bash.yaml"
     shell:
@@ -145,8 +144,8 @@ rule diamond:
     output:
         fname=get_diamond_output(),
     params:
-        extra=f"--header --max-target-seqs 1 " \
-              f"-f {config['diamond']['output_type']} {config['diamond']['output_format']}"
+        extra=f"--header --max-target-seqs 1 "
+        f"-f {config['diamond']['output_type']} {config['diamond']['output_format']}",
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/annotation/diamond/{sample}.log"
