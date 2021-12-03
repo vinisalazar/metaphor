@@ -107,6 +107,8 @@ rule concoct:
             Path(output.outdir).joinpath("clustering_merged.csv")
         ),
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/concoct.log",
     benchmark:
@@ -162,6 +164,8 @@ rule DAS_tool:
             Path(output.proteins).parent.joinpath("DAS_tool")
         ),
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/DAS_tool.log",
     benchmark:
