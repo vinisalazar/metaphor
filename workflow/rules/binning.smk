@@ -179,5 +179,6 @@ rule DAS_tool:
                  -c {input.contigs}             \
                  -o {params.outpreffix}         \
                  --search_engine diamond        \
+                 --write_bins 1                 \
                  --threads {threads} &> {log}
         """
