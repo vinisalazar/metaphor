@@ -7,3 +7,5 @@ slurm-*.out
 .DS_Store
 mgp/
 .*-bkp/
+run.sh
+
