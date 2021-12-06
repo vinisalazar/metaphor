@@ -29,7 +29,7 @@ def main(args):
         codes_out,
         tax_out,
         pathways_out,
-        threads,
+        # threads,
     ) = (
         args.dmnd_out,
         args.cog_csv,
@@ -39,7 +39,7 @@ def main(args):
         args.codes_out,
         args.tax_out,
         args.pathways_out,
-        args.threads,
+        # args.threads,
     )
 
     for file in (dmnd_out, cog_csv, fun_tab, def_tab):
