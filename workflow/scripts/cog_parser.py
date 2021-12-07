@@ -29,7 +29,7 @@ def main(args):
         codes_out,
         tax_out,
         pathways_out,
-        threads,
+        # threads,
     ) = (
         args.dmnd_out,
         args.cog_csv,
@@ -39,7 +39,7 @@ def main(args):
         args.codes_out,
         args.tax_out,
         args.pathways_out,
-        args.threads,
+        # args.threads,
     )
 
     for file in (dmnd_out, cog_csv, fun_tab, def_tab):
@@ -196,15 +196,22 @@ def main(args):
     # The `zip(*df.apply(...))` expands the result of the apply into two columns.
     # Source:
     #   https://stackoverflow.com/questions/29550414/how-can-i-split-a-column-of-tuples-in-a-pandas-dataframe
-    merged_df["taxid"], merged_df["taxname"] = zip(
-        *merged_df.apply(
-            lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
+    try:
+        merged_df["taxid"], merged_df["taxname"] = zip(
+            *merged_df.apply(
+                lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
+            )
         )
-    )
-    merged_df = merged_df[["taxid", "taxname"]].value_counts()
-    merged_df.name = "absolute"
+        merged_df = merged_df[["taxid", "taxname"]].value_counts()
+        merged_df.name = "absolute"
+        logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
+    except Exception as e:
+        logging.info(
+            "Couldn't write taxonomies. Writing empty file so workflow continues."
+        )
+        logging.error(e)
+
     merged_df.to_csv(tax_out, sep="\t")
-    logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
     del merged_df
 
 
@@ -223,16 +230,12 @@ def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for rule_input in ("dmnd_out",):
-        args_dict[rule_input] = snakemake.input[rule_input]
-
-    for rule_param in ("cog_csv", "fun_tab", "def_tab"):
-        args_dict[rule_param] = snakemake.params[rule_param]
-
-    for rule_output in ("categories_out", "codes_out", "tax_out", "pathways_out"):
-        args_dict[rule_output] = snakemake.output[rule_output]
-
-    args_dict["threads"] = snakemake.threads
+    for directive in "input", "output", "params":
+        try:
+            for k, v in getattr(snakemake, directive).items():
+                args_dict[k] = v
+        except AttributeError:
+            pass
 
     return args
 
@@ -253,20 +256,7 @@ def parse_args():
     return args
 
 
-if "snakemake" in locals():
-    logging.basicConfig(
-        filename=str(snakemake.log),
-        encoding="utf-8",
-        level=logging.INFO,
-        format="%(asctime)s %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-    )
-    logging.info(f"Starting script {__file__.split('/')[-1]}.")
-    logging.debug(f"Full script path: {__file__}")
-    args = parse_snakemake_args(snakemake)
-    main(args)
-    logging.info("Done.")
-elif __name__ == "__main__":
+if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
@@ -274,6 +264,13 @@ elif __name__ == "__main__":
     )
     logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
     logging.debug(f"Full script path: '{__file__}'.")
-    args = parse_args()
-    main(args)
-    logging.info("Done.")
+    if "snakemake" in locals():
+        logging.basicConfig(filename=str(snakemake.log))
+        args = parse_snakemake_args(snakemake)
+    else:
+        args = parse_args()
+    try:
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)

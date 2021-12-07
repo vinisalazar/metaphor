@@ -48,16 +48,12 @@ def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for rule_input in ("categories", "codes"):
-        args_dict[rule_input] = snakemake.input[rule_input]
-
-    for rule_output in (
-        "concat_categories_absolute",
-        "concat_categories_relative",
-        "concat_codes_absolute",
-        "concat_codes_relative",
-    ):
-        args_dict[rule_output] = snakemake.output[rule_output]
+    for directive in "input", "output", "params":
+        try:
+            for k, v in getattr(snakemake, directive).items():
+                args_dict[k] = v
+        except AttributeError:
+            pass
 
     return args
 
@@ -74,20 +70,7 @@ def parse_args():
     return args
 
 
-if "snakemake" in locals():
-    logging.basicConfig(
-        filename=str(snakemake.log),
-        encoding="utf-8",
-        level=logging.INFO,
-        format="%(asctime)s %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-    )
-    logging.info(f"Starting script {__file__.split('/')[-1]}.")
-    logging.debug(f"Full script path: {__file__}")
-    args = parse_snakemake_args(snakemake)
-    main(args)
-    logging.info("Done.")
-elif __name__ == "__main__":
+if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
@@ -95,6 +78,13 @@ elif __name__ == "__main__":
     )
     logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
     logging.debug(f"Full script path: '{__file__}'.")
-    args = parse_args()
-    main(args)
-    logging.info("Done.")
+    if "snakemake" in locals():
+        logging.basicConfig(filename=str(snakemake.log))
+        args = parse_snakemake_args(snakemake)
+    else:
+        args = parse_args()
+    try:
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)

@@ -33,24 +33,22 @@ def main(args):
         rank_df.to_csv(vars(args).get(rank), sep="\t")
 
 
+
 def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for rule_input in ("tax_out", "rankedlineage"):
-        args_dict[rule_input] = snakemake.input[rule_input]
-
-    for rank in ranks:
-        # The following block prevents conflict with Python's reserved keyword 'class'
-        # An old problem for Pythonistas that work with taxonomy :)
-        # See the rule 'lineage_parser' output directive to see class is spelled with a 'k'
-        if (rank_ := rank) == "class":
-            rank_ = rank.replace("c", "k")
-        else:
+    for directive in "input", "output", "params":
+        try:
+            # The following block prevents conflict with Python's reserved keyword 'class'
+            # An old problem for Pythonistas that work with taxonomy :)
+            # See the rule 'lineage_parser' output directive to see class is spelled with a 'k'
+            for k, v in getattr(snakemake, directive).items():
+                if k == "klass":
+                    k = k.replace("k", "c")
+                args_dict[k] = v
+        except AttributeError:
             pass
-        args_dict[rank] = snakemake.output[rank_]
-
-    args_dict["threads"] = snakemake.threads
 
     return args
 
@@ -75,20 +73,7 @@ def parse_args():
     return args
 
 
-if "snakemake" in locals():
-    logging.basicConfig(
-        filename=str(snakemake.log),
-        encoding="utf-8",
-        level=logging.INFO,
-        format="%(asctime)s %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-    )
-    logging.info(f"Starting script {__file__.split('/')[-1]}.")
-    logging.debug(f"Full script path: {__file__}")
-    args = parse_snakemake_args(snakemake)
-    main(args)
-    logging.info("Done.")
-elif __name__ == "__main__":
+if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
@@ -96,6 +81,13 @@ elif __name__ == "__main__":
     )
     logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
     logging.debug(f"Full script path: '{__file__}'.")
-    args = parse_args()
-    main(args)
-    logging.info("Done.")
+    if "snakemake" in locals():
+        logging.basicConfig(filename=str(snakemake.log))
+        args = parse_snakemake_args(snakemake)
+    else:
+        args = parse_args()
+    try:
+        main(args)
+        logging.info("Done.")
+    except Exception as e:
+        logging.error(e)

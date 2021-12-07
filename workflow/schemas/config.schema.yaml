@@ -14,6 +14,17 @@ properties:
   wrapper_version:
     type: string
 
+  coassembly:
+    type: boolean
+
+  resources:
+    type: object
+    properties:
+      mb_per_thread:
+        type: integer
+    required:
+      - mb_per_thread
+
   trimming:
     type: object
     properties:
@@ -126,13 +137,16 @@ properties:
   lineage_parser:
     type: object
     properties:
-      db:
-        type: string
       activate:
         type: boolean
+      db:
+        type: string
+      download_url:
+        type: string
     required:
       - db
       - activate
+      - download_url
 
   vamb:
     type: object
@@ -196,8 +210,10 @@ properties:
       - memory_gb
 
 required:
-  - units
+  - samples
   - wrapper_version
+  - coassembly
+  - resources
   - trimming
   - merge_reads
   - concatenate_contigs

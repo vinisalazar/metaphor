@@ -5,8 +5,6 @@ on:
     branches:
       - main
       - stage
-  pull_request:
-    branches_ignore: []
 
 jobs:
   formatting:
@@ -17,7 +15,7 @@ jobs:
       with:
         submodules: recursive
     - name: Formatting
-      uses: github/super-linter@v3
+      uses: github/super-linter@v4
       env:
         VALIDATE_ALL_CODEBASE: false
         DEFAULT_BRANCH: main
@@ -26,9 +24,9 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Linting
-      uses: snakemake/snakemake-github-action@v1.22.0
+      uses: snakemake/snakemake-github-action@v1.24.0
       with:
         directory: .
         snakefile: workflow/Snakefile
@@ -45,7 +43,7 @@ jobs:
       with:
         submodules: recursive
     - name: Test workflow
-      uses: snakemake/snakemake-github-action@v1.22.0
+      uses: snakemake/snakemake-github-action@v1.24.0
       with:
         directory: .
         snakefile: workflow/Snakefile
@@ -55,7 +53,7 @@ jobs:
               --dryrun"
     # Report testing is deactivated for now
     # - name: Test report
-    #   uses: snakemake/snakemake-github-action@v1.22.0
+    #   uses: snakemake/snakemake-github-action@v1.24.0
     #   with:
     #     directory: .test
     #     snakefile: workflow/Snakefile

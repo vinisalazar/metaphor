@@ -1,14 +1,20 @@
-$schema: "http://json-schema.org/draft-06/schema#"
-
-description: an entry in the sample sheet
+$schema: "http://json-schema.org/draft-04/schema#"
+description: row of the units.csv, representing a sequencing unit, i.e. single-end or paired-end data
+type: object
 properties:
   sample_name:
     type: string
-    description: sample name/identifier
-  condition:
+    description: sample name/id the unit has been sequenced from
+  unit_name:
     type: string
-    description: any metadata condition associated with the sample
+    description: unit id
+  R1:
+    type: string
+    description: path to FASTQ file
+  R2:
+    type: string
+    description: path to second FASTQ file (leave empty in case of single-end)
 
 required:
   - sample_name
-  - condition
+  - R1

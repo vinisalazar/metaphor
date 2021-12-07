@@ -19,6 +19,8 @@ rule vamb:
         minfasta=200000,
         batchsize=256,
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/vamb.log",
     benchmark:
@@ -57,6 +59,8 @@ rule metabat2:
             Path(output.outdir).joinpath(config["metabat2"]["preffix"])
         ),
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/metabat2.log",
     benchmark:
@@ -103,6 +107,8 @@ rule concoct:
             Path(output.outdir).joinpath("clustering_merged.csv")
         ),
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/concoct.log",
     benchmark:
@@ -158,6 +164,8 @@ rule DAS_tool:
             Path(output.proteins).parent.joinpath("DAS_tool")
         ),
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/binning/DAS_tool.log",
     benchmark:
@@ -171,5 +179,6 @@ rule DAS_tool:
                  -c {input.contigs}             \
                  -o {params.outpreffix}         \
                  --search_engine diamond        \
+                 --write_bins 1                 \
                  --threads {threads} &> {log}
         """
