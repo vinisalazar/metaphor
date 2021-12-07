@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Linting
-      uses: snakemake/snakemake-github-action@v1.22.0
+      uses: snakemake/snakemake-github-action@v1.24.0
       with:
         directory: .
         snakefile: workflow/Snakefile
@@ -47,7 +47,7 @@ jobs:
       with:
         submodules: recursive
     - name: Test workflow
-      uses: snakemake/snakemake-github-action@v1.22.0
+      uses: snakemake/snakemake-github-action@v1.24.0
       with:
         directory: .
         snakefile: workflow/Snakefile
@@ -57,7 +57,7 @@ jobs:
               --dryrun"
     # Report testing is deactivated for now
     # - name: Test report
-    #   uses: snakemake/snakemake-github-action@v1.22.0
+    #   uses: snakemake/snakemake-github-action@v1.24.0
     #   with:
     #     directory: .test
     #     snakefile: workflow/Snakefile
