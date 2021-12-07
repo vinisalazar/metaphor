@@ -6,7 +6,9 @@ on:
       - main
       - stage
   pull_request:
-    branches_ignore: []
+    branches:
+      - main
+      - stage
 
 jobs:
   formatting:
@@ -26,7 +28,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Linting
       uses: snakemake/snakemake-github-action@v1.22.0
       with:
