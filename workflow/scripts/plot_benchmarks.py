@@ -198,7 +198,7 @@ def main(args):
     )
     for plot in plots:
         try:
-            outfile = Path(args.benchmarks_df).parent.joinpath(plot.__name__ + ".png")
+            outfile = getattr(args, plot.__name__)
             plot(
                 df,
                 outfile=outfile,
@@ -241,6 +241,10 @@ def parse_args():
     parser.add_argument("--time_cutoff", default=0)
     parser.add_argument("--memory_cutoff", default=0)
     parser.add_argument("--gb", action="store_true")
+    parser.add_argument("--runtime_barplot_sum")
+    parser.add_argument("--runtime_barplot_errorbar")
+    parser.add_argument("--memory_barplot_sum")
+    parser.add_argument("--memory_barplot_errorbar")
     args = parser.parse_args()
     return args
 
