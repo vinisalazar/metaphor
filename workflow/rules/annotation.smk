@@ -145,8 +145,9 @@ rule diamond:
     output:
         fname=get_diamond_output(),
     params:
-        extra=f"--header --max-target-seqs 1 "
-        f"-f {config['diamond']['output_type']} {config['diamond']['output_format']}",
+        max_target_seqs=1,
+        output_type=config["diamond"]["output_type"],
+        output_format=config["diamond"]["output_format"],
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/annotation/diamond/{sample}.log"
@@ -156,8 +157,19 @@ rule diamond:
         "output/benchmarks/annotation/diamond/{sample}.txt" if not config[
         "coassembly"
         ] else "output/benchmarks/annotation/diamond/coassembly.txt"
-    wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/diamond/blastp"))
+    conda:
+        "../envs/diamond.yaml"
+    shell:
+        """
+        echo {params.output_format} | sed -e 's/ /\t/g' > {output.fname}
+        {{ diamond blastp -q {input.fname_fasta}                \
+                   --max-target-seqs {params.max_target_seqs}   \
+                   -p {threads}                                 \
+                   -d {input.fname_db}                          \
+                   -f {params.output_type}                      \
+                   {params.output_format}                       \
+                   >> {output.fname} ; }} &> {log}
+        """
 
 
 rule cog_parser:
