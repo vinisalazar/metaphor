@@ -110,6 +110,8 @@ rule metaquast:
         outdir=lambda w, output: str(Path(output.outfile).parent.parent),
         extra_params="--no-icarus",
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
     log:
         "output/logs/assembly/metaquast.log",
     benchmark:
