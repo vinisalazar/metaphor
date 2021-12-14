@@ -215,11 +215,62 @@ rule concatenate_cog:
         codes=expand(
             "output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs
         ),
+        taxs=expand(
+            "output/annotation/cog/{sample}/{sample}_tax.tsv", sample=sample_IDs
+        ),
+        pathways=expand(
+            "output/annotation/cog/{sample}/{sample}_pathways.tsv", sample=sample_IDs
+        ),
+        species=expand(
+            "output/annotation/cog/{sample}/{sample}_species.tsv", sample=sample_IDs
+        ),
+        genus=expand(
+            "output/annotation/cog/{sample}/{sample}_genus.tsv", sample=sample_IDs
+        ),
+        family=expand(
+            "output/annotation/cog/{sample}/{sample}_family.tsv", sample=sample_IDs
+        ),
+        order=expand(
+            "output/annotation/cog/{sample}/{sample}_order.tsv", sample=sample_IDs
+        ),
+        klass=expand(
+            "output/annotation/cog/{sample}/{sample}_class.tsv", sample=sample_IDs
+        ),
+        phylum=expand(
+            "output/annotation/cog/{sample}/{sample}_phylum.tsv", sample=sample_IDs
+        ),
+        kingdom=expand(
+            "output/annotation/cog/{sample}/{sample}_kingdom.tsv", sample=sample_IDs
+        ),
+        domain=expand(
+            "output/annotation/cog/{sample}/{sample}_domain.tsv", sample=sample_IDs
+        ),
     output:
-        concat_categories_absolute="output/annotation/cog/COG_categories_absolute.tsv",
-        concat_categories_relative="output/annotation/cog/COG_categories_relative.tsv",
-        concat_codes_absolute="output/annotation/cog/COG_codes_absolute.tsv",
-        concat_codes_relative="output/annotation/cog/COG_codes_relative.tsv",
+        # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
+        categories_absolute="output/annotation/cog/COG_categories_absolute.tsv",
+        categories_relative="output/annotation/cog/COG_categories_relative.tsv",
+        codes_absolute="output/annotation/cog/COG_codes_absolute.tsv",
+        codes_relative="output/annotation/cog/COG_codes_relative.tsv",
+        taxs_absolute="output/annotation/cog/COG_taxs_absolute.tsv",
+        taxs_relative="output/annotation/cog/COG_taxs_relative.tsv",
+        pathways_absolute="output/annotation/cog/COG_pathways_absolute.tsv",
+        pathways_relative="output/annotation/cog/COG_pathways_relative.tsv",
+        species_absolute="output/annotation/cog/COG_species_absolute.tsv",
+        species_relative="output/annotation/cog/COG_species_relative.tsv",
+        genus_absolute="output/annotation/cog/COG_genus_absolute.tsv",
+        genus_relative="output/annotation/cog/COG_genus_relative.tsv",
+        family_absolute="output/annotation/cog/COG_family_absolute.tsv",
+        family_relative="output/annotation/cog/COG_family_relative.tsv",
+        order_absolute="output/annotation/cog/COG_order_absolute.tsv",
+        order_relative="output/annotation/cog/COG_order_relative.tsv",
+        klass_absolute="output/annotation/cog/COG_class_absolute.tsv",
+        klass_relative="output/annotation/cog/COG_class_relative.tsv",
+        phylum_absolute="output/annotation/cog/COG_phylum_absolute.tsv",
+        phylum_relative="output/annotation/cog/COG_phylum_relative.tsv",
+        kingdom_absolute="output/annotation/cog/COG_kingdom_absolute.tsv",
+        kingdom_relative="output/annotation/cog/COG_kingdom_relative.tsv",
+        domain_absolute="output/annotation/cog/COG_domain_absolute.tsv",
+        domain_relative="output/annotation/cog/COG_domain_relative.tsv",
     log:
         "output/logs/annotation/concatenate_cog.log",
     benchmark:

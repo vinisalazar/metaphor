@@ -356,7 +356,8 @@ def get_all_diamond_outputs():
 
 
 def get_all_cog_parser_outputs():
-    cog_valid_output_kinds = ("categories", "codes", "tax")
+    cog_outputs = ["categories", "codes", "tax", "pathways"]
+    cog_valid_output_kinds = cog_outputs + ranks
     return (
         expand(
             "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
@@ -379,6 +380,26 @@ def get_concatenate_cog_outputs():
             "output/annotation/cog/COG_categories_relative.tsv",
             "output/annotation/cog/COG_codes_absolute.tsv",
             "output/annotation/cog/COG_codes_relative.tsv",
+            "output/annotation/cog/COG_taxs_absolute.tsv",
+            "output/annotation/cog/COG_taxs_relative.tsv",
+            "output/annotation/cog/COG_pathways_absolute.tsv",
+            "output/annotation/cog/COG_pathways_relative.tsv",
+            "output/annotation/cog/COG_species_absolute.tsv",
+            "output/annotation/cog/COG_species_relative.tsv",
+            "output/annotation/cog/COG_genus_absolute.tsv",
+            "output/annotation/cog/COG_genus_relative.tsv",
+            "output/annotation/cog/COG_family_absolute.tsv",
+            "output/annotation/cog/COG_family_relative.tsv",
+            "output/annotation/cog/COG_order_absolute.tsv",
+            "output/annotation/cog/COG_order_relative.tsv",
+            "output/annotation/cog/COG_class_absolute.tsv",
+            "output/annotation/cog/COG_class_relative.tsv",
+            "output/annotation/cog/COG_phylum_absolute.tsv",
+            "output/annotation/cog/COG_phylum_relative.tsv",
+            "output/annotation/cog/COG_kingdom_absolute.tsv",
+            "output/annotation/cog/COG_kingdom_relative.tsv",
+            "output/annotation/cog/COG_domain_absolute.tsv",
+            "output/annotation/cog/COG_domain_relative.tsv",
         )
         if not config["coassembly"]
         else ()
@@ -389,8 +410,10 @@ def get_mem_mb(wildcards, threads):
     return threads * config["resources"]["mb_per_thread"]
 
 
+ranks = "species genus family order class phylum kingdom domain".split()
+
+
 def get_lineage_parser_outputs():
-    ranks = "species genus family order class phylum kingdom domain".split()
     return (
         (f"output/annotation/cog/{{sample}}/{{sample}}_{rank}.tsv" for rank in ranks)
         if not config["coassembly"]
