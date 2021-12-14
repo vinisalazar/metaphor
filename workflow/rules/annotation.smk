@@ -263,11 +263,11 @@ rule lineage_parser:
     log:
         "output/logs/annotation/lineage_parser/{sample}.log"
         if not config["coassembly"]
-        else "output/logs/annotation/lineage_parser/coassembly_suffix.log",
+        else "output/logs/annotation/lineage_parser/coassembly.log",
     benchmark:
         "output/benchmarks/annotation/lineage_parser/{sample}.txt" if not config[
         "coassembly"
-        ] else "output/benchmarks/annotation/lineage_parser/coassembly_suffix.txt"
+        ] else "output/benchmarks/annotation/lineage_parser/coassembly.txt"
     conda:
         "../envs/bash.yaml"
     script:

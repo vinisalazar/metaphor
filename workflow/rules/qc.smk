@@ -135,5 +135,13 @@ rule multiqc:
         "output/logs/qc/multiqc.log",
     benchmark:
         "output/benchmarks/qc/multiqc.txt"
-    wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/multiqc"))
+    conda:
+        "../envs/multiqc.yaml"
+    shell:
+        """
+        multiqc --force -o $(dirname {output.report}) -n $(basename {output.report}) {input}
+        """
+
+
+# wrapper:
+#     str(Path(config["wrapper_version"]).joinpath("bio/multiqc"))

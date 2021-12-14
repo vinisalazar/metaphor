@@ -13,12 +13,12 @@ samples: config/samples.csv
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version: v0.80.1
+wrapper_version: "0.84.0"
 
 coassembly: False
 
 resources:
-  mb_per_thread: 8192  # how many GBs per processor
+  mb_per_thread: 8192  # how many MBs per processor
 
 ###############################################################
 # QC
@@ -48,7 +48,7 @@ megahit:
 
 metaquast:
   activate: False
-  reference: ""
+  coassembly_reference: ""  # only required if 'coassembly' is True
 
 ###############################################################
 # Annotation

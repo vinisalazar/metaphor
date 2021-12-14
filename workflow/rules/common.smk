@@ -40,6 +40,14 @@ def get_parent(path: str) -> str:
     return str(Path(path).parent)
 
 
+def allow():
+    import sys
+
+    allow_on = ("--lint", "--dry-run", "--dryrun", "-n")
+    if any(term in sys.argv for term in allow_on):
+        return True
+
+
 def is_paired_end(sample):
     sample_units = samples.loc[sample]
     fq2_null = sample_units["R2"].isnull()
@@ -54,12 +62,26 @@ def is_paired_end(sample):
     return all_paired
 
 
-def get_metaquast_reference():
-    reference = config["metaquast"].get("reference", "")
-    if Path(reference).is_file():
-        return f"-r {reference}"
-    else:
-        return ""
+def get_metaquast_reference(wildcards):
+    sample = wildcards.sample
+    try:
+        reference = samples.loc[sample, "metaquast_reference"].unique()[0]
+        assert Path(reference).is_file()
+        return reference
+    except (KeyError, IndexError):
+        if allow():
+            return ()
+        else:
+            print(
+                f"Column 'metaquast_reference' could not be found or does not contain any files."
+            )
+            raise
+    except AssertionError:
+        if allow():
+            return ()
+        else:
+            f"Reference file '{reference}' for sample '{sample}' could not be found."
+            raise
 
 
 def get_cog_db_file(filename):
@@ -68,11 +90,7 @@ def get_cog_db_file(filename):
     try:
         assert output.exists()
     except AssertionError as e:
-        # Ignore the error if linting or on dry-runs
-        import sys
-
-        allow_on = ("--lint", "--dry-run", "--dryrun", "-n")
-        if any(term in sys.argv for term in allow_on):
+        if allow():
             return filename
 
         # Else, raise the error
@@ -389,7 +407,15 @@ def get_prokka_output():
 
 
 def get_metaquast_output():
-    return "output/assembly/metaquast/combined_reference/report.html"
+    if config["coassembly"]:
+        if Path(config["metaquast"]["coassembly_reference"]).is_file():
+            return "output/assembly/metaquast_coassembly/report.html"
+        else:
+            return ()
+    else:
+        return expand(
+            "output/assembly/metaquast/{sample}/report.html", sample=sample_IDs
+        )
 
 
 def get_postprocessing_output():

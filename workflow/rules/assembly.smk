@@ -2,6 +2,7 @@
 Assembly rules:
     - concatenate_merged_reads: prepare MegaHIT input if there coassembly is True in config file
     - megahit: assemble preprocessed reads with Megahit
+    - megahit_coassembly: perform coassembly of pool of reads of all samples with Megahit
     - metaquast: evaluate assembly results with MetaQuast
 """
 
@@ -96,33 +97,37 @@ rule megahit_coassembly:
 
 rule metaquast:
     input:
-        assemblies="output/assembly/megahit/coassembly.contigs.fa"
-        if config["coassembly"]
-        else expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
-        ),
+        contigs=get_contigs_input(),
+        reference=get_metaquast_reference
+        if not config["coassembly"]
+        else config["metaquast"]["coassembly_reference"],
     output:
-        outfile=get_metaquast_output(),
+        outfile="output/assembly/metaquast/{sample}/report.html"
+        if not config["coassembly"]
+        else "output/assembly/metaquast_coassembly/report.html",
     params:
         mincontig=500,
-        reference=get_metaquast_reference(),
-        labels=",".join(sample_IDs),
-        outdir=lambda w, output: str(Path(output.outfile).parent.parent),
+        outdir=lambda w, output: str(Path(output.outfile).parent),
         extra_params="--no-icarus",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * 0.75) if config["coassembly"] else round(workflow.cores * 0.25)
+    resources:
+        mem_mb=get_mem_mb,
     log:
-        "output/logs/assembly/metaquast.log",
+        "output/logs/assembly/metaquast/{sample}.log"
+        if not config["coassembly"]
+        else "output/logs/assembly/metaquast/coassembly.log",
     benchmark:
-        "output/benchmarks/assembly/metaquast.txt"
+        "output/benchmarks/assembly/metaquast/{sample}.txt" if not config[
+        "coassembly"
+        ] else "output/benchmarks/assembly/metaquast/coassembly.txt"
     conda:
         "../envs/quast.yaml"
     shell:
         """
         metaquast.py -t {threads}               \
                      -o {params.outdir}         \
-                     -l {params.labels}         \
                      -m {params.mincontig}      \
+                     -r {input.reference}      \
                      --no-icarus                \
-                     {params.reference}         \
-                     {input.assemblies}
+                     {input.contigs}
         """
