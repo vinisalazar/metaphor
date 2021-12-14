@@ -18,7 +18,7 @@ wrapper_version: v0.80.1
 coassembly: False
 
 resources:
-  mb_per_thread: 8192  # how many GBs per processor
+  mb_per_thread: 8192  # how many MBs per processor
 
 ###############################################################
 # QC
@@ -48,7 +48,7 @@ megahit:
 
 metaquast:
   activate: False
-  reference: ""
+  coassembly_reference: ""  # only required if 'coassembly' is True
 
 ###############################################################
 # Annotation

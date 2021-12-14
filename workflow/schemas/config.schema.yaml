@@ -77,11 +77,11 @@ properties:
     properties:
       activate:
         type: boolean
-      reference:
+      coassembly_reference:
         type: string
     required:
       - activate
-      - reference
+      - coassembly_reference
 
   prodigal:
     type: object
