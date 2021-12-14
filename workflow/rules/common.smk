@@ -42,6 +42,7 @@ def get_parent(path: str) -> str:
 
 def allow():
     import sys
+
     allow_on = ("--lint", "--dry-run", "--dryrun", "-n")
     if any(term in sys.argv for term in allow_on):
         return True
@@ -61,10 +62,12 @@ def is_paired_end(sample):
     return all_paired
 
 
-def get_metaquast_reference():
+def get_metaquast_reference(wildcards):
+    sample = wildcards.sample
     try:
-        reference = samples.loc["{sample}", "metaquast_reference"].unique()[0]
+        reference = samples.loc[sample, "metaquast_reference"].unique()[0]
         assert Path(reference).is_file()
+        return reference
     except (KeyError, IndexError):
         if allow():
             return ()
