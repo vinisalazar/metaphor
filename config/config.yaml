@@ -67,7 +67,7 @@ prokka:
 diamond:
   db: ".test/cog-20.dmnd"  # for testing purposes only
   output_type: 6
-  output_format: "qseqid sseqid stitle pident length mismatch gapopen qstart qend sstart send evalue bitscore"
+  output_format: "qseqid sseqid stitle evalue bitscore"
 
 cog_parser:
   activate: False
