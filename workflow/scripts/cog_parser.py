@@ -79,9 +79,12 @@ def main(args):
 
     # Load data
     logging.info(f"Loading annotation data: '{dmnd_out}'.")
-    df = pd.read_csv(dmnd_out, sep="\t", usecols=["qseqid", "sseqid"]).drop_duplicates(
-        "qseqid"
-    )
+    df = pd.read_csv(dmnd_out, sep="\t", usecols=["qseqid", "sseqid"])
+
+    # Keep the best score
+    df = df.sort_values("bitscore", ascending=False)
+    df = df.drop_duplicates("qseqid")
+
     df["Protein ID"] = (
         df["sseqid"].str[::-1].str.split("_", 1).apply(lambda l: ".".join(l)).str[::-1]
     )
