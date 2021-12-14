@@ -127,7 +127,7 @@ rule metaquast:
         metaquast.py -t {threads}               \
                      -o {params.outdir}         \
                      -m {params.mincontig}      \
-                     -r {params.reference}      \
+                     -r {input.reference}      \
                      --no-icarus                \
                      {input.contigs}
         """
