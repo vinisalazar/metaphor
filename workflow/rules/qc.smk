@@ -139,7 +139,9 @@ rule multiqc:
         "../envs/multiqc.yaml"
     shell:
         """
-        multiqc --force -o $(dirname {output.report}) -n $(basename output.report) {input}
+        multiqc --force -o $(dirname {output.report}) -n $(basename {output.report}) {input}
         """
-    # wrapper:
-    #     str(Path(config["wrapper_version"]).joinpath("bio/multiqc"))
+
+
+# wrapper:
+#     str(Path(config["wrapper_version"]).joinpath("bio/multiqc"))
