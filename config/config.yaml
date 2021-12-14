@@ -13,7 +13,7 @@ samples: config/samples.csv
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version: v0.80.1
+wrapper_version: "0.84.0"
 
 coassembly: False
 
