@@ -81,7 +81,6 @@ properties:
         type: string
     required:
       - activate
-      - coassembly_reference
 
   prodigal:
     type: object
