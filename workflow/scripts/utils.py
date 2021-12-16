@@ -19,22 +19,22 @@ def parse_snakemake_args(snakemake):
     return args
 
 
-def driver(parse_snakemake_args_fn=parse_snakemake_args):
+def driver(main_fn, snakemake_obj, parse_args_fn=parse_snakemake_args):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
     )
-    if "snakemake" in locals():
-        fh = logging.FileHandler(str(snakemake.log), encoding="utf-8")
+    if snakemake_obj:
+        fh = logging.FileHandler(str(snakemake_obj.log), encoding="utf-8")
         logging.getLogger().addHandler(fh)
-        args = parse_snakemake_args(snakemake)
+        args = parse_args_fn(snakemake_obj)
     else:
-        args = parse_args()
+        args = parse_args_fn()
     try:
         logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
         logging.debug(f"Full script path: '{__file__}'.")
-        main(args)
+        main_fn(args)
         logging.info("Done.")
     except Exception as e:
         logging.error(e)
