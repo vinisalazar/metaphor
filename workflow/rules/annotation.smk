@@ -368,6 +368,6 @@ rule plot_cog:
     benchmark:
         "output/benchmarks/annotation/plot_cog.txt"
     conda:
-        "../envs/"
+        "../envs/bash.yaml"
     script:
         "../scripts/plot_cog.py"
