@@ -109,7 +109,7 @@ rule metaquast:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         extra_params="--no-icarus",
-    threads: round(workflow.cores * 0.75) if config["coassembly"] else round(workflow.cores * 0.50)
+    threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,
     log:

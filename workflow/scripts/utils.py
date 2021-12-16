@@ -3,6 +3,7 @@ Helper functions that are common across scripts.
 """
 import logging
 import argparse
+import traceback
 
 
 def parse_snakemake_args(snakemake):
@@ -19,7 +20,7 @@ def parse_snakemake_args(snakemake):
     return args
 
 
-def driver(main_fn, snakemake_obj, parse_args_fn=parse_snakemake_args):
+def driver(main_fn, snakemake_obj, file, parse_args_fn=parse_snakemake_args):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
@@ -32,8 +33,8 @@ def driver(main_fn, snakemake_obj, parse_args_fn=parse_snakemake_args):
     else:
         args = parse_args_fn()
     try:
-        logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
-        logging.debug(f"Full script path: '{__file__}'.")
+        logging.info(f"Starting script '{file.split('/')[-1]}'.")
+        logging.debug(f"Full script path: '{file}'.")
         main_fn(args)
         logging.info("Done.")
     except Exception as e:

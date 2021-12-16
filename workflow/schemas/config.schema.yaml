@@ -147,6 +147,23 @@ properties:
       - activate
       - download_url
 
+  plot_cog:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      filter_categories:
+        type: boolean
+      categories_cutoff:
+        type: number
+      tax_cutoff:
+        type: number
+    required:
+      - activate
+      - filter_categories
+      - categories_cutoff
+      - tax_cutoff
+
   vamb:
     type: object
     properties:
@@ -223,6 +240,7 @@ required:
   - diamond
   - cog_parser
   - lineage_parser
+  - plot_cog
   - vamb
   - metabat2
   - concoct

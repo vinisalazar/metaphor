@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 import logging
-import traceback
 from pathlib import Path
 
 import pandas as pd
@@ -242,4 +241,4 @@ if __name__ == "__main__":
     from utils import driver
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake)
+    driver(main, snakemake, __file__)

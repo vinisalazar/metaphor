@@ -325,14 +325,16 @@ def get_annotation_output():
         "diamond": get_all_diamond_outputs(),
         "cog_parser": (get_all_cog_parser_outputs(), get_concatenate_cog_outputs()),
         "lineage_parser": get_all_lineage_parser_outputs(),
+        "plot_cog": get_taxa_plot_outputs(),
         "prokka": get_prokka_output(),
     }
 
-    needs_activation = ("cog_parser", "lineage_parser", "prokka")
+    needs_activation = ("cog_parser", "lineage_parser", "plot_cog", "prokka")
     annotation_output = []
 
     if not is_activated("cog_parser"):
         config["lineage_parser"]["activate"] = False
+        config["plot_cog"]["activate"] = False
 
     for k, v in annotations.items():
         if not is_activated(k) and k in needs_activation:
@@ -439,6 +441,18 @@ def get_metaquast_output():
         return expand(
             "output/assembly/metaquast/{sample}/report.html", sample=sample_IDs
         )
+
+
+def get_taxa_plot_outputs():
+    return (
+        "output/annotation/cog/COG_species_relative.png",
+        "output/annotation/cog/COG_genus_relative.png",
+        "output/annotation/cog/COG_family_relative.png",
+        "output/annotation/cog/COG_order_relative.png",
+        "output/annotation/cog/COG_class_relative.png",
+        "output/annotation/cog/COG_phylum_relative.png",
+        "output/annotation/cog/COG_domain_relative.png",
+    )
 
 
 def get_postprocessing_output():

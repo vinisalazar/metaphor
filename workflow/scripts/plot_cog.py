@@ -13,16 +13,23 @@ from matplotlib import pyplot as plt
 #######################################
 
 
-def create_heatmap(categories_file, filter_categories=True, cutoff=0.01):
-    dataframe = pd.read_csv(categories_file, sep="\t", index_col=0)
+def create_heatmap(args):
+    logging.info(f"Processing COG categories file: '{args.categories_file}'.")
+    dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0)
+    logging.info(f"{len(dataframe)} categories detected.")
 
-    if filter_categories:
+    if args.coassembly:
+        dataframe = dataframe[["relative"]].rename(columns={"relative": "coassembly"})
+    if args.filter_categories:
+        logging.info("Filtering categories.")
         dataframe = dataframe.drop("Function unknown")
         dataframe = dataframe.drop("General function prediction only")
-        dataframe = dataframe[dataframe > 0.01]
+        dataframe = dataframe[dataframe > args.categories_cutoff]
         dataframe = dataframe.dropna()
         filtered = (abs(dataframe.sum() - 1)).mean()
+        logging.info(f"{len(dataframe)} categories left after filtering.")
         dataframe = dataframe / dataframe.sum()
+        logging.info("Normalising data after filtering.")
         vmax, vmin = None, None
     else:
         nlargest = categories.sum(axis=1).nlargest().index.to_list()
@@ -31,10 +38,13 @@ def create_heatmap(categories_file, filter_categories=True, cutoff=0.01):
                 vmax = dataframe.loc[ix].max()
                 break
 
-        vmin = cutoff
+        vmin = args.categories_cutoff
 
+    outfile = Path(args.categories_file).with_suffix(".png")
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
     sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
+    plt.savefig(outfile, bbox_inches="tight")
+    logging.info(f"Generated plot: '{outfile}'.")
 
 
 #######################################
@@ -67,20 +77,103 @@ def format_index(index):
     return pd.Index(new_index, name=index.name)
 
 
-def create_tax_barplot(dataframe):
+def create_tax_barplot(dataframe, save=True):
     figsize = (10, len(dataframe.columns))
     dataframe.index = format_index(dataframe.index)
+    rank = dataframe.index.name
+    logging.info(f"Generating plot for rank '{rank}'.")
     fig, axs = plt.subplots(
         nrows=1,
         ncols=2,
         figsize=figsize,
         gridspec_kw={"width_ratios": calculate_legend_width(dataframe.index)},
     )
-    axsdataframe.T.plot(kind="barh", stacked=True, ax=axs[0], cmap="tab20c")
+    dataframe.T.plot(kind="barh", stacked=True, ax=axs[0], cmap="tab20c")
     handles, labels = axs[0].get_legend_handles_labels()
     axs[0].get_legend().remove()
     axs[0].set_xlabel("Relative abundance")
-    axs[1].legend(handles, labels, title=dataframe.index.name.capitalize())
+    axs[1].legend(handles, labels, title=rank.capitalize())
     axs[1].set_xticks([])
     axs[1].set_yticks([])
     axs[1].axis("off")
+    if save:
+        outfile = f"output/annotation/cog/COG_{rank}_relative.png"
+        plt.savefig(outfile, bbox_inches="tight")
+        logging.info(f"Generated plot: '{outfile}'.")
+
+
+def process_rank_files(args):
+    ranks = "species genus family order class phylum domain".split()
+    rank_files = (
+        getattr(args, rank) if rank != "class" else getattr(args, "klass")
+        for rank in ranks
+    )
+    rank_df_list = []
+
+    cutoff = 0.05
+    for rank, file in zip(ranks, rank_files):
+        rank_df = pd.read_csv(file, sep="\t", index_col=0)
+
+        # When it's a coassembly, the columns will already look like this
+        # If it's not a coassembly, the script will already consume the relative data
+        if args.coassembly:
+            rank_df = rank_df[
+                [
+                    "relative",
+                ]
+            ].rename(columns={"relative": "coassembly"})
+        rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
+        rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
+        rank_df.index.name = rank
+
+        # Sort in descending abundance
+        rank_df = rank_df.loc[rank_df.sum(axis=1).sort_values(ascending=False).index]
+
+        # Group low abundance and undetermined taxa
+        filtered = abs(rank_df.sum() - 1)
+        if filtered.sum() < args.tax_cutoff:
+            pass
+        else:
+            rank_df.loc["Undetermined/other"] = filtered
+
+        rank_df = rank_df[sorted(rank_df.columns, reverse=True)]
+
+        rank_df_list.append(rank_df)
+
+    return rank_df_list
+
+
+def main(args):
+    create_heatmap(args)
+    rank_df_list = process_rank_files(args)
+    for dataframe in rank_df_list:
+        create_tax_barplot(dataframe, save=True)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--categories_file")
+    parser.add_argument("--species")
+    parser.add_argument("--genus")
+    parser.add_argument("--family")
+    parser.add_argument("--order")
+    parser.add_argument("--klass")
+    parser.add_argument("--phylum")
+    parser.add_argument("--kingdom")
+    parser.add_argument("--domain")
+    parser.add_argument("--categories_plt")
+    parser.add_argument("--filter_categories")
+    parser.add_argument("--categories_cutoff")
+    parser.add_argument("--tax_cutoff")
+    parser.add_argument("--coassembly", action="store_true", default=False)
+    args = parser.parse_args()
+
+
+if __name__ == "__main__":
+    # The driver function is standardized across scripts in this workflow
+    # Please check the workflow/scripts/utils.py module for reference
+    from utils import driver
+
+    if "snakemake" not in locals():
+        snakemake = None
+    driver(main, snakemake, __file__)
