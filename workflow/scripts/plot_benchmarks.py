@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import logging
+import traceback
 from pathlib import Path
 
 import pandas as pd
@@ -219,20 +220,6 @@ def main(args):
             pass
 
 
-def parse_snakemake_args(snakemake):
-    args = argparse.Namespace()
-    args_dict = vars(args)
-
-    for directive in "input", "output", "params":
-        try:
-            for k, v in getattr(snakemake, directive).items():
-                args_dict[k] = v
-        except AttributeError:
-            pass
-
-    return args
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--benchmarks_df")
@@ -250,20 +237,9 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-    )
-    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
-    logging.debug(f"Full script path: '{__file__}'.")
-    if "snakemake" in locals():
-        logging.basicConfig(filename=str(snakemake.log))
-        args = parse_snakemake_args(snakemake)
-    else:
-        args = parse_args()
-    try:
-        main(args)
-        logging.info("Done.")
-    except Exception as e:
-        logging.error(e)
+    # The driver function is standardized across scripts in this workflow
+    # Please check the workflow/scripts/utils.py module for reference
+    from utils import driver
+    if "snakemake" not in locals():
+        snakemake = None
+    driver(main, snakemake)

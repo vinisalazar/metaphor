@@ -109,7 +109,7 @@ rule metaquast:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         extra_params="--no-icarus",
-    threads: round(workflow.cores * 0.75) if config["coassembly"] else round(workflow.cores * 0.25)
+    threads: round(workflow.cores * 0.75) if config["coassembly"] else round(workflow.cores * 0.50)
     resources:
         mem_mb=get_mem_mb,
     log:
@@ -127,7 +127,10 @@ rule metaquast:
         metaquast.py -t {threads}               \
                      -o {params.outdir}         \
                      -m {params.mincontig}      \
-                     -r {input.reference}      \
+                     -r {input.reference}       \
                      --no-icarus                \
+                     --no-plots                 \
+                     --no-gc                    \
+                     --no-sv                    \
                      {input.contigs}
         """
