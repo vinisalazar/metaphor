@@ -90,6 +90,8 @@ def parse_snakemake_args(snakemake):
 
 def parse_args():
     # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
+    # 'Simple is better than complex.'
+    # 'Special cases aren't special enough to break the rules.'
     parser = argparse.ArgumentParser()
     parser.add_argument("--categories")
     parser.add_argument("--codes")
@@ -137,16 +139,18 @@ if __name__ == "__main__":
         format="%(asctime)s %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S",
     )
-    logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
-    logging.debug(f"Full script path: '{__file__}'.")
     if "snakemake" in locals():
-        logging.basicConfig(filename=str(snakemake.log))
+        fh = logging.FileHandler(str(snakemake.log), encoding="utf-8")
+        log = logging.getLogger()
+        log.addHandler(fh)
         args = parse_snakemake_args(snakemake)
     else:
         args = parse_args()
     try:
+        log.info(f"Starting script '{__file__.split('/')[-1]}'.")
+        log.debug(f"Full script path: '{__file__}'.")
         main(args)
-        logging.info("Done.")
+        log.info("Done.")
     except Exception as e:
-        logging.error(e)
-        logging.error(traceback.format_exc())
+        log.error(e)
+        log.error(traceback.format_exc())
