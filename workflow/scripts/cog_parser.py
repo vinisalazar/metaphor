@@ -12,7 +12,6 @@ import sys
 import logging
 import argparse
 import subprocess
-import traceback
 from pathlib import Path
 from functools import lru_cache
 

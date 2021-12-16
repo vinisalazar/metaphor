@@ -11,7 +11,6 @@ Usage:
 
 import argparse
 import logging
-import traceback
 from glob import glob
 from pathlib import Path
 import pandas as pd

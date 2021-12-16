@@ -1,6 +1,5 @@
 import argparse
 import logging
-import traceback
 import pandas as pd
 
 

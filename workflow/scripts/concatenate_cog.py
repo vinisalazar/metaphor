@@ -5,7 +5,6 @@ into a single table (wide with all samples).
 """
 import argparse
 import logging
-import traceback
 from pathlib import Path
 import pandas as pd
 
