@@ -1,6 +1,8 @@
 """
 Helper functions that are common across scripts.
 """
+import logging
+import argparse
 
 
 def parse_snakemake_args(snakemake):
