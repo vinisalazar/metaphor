@@ -78,6 +78,12 @@ lineage_parser:
   db: "data/taxonomy/rankedlineage.dmp"
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
 
+plot_cog:
+  activate: False
+  filter_categories: True
+  categories_cutoff: 0.01
+  tax_cutoff: 0.000001  # 1e-6
+
 ###############################################################
 # Binning
 ###############################################################

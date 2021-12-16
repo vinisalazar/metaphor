@@ -323,3 +323,51 @@ rule lineage_parser:
         "../envs/bash.yaml"
     script:
         "../scripts/lineage_parser.py"
+
+
+rule plot_cog:
+    input:
+        categories_file="output/annotation/cog/COG_categories_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_categories.tsv",
+        species="output/annotation/cog/COG_species_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_species.tsv",
+        genus="output/annotation/cog/COG_genus_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_genus.tsv",
+        family="output/annotation/cog/COG_family_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_family.tsv",
+        order="output/annotation/cog/COG_order_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_order.tsv",
+        klass="output/annotation/cog/COG_class_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_class.tsv",
+        phylum="output/annotation/cog/COG_phylum_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_phylum.tsv",
+        kingdom="output/annotation/cog/COG_kingdom_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_kingdom.tsv",
+        domain="output/annotation/cog/COG_domain_relative.tsv"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_domain.tsv",
+    output:
+        categories_plt="output/annotation/cog/COG_categories.png"
+        if not config["coassembly"]
+        else "output/annotation/cog/coassembly_categories.png",
+        taxa_barplots=get_taxa_plot_outputs(),
+    params:
+        filter_categories=config["plot_cog"]["filter_categories"],
+        categories_cutoff=config["plot_cog"]["categories_cutoff"],
+        tax_cutoff=config["plot_cog"]["tax_cutoff"],
+    log:
+        "output/logs/annotation/plot_cog.log",
+    benchmark:
+        "output/benchmarks/annotation/plot_cog.txt"
+    conda:
+        "../envs/"
+    script:
+        "../scripts/plot_cog.py"

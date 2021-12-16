@@ -113,7 +113,7 @@ def process_rank_files(args):
         series.name = sample
         rank_df.append(series)
     rank_df = pd.concat(rank_df, axis=1)
-    rank_df = rank_df[rank_df.sum(axis=1) > cutoff]
+    rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
     rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
     rank_df.index.name = rank
 
