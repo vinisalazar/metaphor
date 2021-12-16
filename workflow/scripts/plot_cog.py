@@ -114,24 +114,24 @@ def process_rank_files(args):
         series = pd.read_csv(file, sep="\t", index_col=0)["relative"]
         series.name = sample
         rank_df.append(series)
-    rank_df = pd.concat(rank_df, axis=1)
-    rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
-    rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
-    rank_df.index.name = rank
+        rank_df = pd.concat(rank_df, axis=1)
+        rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
+        rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
+        rank_df.index.name = rank
 
-    # Sort in descending abundance
-    rank_df = rank_df.loc[rank_df.sum(axis=1).sort_values(ascending=False).index]
+        # Sort in descending abundance
+        rank_df = rank_df.loc[rank_df.sum(axis=1).sort_values(ascending=False).index]
 
-    # Group low abundance and undetermined taxa
-    filtered = abs(rank_df.sum() - 1)
-    if filtered.sum() < args.tax_cutoff:
-        pass
-    else:
-        rank_df.loc["Undetermined/other"] = filtered
+        # Group low abundance and undetermined taxa
+        filtered = abs(rank_df.sum() - 1)
+        if filtered.sum() < args.tax_cutoff:
+            pass
+        else:
+            rank_df.loc["Undetermined/other"] = filtered
 
-    rank_df = rank_df[sorted(rank_df.columns, reverse=True)]
+        rank_df = rank_df[sorted(rank_df.columns, reverse=True)]
 
-    rank_df_list.append(rank_df)
+        rank_df_list.append(rank_df)
 
     return rank_df_list
 
@@ -146,6 +146,24 @@ def main(args):
     rank_df_list = process_rank_files(args)
     for dataframe in rank_df_list:
         create_tax_barplot(dataframe, save=True)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--categories_file")
+    parser.add_argument("--species")
+    parser.add_argument("--genus")
+    parser.add_argument("--family")
+    parser.add_argument("--order")
+    parser.add_argument("--klass")
+    parser.add_argument("--phylum")
+    parser.add_argument("--kingdom")
+    parser.add_argument("--domain")
+    parser.add_argument("--categories_plt")
+    parser.add_argument("--filter_categories")
+    parser.add_argument("--categories_cutoff")
+    parser.add_argument("--tax_cutoff")
+    args = parser.parse_args()
 
 
 if __name__ == "__main__":
