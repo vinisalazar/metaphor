@@ -106,15 +106,11 @@ def process_rank_files(args):
         getattr(args, rank) if rank != "class" else getattr(args, "klass")
         for rank in ranks
     )
-    rank_df_list, rank_df = [], []  # rank_df is going to become a dataframe
+    rank_df_list = []
 
     cutoff = 0.05
     for rank, file in zip(ranks, rank_files):
-        sample = file.split("/")[-1].replace(f"_{rank}.tsv", "")
-        series = pd.read_csv(file, sep="\t", index_col=0)["relative"]
-        series.name = sample
-        rank_df.append(series)
-        rank_df = pd.concat(rank_df, axis=1)
+        rank_df = pd.read_csv(file, sep="\t", index_col=0)
         rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
         rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
         rank_df.index.name = rank
