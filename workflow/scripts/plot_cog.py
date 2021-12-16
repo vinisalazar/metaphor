@@ -85,7 +85,7 @@ def create_tax_barplot(dataframe, save=True):
         figsize=figsize,
         gridspec_kw={"width_ratios": calculate_legend_width(dataframe.index)},
     )
-    axsdataframe.T.plot(kind="barh", stacked=True, ax=axs[0], cmap="tab20c")
+    dataframe.T.plot(kind="barh", stacked=True, ax=axs[0], cmap="tab20c")
     handles, labels = axs[0].get_legend_handles_labels()
     axs[0].get_legend().remove()
     axs[0].set_xlabel("Relative abundance")
@@ -104,7 +104,7 @@ def process_rank_files(args):
         getattr(args, rank) if rank != "class" else getattr(args, "klass")
         for rank in ranks
     )
-    rank_df_list = []
+    rank_df_list, rank_df = [], []  # rank_df is going to become a dataframe
 
     cutoff = 0.05
     for rank, file in zip(ranks, rank_files):
