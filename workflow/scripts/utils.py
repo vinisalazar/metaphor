@@ -3,6 +3,7 @@ Helper functions that are common across scripts.
 """
 import logging
 import argparse
+import traceback
 
 
 def parse_snakemake_args(snakemake):

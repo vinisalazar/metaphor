@@ -79,6 +79,7 @@ def create_tax_barplot(dataframe, save=True):
     figsize = (10, len(dataframe.columns))
     dataframe.index = format_index(dataframe.index)
     rank = dataframe.index.name
+    logging.info(f"Generating plot for rank '{rank}'.")
     fig, axs = plt.subplots(
         nrows=1,
         ncols=2,
@@ -96,6 +97,7 @@ def create_tax_barplot(dataframe, save=True):
     if save:
         outfile = f"output/annotation/cog/COG_{rank}_relative.png"
         plt.savefig(outfile, bbox_inches="tight")
+        logging.info(f"Generated plot: '{outfile}'.")
 
 
 def process_rank_files(args):
