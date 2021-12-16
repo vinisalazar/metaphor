@@ -241,4 +241,4 @@ if __name__ == "__main__":
     from utils import driver
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake)
+    driver(main, snakemake, __file__)
