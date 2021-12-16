@@ -13,16 +13,18 @@ from matplotlib import pyplot as plt
 #######################################
 
 
-def create_heatmap(categories_file, filter_categories=True, cutoff=0.01):
-    logging.info(f"Processing COG categories file: '{categories_file}'.")
-    dataframe = pd.read_csv(categories_file, sep="\t", index_col=0)
+def create_heatmap(args):
+    logging.info(f"Processing COG categories file: '{args.categories_file}'.")
+    dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0)
     logging.info(f"{len(dataframe)} categories detected.")
 
-    if filter_categories:
+    if args.coassembly:
+        dataframe = dataframe[["relative"]].rename(columns={"relative": "coassembly"})
+    if args.filter_categories:
         logging.info("Filtering categories.")
         dataframe = dataframe.drop("Function unknown")
         dataframe = dataframe.drop("General function prediction only")
-        dataframe = dataframe[dataframe > 0.01]
+        dataframe = dataframe[dataframe > args.categories_cutoff]
         dataframe = dataframe.dropna()
         filtered = (abs(dataframe.sum() - 1)).mean()
         logging.info(f"{len(dataframe)} categories left after filtering.")
@@ -36,9 +38,9 @@ def create_heatmap(categories_file, filter_categories=True, cutoff=0.01):
                 vmax = dataframe.loc[ix].max()
                 break
 
-        vmin = cutoff
+        vmin = args.categories_cutoff
 
-    outfile = Path(categories_file).with_suffix(".png")
+    outfile = Path(args.categories_file).with_suffix(".png")
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
     sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
     plt.savefig(outfile, bbox_inches="tight")
@@ -119,7 +121,7 @@ def process_rank_files(args):
                 [
                     "relative",
                 ]
-            ]
+            ].rename(columns={"relative": "coassembly"})
         rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
         rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
         rank_df.index.name = rank
@@ -142,12 +144,7 @@ def process_rank_files(args):
 
 
 def main(args):
-    categories_file, filter_categories, categories_cutoff = (
-        args.categories_file,
-        args.filter_categories,
-        args.categories_cutoff,
-    )
-    create_heatmap(categories_file, filter_categories, categories_cutoff)
+    create_heatmap(args)
     rank_df_list = process_rank_files(args)
     for dataframe in rank_df_list:
         create_tax_barplot(dataframe, save=True)
