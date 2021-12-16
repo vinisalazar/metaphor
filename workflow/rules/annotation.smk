@@ -145,10 +145,9 @@ rule diamond:
     output:
         fname=get_diamond_output(),
     params:
-        max_target_seqs=25,
         output_type=config["diamond"]["output_type"],
         output_format=config["diamond"]["output_format"],
-        extra_params="--iterate --top 0",
+        extra="--iterate --top 0",
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/annotation/diamond/{sample}.log"
@@ -164,7 +163,6 @@ rule diamond:
         """
         echo {params.output_format} | sed -e 's/ /\t/g' > {output.fname}
         {{ diamond blastp -q {input.fname_fasta}                \
-                   --max-target-seqs {params.max_target_seqs}   \
                    -p {threads}                                 \
                    -d {input.fname_db}                          \
                    -f {params.output_type}                      \
