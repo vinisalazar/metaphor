@@ -12,6 +12,7 @@ import sys
 import logging
 import argparse
 import subprocess
+import traceback
 from pathlib import Path
 from functools import lru_cache
 
@@ -79,7 +80,7 @@ def main(args):
 
     # Load data
     logging.info(f"Loading annotation data: '{dmnd_out}'.")
-    df = pd.read_csv(dmnd_out, sep="\t", usecols=["qseqid", "sseqid"])
+    df = pd.read_csv(dmnd_out, sep="\t", usecols=["qseqid", "sseqid", "bitscore"])
 
     # Keep the best score
     df = df.sort_values("bitscore", ascending=False)
@@ -277,3 +278,4 @@ if __name__ == "__main__":
         logging.info("Done.")
     except Exception as e:
         logging.error(e)
+        logging.error(traceback.format_exc())

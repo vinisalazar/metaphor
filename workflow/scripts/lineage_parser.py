@@ -1,5 +1,6 @@
 import argparse
 import logging
+import traceback
 import pandas as pd
 
 
@@ -91,3 +92,4 @@ if __name__ == "__main__":
         logging.info("Done.")
     except Exception as e:
         logging.error(e)
+        logging.error(traceback.format_exc())

@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import logging
+import traceback
 from glob import glob
 from pathlib import Path
 import pandas as pd
@@ -91,4 +92,4 @@ if __name__ == "__main__":
         logging.info("Done.")
     except Exception as e:
         logging.error(e)
-
+        logging.error(traceback.format_exc())
