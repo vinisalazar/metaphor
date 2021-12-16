@@ -141,16 +141,15 @@ if __name__ == "__main__":
     )
     if "snakemake" in locals():
         fh = logging.FileHandler(str(snakemake.log), encoding="utf-8")
-        log = logging.getLogger()
-        log.addHandler(fh)
+        logging.getLogger().addHandler(fh)
         args = parse_snakemake_args(snakemake)
     else:
         args = parse_args()
     try:
-        log.info(f"Starting script '{__file__.split('/')[-1]}'.")
-        log.debug(f"Full script path: '{__file__}'.")
+        logging.info(f"Starting script '{__file__.split('/')[-1]}'.")
+        logging.debug(f"Full script path: '{__file__}'.")
         main(args)
-        log.info("Done.")
+        logging.info("Done.")
     except Exception as e:
-        log.error(e)
-        log.error(traceback.format_exc())
+        logging.error(e)
+        logging.error(traceback.format_exc())
