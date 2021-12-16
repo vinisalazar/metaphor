@@ -363,6 +363,7 @@ rule plot_cog:
         filter_categories=config["plot_cog"]["filter_categories"],
         categories_cutoff=config["plot_cog"]["categories_cutoff"],
         tax_cutoff=config["plot_cog"]["tax_cutoff"],
+        coassembly=config["coassembly"]
     log:
         "output/logs/annotation/plot_cog.log",
     benchmark:

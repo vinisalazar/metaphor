@@ -114,7 +114,7 @@ def process_rank_files(args):
 
         # When it's a coassembly, the columns will already look like this
         # If it's not a coassembly, the script will already consume the relative data
-        if rank_df.columns == ("absolute", "relative"):
+        if args.coassembly:
             rank_df = rank_df[
                 [
                     "relative",
@@ -168,6 +168,7 @@ def parse_args():
     parser.add_argument("--filter_categories")
     parser.add_argument("--categories_cutoff")
     parser.add_argument("--tax_cutoff")
+    parser.add_argument("--coassembly", action="store_true", default=False)
     args = parser.parse_args()
 
 
