@@ -111,6 +111,15 @@ def process_rank_files(args):
     cutoff = 0.05
     for rank, file in zip(ranks, rank_files):
         rank_df = pd.read_csv(file, sep="\t", index_col=0)
+
+        # When it's a coassembly, the columns will already look like this
+        # If it's not a coassembly, the script will already consume the relative data
+        if rank_df.columns == ("absolute", "relative"):
+            rank_df = rank_df[
+                [
+                    "relative",
+                ]
+            ]
         rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
         rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
         rank_df.index.name = rank
