@@ -14,7 +14,7 @@ def main(args):
     cog = [
         "categories",
         "codes",
-        "tax",
+        "taxs",
         "pathways",
     ]
     ranks = "species genus family order class phylum kingdom domain".split()
