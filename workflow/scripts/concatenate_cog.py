@@ -90,8 +90,8 @@ def parse_snakemake_args(snakemake):
             # An old problem for Pythonistas that work with taxonomy :)
             # See the rule 'lineage_parser' output directive to see class is spelled with a 'k'
             for k, v in getattr(snakemake, directive).items():
-                if k == "klass":
-                    k = k.replace("k", "c")
+                if "klass" in k:
+                    k = k.replace("klass", "class")
                 args_dict[k] = v
         except AttributeError:
             pass
