@@ -51,9 +51,17 @@ def main(args):
             )
             for k, v in df.items()
         }
-        df = {k: v.reset_index() for k, v in df.items()}
-        df = pd.concat(df.values(), axis=1)
-        df = df.set_index(df.columns[0])
+
+        # This handles repeated TaxIDs with different tax names
+        # It only keeps the first tax name
+        try:
+            df = pd.concat(df.values(), axis=1)
+        except pd.errors.InvalidIndexError:
+            df = (
+                v.groupby(v.index).agg({v.columns[0]: "first", v.columns[1]: sum})
+                for v in df.values()
+            )
+            df = pd.concat(df, axis=1)
 
         for count in ("absolute", "relative"):
             outdf = df[[i for i in df.columns if count in i]]
