@@ -355,7 +355,7 @@ rule plot_cog:
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_domain.tsv",
     output:
-        categories_plt="output/annotation/cog/COG_categories.png"
+        categories_plt="output/annotation/cog/COG_categories_relative.png"
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_categories.png",
         taxa_barplots=get_taxa_plot_outputs(),
