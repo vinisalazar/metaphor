@@ -41,11 +41,24 @@ def get_parent(path: str) -> str:
 
 
 def allow():
+    """
+    Allows the workflow to run even when failing certain assertions.
+
+    Must be explicitly declared.
+    """
     import sys
 
     allow_on = ("--lint", "--dry-run", "--dryrun", "-n")
     if any(term in sys.argv for term in allow_on):
         return True
+
+
+def get_wrapper(wrapper):
+    """
+    Builds the string for the 'wrapper' directive
+    based on 'wrapper_version' key in the config.
+    """
+    return str(Path(config["wrapper_version"]).joinpath(f"bio/{wrapper}"))
 
 
 def is_paired_end(sample):
@@ -85,36 +98,7 @@ def get_metaquast_reference(wildcards):
 
 
 def get_cog_db_file(filename):
-    output = Path(config["cog_parser"]["db"]).joinpath(filename)
-
-    try:
-        assert output.exists()
-    except AssertionError as e:
-        if allow():
-            return filename
-
-        # Else, raise the error
-        message = (
-            f"Could not find input file {filename}.\n"
-            f"Please check the config['cog_parser']['db'] param: '{config['cog_parser']['db']}'."
-        )
-
-        if "logging" in locals():
-            logging.error(message)
-        else:
-            print(message)
-        raise
-
-    # Convert to string rather than Path
-    output = str(output)
-
-    # The following block prevents the function from returning an empty (test) file,
-    # which is the default value in the config/config.yaml file.
-    # It is a bit hacky, but it will do for now.
-    if ".test/" in output:
-        output.replace(".test/", "data/")
-
-    return output
+    return str(Path(config["cog_parser"]["db"]).joinpath(filename))
 
 
 # Inputs
@@ -323,8 +307,15 @@ def get_vamb_output():
 def get_annotation_output():
     annotations = {
         "diamond": get_all_diamond_outputs(),
-        "cog_parser": (get_all_cog_parser_outputs(), get_concatenate_cog_outputs()),
-        "lineage_parser": get_all_lineage_parser_outputs(),
+        "cog_parser": (
+            get_all_cog_parser_outputs(),
+            get_concatenate_cog_outputs(),
+            get_database_outputs(),
+        ),
+        "lineage_parser": (
+            get_all_lineage_parser_outputs(),
+            config["lineage_parser"]["db"],
+        ),
         "plot_cog": get_taxa_plot_outputs(),
         "prokka": get_prokka_output(),
     }
@@ -343,6 +334,17 @@ def get_annotation_output():
             annotation_output.append(v)
 
     return annotation_output
+
+
+def get_database_outputs():
+    db_outputs = [
+        get_cog_db_file("cog-20.fa.gz"),
+        get_cog_db_file("cog-20.cog.csv"),
+        get_cog_db_file("cog-20.def.tab"),
+        get_cog_db_file("fun-20.tab"),
+    ]
+
+    return db_outputs
 
 
 def get_diamond_output():
