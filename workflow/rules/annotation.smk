@@ -81,10 +81,7 @@ rule prokka:
 
 rule download_COG_database:
     output:
-        cog_fasta=get_cog_db_file("cog-20.fa.gz"),
-        cog_csv=get_cog_db_file("cog-20.cog.csv"),
-        def_tab=get_cog_db_file("cog-20.def.tab"),
-        fun_tab=get_cog_db_file("fun-20.tab"),
+        get_database_outputs()
     log:
         "output/logs/annotation/download_COG_database.log",
     benchmark:
@@ -108,7 +105,7 @@ rule diamond_makedb:
         "output/logs/annotation/diamond/diamond_makedb.log",
     threads: round(workflow.cores * 0.25)
     wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/diamond/makedb"))
+        get_wrapper("diamond/makedb")
 
 
 rule download_taxonomy_database:
