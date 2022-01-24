@@ -114,7 +114,7 @@ rule download_taxonomy_database:
         rankedlineage=config["lineage_parser"]["db"],
     params:
         download_url=config["lineage_parser"]["download_url"],
-        output_dir=lambda w, input_: str(Path(input_.rankedlineage).parent),
+        output_dir=lambda w, output: str(Path(output.rankedlineage).parent),
     log:
         "output/logs/annotation/cog/download_taxonomy_database.log",
     conda:
