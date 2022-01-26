@@ -137,4 +137,3 @@ rule multiqc:
         "output/benchmarks/qc/multiqc.txt"
     wrapper:
         get_wrapper("multiqc")
-

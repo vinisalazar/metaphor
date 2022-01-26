@@ -81,7 +81,7 @@ rule prokka:
 
 rule download_COG_database:
     output:
-        get_database_outputs()
+        get_database_outputs(),
     log:
         "output/logs/annotation/download_COG_database.log",
     benchmark:
