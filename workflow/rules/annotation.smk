@@ -33,8 +33,12 @@ rule prodigal:
         else (),
     params:
         mode=config["prodigal"]["mode"],
-        genes=lambda w, output: f"-d {output.genes}" if config["prodigal"]["genes"] else "",
-        scores=lambda w, output: f"-s {output.scores}" if config["prodigal"]["scores"] else "",
+        genes=lambda w, output: f"-d {output.genes}"
+        if config["prodigal"]["genes"]
+        else "",
+        scores=lambda w, output: f"-s {output.scores}"
+        if config["prodigal"]["scores"]
+        else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "prodigal"),
