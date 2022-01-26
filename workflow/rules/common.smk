@@ -267,7 +267,7 @@ def get_metaquast_output():
             "output/assembly/metaquast/{sample}/report.html", sample=sample_IDs
         )
 
-    
+
 # def metaquast_cleanup(report):
 #     if config["metaquast"]["cleanup"]:
 
