@@ -100,6 +100,17 @@ def get_metaquast_reference(wildcards):
             raise
 
 
+def get_metaquast_benchmark_or_log(kind):
+    if not kind.endswith("s"):
+        kind = f"{kind}s"
+    base_path = Path(f"output/{kind}/assembly/metaquast/")
+    ext = {"logs": ".log", "benchmarks": ".txt"}
+    if config["coassembly"]:
+        return str(base_path.joinpath("coassembly").with_suffix(ext[kind]))
+    else:
+        return str(base_path.joinpath("{sample}").with_suffix(ext[kind]))
+
+
 def get_cog_db_file(filename):
     return str(Path(config["cog_parser"]["db"]).joinpath(filename))
 

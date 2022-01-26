@@ -18,8 +18,8 @@ rule concatenate_merged_reads:
         "output/logs/assembly/concatenate_merged_reads.log",
     benchmark:
         "output/benchmarks/assembly/concatenate_merged_reads.txt"
-    # conda:
-    #     "../envs/bash.yaml"
+    conda:
+        "../envs/bash.yaml"
     shell:
         """
         {{ cat {input.R1} > {output.R1_concat} ; }} > {log}
@@ -29,7 +29,8 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1="output/qc/merged/{sample}_R1.fq.gz",fastq2="output/qc/merged/{sample}_R2.fq.gz"
+        fastq1="output/qc/merged/{sample}_R1.fq.gz",
+        fastq2="output/qc/merged/{sample}_R2.fq.gz",
     output:
         contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:
@@ -110,13 +111,9 @@ rule metaquast:
     resources:
         mem_mb=get_mem_mb,
     log:
-        "output/logs/assembly/metaquast/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/assembly/metaquast/coassembly.log",
+        get_metaquast_benchmark_or_log("log"),
     benchmark:
-        "output/benchmarks/assembly/metaquast/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/assembly/metaquast/coassembly.txt"
+        get_metaquast_benchmark_or_log("benchmark")
     conda:
         "../envs/quast.yaml"
     shell:
