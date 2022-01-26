@@ -67,8 +67,7 @@ rule megahit_coassembly:
     output:
         contigs="output/assembly/megahit/coassembly.contigs.fa",
     params:
-        out_dir=lambda w, output: get_parent(output.contigs),
-        min_contig_len=200,
+        out_dir=lambda w, output: get_parent(output.contigs),min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
     threads: round(workflow.cores * 0.75)
