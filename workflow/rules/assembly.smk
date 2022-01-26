@@ -111,9 +111,9 @@ rule metaquast:
     resources:
         mem_mb=get_mem_mb,
     log:
-        get_metaquast_benchmark_or_log("log"),
+        get_coassembly_benchmark_or_log("log", "assembly", "metaquast"),
     benchmark:
-        get_metaquast_benchmark_or_log("benchmark")
+        get_coassembly_benchmark_or_log("benchmark", "assembly", "metaquast")
     conda:
         "../envs/quast.yaml"
     shell:

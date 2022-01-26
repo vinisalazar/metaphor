@@ -37,13 +37,9 @@ rule prodigal:
         scores=lambda w, output: f"-s {output.scores}" if config["prodigal"]["scores"] else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
-        "output/logs/annotation/prodigal/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/prodigal/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "prodigal"),
     benchmark:
-        "output/benchmarks/annotation/prodigal/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/prodigal/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "prodigal")
     conda:
         "../envs/prodigal.yaml"
     shell:
@@ -155,13 +151,9 @@ rule diamond:
         extra="--iterate --top 0",
     threads: round(workflow.cores * 0.75)
     log:
-        "output/logs/annotation/diamond/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/diamond/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "diamond"),
     benchmark:
-        "output/benchmarks/annotation/diamond/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/diamond/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "diamond")
     conda:
         "../envs/diamond.yaml"
     shell:
@@ -197,13 +189,9 @@ rule cog_parser:
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_pathways.tsv",
     log:
-        "output/logs/annotation/cog_parser/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/cog_parser/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
     benchmark:
-        "output/benchmarks/annotation/cog_parser/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/cog_parser/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_parser")
     conda:
         "../envs/bash.yaml"
     script:
@@ -317,13 +305,9 @@ rule lineage_parser:
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_domain.tsv",
     log:
-        "output/logs/annotation/lineage_parser/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/lineage_parser/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
-        "output/benchmarks/annotation/lineage_parser/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/lineage_parser/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "lineage_parser")
     conda:
         "../envs/bash.yaml"
     script:

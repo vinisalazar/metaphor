@@ -230,7 +230,7 @@ def get_metaquast_reference(wildcards):
             raise
 
 
-def get_metaquast_benchmark_or_log(kind):
+def get_coassembly_benchmark_or_log(kind, subworkflow, rule):
     """
     This function was created to prevent formatting errors with snakefmt.
 
@@ -238,7 +238,7 @@ def get_metaquast_benchmark_or_log(kind):
     """
     if not kind.endswith("s"):
         kind = f"{kind}s"
-    base_path = Path(f"output/{kind}/assembly/metaquast/")
+    base_path = Path(f"output/{kind}/{subworkflow}/{rule}/")
     ext = {"logs": ".log", "benchmarks": ".txt"}
     if config["coassembly"]:
         return str(base_path.joinpath("coassembly").with_suffix(ext[kind]))
