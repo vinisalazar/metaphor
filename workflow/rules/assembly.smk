@@ -34,13 +34,12 @@ rule megahit:
     output:
         contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:
+        # Turn 'remove_intermediates' on/off in config['megahit']
         out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
-        remove_intermediate=lambda w, output: get_megahit_intermediate_contigs(
-            output.contigs
-        ),  # turn this on/off in config['megahit']
+        remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/assembly/megahit/{sample}.log",
@@ -72,10 +71,12 @@ rule megahit_coassembly:
     output:
         contigs="output/assembly/megahit/coassembly.contigs.fa",
     params:
+        # Turn 'remove_intermediates' on/off in config['megahit']
         out_dir=lambda w, output: get_parent(output.contigs),
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
+        remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
     threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,
@@ -97,6 +98,8 @@ rule megahit_coassembly:
                 --min-contig-len {params.min_contig_len}    \
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
+
+        {params.remove_intermediate}
         """
 
 

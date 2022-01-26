@@ -246,8 +246,8 @@ def get_coassembly_benchmark_or_log(kind, subworkflow, rule):
         return str(base_path.joinpath("{sample}").with_suffix(ext[kind]))
 
 
-def get_megahit_intermediate_contigs(contigs):
-    if config["megahit"]["remove_intermediate"]:
+def cleanup_megahit(contigs):
+    if config["megahit"]["cleanup"]:
         intermediate_contigs = str(
             Path(contigs).parent.joinpath("intermediate_contigs")
         )
@@ -266,6 +266,11 @@ def get_metaquast_output():
         return expand(
             "output/assembly/metaquast/{sample}/report.html", sample=sample_IDs
         )
+
+    
+def metaquast_cleanup(report):
+    if config["metaquast"]["cleanup"]:
+
 
 
 def get_all_assembly_outputs():

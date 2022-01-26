@@ -45,7 +45,7 @@ concatenate_contigs:
 
 megahit:
   preset: "meta-large"
-  remove_intermediate: True
+  cleanup: True
 
 metaquast:
   activate: False
