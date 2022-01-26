@@ -18,8 +18,8 @@ rule concatenate_merged_reads:
         "output/logs/assembly/concatenate_merged_reads.log",
     benchmark:
         "output/benchmarks/assembly/concatenate_merged_reads.txt"
-    conda:
-        "../envs/bash.yaml"
+    # conda:
+    #     "../envs/bash.yaml"
     shell:
         """
         {{ cat {input.R1} > {output.R1_concat} ; }} > {log}
