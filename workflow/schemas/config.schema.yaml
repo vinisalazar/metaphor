@@ -69,8 +69,11 @@ properties:
     properties:
       preset:
         type: string
+      remove_intermediate:
+        type: boolean
     required:
       - preset
+      - remove_intermediate
 
   metaquast:
     type: object

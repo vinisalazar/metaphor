@@ -246,6 +246,16 @@ def get_coassembly_benchmark_or_log(kind, subworkflow, rule):
         return str(base_path.joinpath("{sample}").with_suffix(ext[kind]))
 
 
+def get_megahit_intermediate_contigs(contigs):
+    if config["megahit"]["remove_intermediate"]:
+        intermediate_contigs = str(
+            Path(contigs).parent.joinpath("intermediate_contigs")
+        )
+        return f"rm -rf {intermediate_contigs}"
+    else:
+        return ""
+
+
 def get_metaquast_output():
     if config["coassembly"]:
         if Path(config["metaquast"]["coassembly_reference"]).is_file():

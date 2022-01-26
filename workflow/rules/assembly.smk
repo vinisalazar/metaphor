@@ -38,6 +38,9 @@ rule megahit:
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
+        remove_intermediate=lambda w, output: get_megahit_intermediate_contigs(
+            output.contigs
+        ),  # turn this on/off in config['megahit']
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/assembly/megahit/{sample}.log",
@@ -57,6 +60,8 @@ rule megahit:
                 --min-contig-len {params.min_contig_len}    \
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
+
+        {params.remove_intermediate}
         """
 
 
