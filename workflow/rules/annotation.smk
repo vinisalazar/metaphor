@@ -13,20 +13,28 @@ rule prodigal:
     input:
         contigs=get_contigs_input(),
     output:
-        genes="output/annotation/prodigal/{sample}/{sample}_genes.fna"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_genes.fna",
         proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_proteins.faa",
-        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_scores.cds",
         genbank="output/annotation/prodigal/{sample}/{sample}_genbank.gbk"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_genbank.gbk",
+        genes=(
+            "output/annotation/prodigal/{sample}/{sample}_genes.fna"
+            if not config["coassembly"]
+            else "output/annotation/prodigal/coassembly_genes.fna"
+        )
+        if config["prodigal"]["genes"]
+        else (),
+        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds"
+        if not config["coassembly"]
+        else "output/annotation/prodigal/coassembly_scores.cds"
+        if config["prodigal"]["genes"]
+        else (),
     params:
         mode=config["prodigal"]["mode"],
+        genes=lambda w, output: f"-d {output.genes}",
+        scores=lambda w, output: f"-s {output.scores}",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
         "output/logs/annotation/prodigal/{sample}.log"
@@ -43,10 +51,10 @@ rule prodigal:
         prodigal {params.quiet}         \
                  -p {params.mode}       \
                  -i {input}             \
-                 -d {output.genes}      \
                  -a {output.proteins}   \
-                 -s {output.scores}     \
-                 -o {output.genbank} &> {log}
+                 -o {output.genbank}    \
+                 {params.genes}         \
+                 {params.scores} &> {log}
         """
 
 

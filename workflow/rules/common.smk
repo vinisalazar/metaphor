@@ -231,6 +231,11 @@ def get_metaquast_reference(wildcards):
 
 
 def get_metaquast_benchmark_or_log(kind):
+    """
+    This function was created to prevent formatting errors with snakefmt.
+
+    If such errors are resolved in the future, it may be deprecated.
+    """
     if not kind.endswith("s"):
         kind = f"{kind}s"
     base_path = Path(f"output/{kind}/assembly/metaquast/")

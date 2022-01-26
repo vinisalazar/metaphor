@@ -58,6 +58,8 @@ prodigal:
   activate: True
   mode: "meta"
   quiet: True
+  genes: False
+  scores: False
 
 prokka:
   activate: False

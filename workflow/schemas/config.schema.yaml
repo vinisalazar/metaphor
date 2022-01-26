@@ -91,10 +91,16 @@ properties:
         type: string
       quiet:
         type: boolean
+      genes:
+        type: boolean
+      scores:
+        type: boolean
     required:
       - activate
       - mode
       - quiet
+      - genes
+      - scores
 
   prokka:
     type: object
