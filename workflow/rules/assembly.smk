@@ -29,8 +29,7 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1="output/qc/merged/{sample}_R1.fq.gz",
-        fastq2="output/qc/merged/{sample}_R2.fq.gz",
+        fastq1="output/qc/merged/{sample}_R1.fq.gz",fastq2="output/qc/merged/{sample}_R2.fq.gz"
     output:
         contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:
