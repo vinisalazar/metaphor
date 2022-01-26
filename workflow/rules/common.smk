@@ -268,9 +268,8 @@ def get_metaquast_output():
         )
 
     
-def metaquast_cleanup(report):
-    if config["metaquast"]["cleanup"]:
-
+# def metaquast_cleanup(report):
+#     if config["metaquast"]["cleanup"]:
 
 
 def get_all_assembly_outputs():
