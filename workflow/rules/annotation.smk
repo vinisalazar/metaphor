@@ -33,8 +33,8 @@ rule prodigal:
         else (),
     params:
         mode=config["prodigal"]["mode"],
-        genes=lambda w, output: f"-d {output.genes}",
-        scores=lambda w, output: f"-s {output.scores}",
+        genes=lambda w, output: f"-d {output.genes}" if config["prodigal"]["genes"] else "",
+        scores=lambda w, output: f"-s {output.scores}" if config["prodigal"]["scores"] else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
         "output/logs/annotation/prodigal/{sample}.log"
