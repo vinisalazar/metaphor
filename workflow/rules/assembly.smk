@@ -98,9 +98,7 @@ rule megahit_coassembly:
 rule metaquast:
     input:
         contigs=get_contigs_input(),
-        reference=get_metaquast_reference
-        if not config["coassembly"]
-        else config["metaquast"]["coassembly_reference"],
+        reference=get_metaquast_reference,
     output:
         outfile="output/assembly/metaquast/{sample}/report.html"
         if not config["coassembly"]

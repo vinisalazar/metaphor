@@ -78,9 +78,12 @@ def is_paired_end(sample):
 def get_metaquast_reference(wildcards):
     sample = wildcards.sample
     try:
-        reference = samples.loc[sample, "metaquast_reference"].unique()[0]
-        assert Path(reference).is_file()
-        return reference
+        if config["coassembly"]:
+            return config["metaquast"]["coassembly_reference"]
+        else:
+            reference = samples.loc[sample, "metaquast_reference"].unique()[0]
+            assert Path(reference).is_file()
+            return reference
     except (KeyError, IndexError):
         if allow():
             return ()
