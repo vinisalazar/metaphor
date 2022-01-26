@@ -1,5 +1,7 @@
 .idea/
 .snakemake/
+data/
+
 output/
 config/slurm*/
 config/spartan-*
@@ -8,5 +10,4 @@ slurm-*.out
 mgp/
 .*-bkp/
 run.sh
-
-workspace.code-workspace
+*.code-workspace
