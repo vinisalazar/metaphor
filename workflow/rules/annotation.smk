@@ -29,7 +29,7 @@ rule prodigal:
         scores="output/annotation/prodigal/{sample}/{sample}_scores.cds"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_scores.cds"
-        if config["prodigal"]["genes"]
+        if config["prodigal"]["scores"]
         else (),
     params:
         mode=config["prodigal"]["mode"],
