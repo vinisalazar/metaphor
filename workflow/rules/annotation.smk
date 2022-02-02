@@ -26,11 +26,13 @@ rule prodigal:
         )
         if config["prodigal"]["genes"]
         else (),
-        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_scores.cds"
+        scores=(
+            "output/annotation/prodigal/{sample}/{sample}_scores.cds"
+            if not config["coassembly"]
+            else "output/annotation/prodigal/coassembly_scores.cds"
+        )
         if config["prodigal"]["scores"]
-        else (),
+        else [],
     params:
         mode=config["prodigal"]["mode"],
         genes=lambda w, output: f"-d {output.genes}"
