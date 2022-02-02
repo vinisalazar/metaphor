@@ -13,29 +13,39 @@ rule prodigal:
     input:
         contigs=get_contigs_input(),
     output:
-        genes="output/annotation/prodigal/{sample}/{sample}_genes.fna"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_genes.fna",
         proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_proteins.faa",
-        scores="output/annotation/prodigal/{sample}/{sample}_scores.cds"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_scores.cds",
         genbank="output/annotation/prodigal/{sample}/{sample}_genbank.gbk"
         if not config["coassembly"]
         else "output/annotation/prodigal/coassembly_genbank.gbk",
+        genes=(
+            "output/annotation/prodigal/{sample}/{sample}_genes.fna"
+            if not config["coassembly"]
+            else "output/annotation/prodigal/coassembly_genes.fna"
+        ),
+        # if config["prodigal"]["genes"]
+        # else (),
+        scores=(
+            "output/annotation/prodigal/{sample}/{sample}_scores.cds"
+            if not config["coassembly"]
+            else "output/annotation/prodigal/coassembly_scores.cds"
+        )
+        if config["prodigal"]["scores"]
+        else [],
     params:
         mode=config["prodigal"]["mode"],
+        genes=lambda w, output: f"-d {output.genes}",
+        # if config["prodigal"]["genes"]
+        # else "",
+        scores=lambda w, output: f"-s {output.scores}"
+        if config["prodigal"]["scores"]
+        else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
-        "output/logs/annotation/prodigal/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/prodigal/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "prodigal"),
     benchmark:
-        "output/benchmarks/annotation/prodigal/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/prodigal/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "prodigal")
     conda:
         "../envs/prodigal.yaml"
     shell:
@@ -43,10 +53,10 @@ rule prodigal:
         prodigal {params.quiet}         \
                  -p {params.mode}       \
                  -i {input}             \
-                 -d {output.genes}      \
                  -a {output.proteins}   \
-                 -s {output.scores}     \
-                 -o {output.genbank} &> {log}
+                 -o {output.genbank}    \
+                 {params.genes}         \
+                 {params.scores} &> {log}
         """
 
 
@@ -81,10 +91,7 @@ rule prokka:
 
 rule download_COG_database:
     output:
-        cog_fasta=get_cog_db_file("cog-20.fa.gz"),
-        cog_csv=get_cog_db_file("cog-20.cog.csv"),
-        def_tab=get_cog_db_file("cog-20.def.tab"),
-        fun_tab=get_cog_db_file("fun-20.tab"),
+        get_database_outputs(),
     log:
         "output/logs/annotation/download_COG_database.log",
     benchmark:
@@ -108,7 +115,7 @@ rule diamond_makedb:
         "output/logs/annotation/diamond/diamond_makedb.log",
     threads: round(workflow.cores * 0.25)
     wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/diamond/makedb"))
+        get_wrapper("diamond/makedb")
 
 
 rule download_taxonomy_database:
@@ -117,7 +124,7 @@ rule download_taxonomy_database:
         rankedlineage=config["lineage_parser"]["db"],
     params:
         download_url=config["lineage_parser"]["download_url"],
-        output_dir=lambda w, input_: str(Path(input_.rankedlineage).parent),
+        output_dir=lambda w, output: str(Path(output.rankedlineage).parent),
     log:
         "output/logs/annotation/cog/download_taxonomy_database.log",
     conda:
@@ -150,13 +157,9 @@ rule diamond:
         extra="--iterate --top 0",
     threads: round(workflow.cores * 0.75)
     log:
-        "output/logs/annotation/diamond/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/diamond/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "diamond"),
     benchmark:
-        "output/benchmarks/annotation/diamond/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/diamond/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "diamond")
     conda:
         "../envs/diamond.yaml"
     shell:
@@ -192,13 +195,9 @@ rule cog_parser:
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_pathways.tsv",
     log:
-        "output/logs/annotation/cog_parser/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/cog_parser/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
     benchmark:
-        "output/benchmarks/annotation/cog_parser/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/cog_parser/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_parser")
     conda:
         "../envs/bash.yaml"
     script:
@@ -312,13 +311,9 @@ rule lineage_parser:
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_domain.tsv",
     log:
-        "output/logs/annotation/lineage_parser/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/annotation/lineage_parser/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
-        "output/benchmarks/annotation/lineage_parser/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/annotation/lineage_parser/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "lineage_parser")
     conda:
         "../envs/bash.yaml"
     script:
@@ -355,7 +350,7 @@ rule plot_cog:
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_domain.tsv",
     output:
-        categories_plt="output/annotation/cog/COG_categories.png"
+        categories_plt="output/annotation/cog/COG_categories_relative.png"
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_categories.png",
         taxa_barplots=get_taxa_plot_outputs(),

@@ -14,7 +14,7 @@ def main(args):
     cog = [
         "categories",
         "codes",
-        "tax",
+        "taxs",
         "pathways",
     ]
     ranks = "species genus family order class phylum kingdom domain".split()
@@ -31,7 +31,7 @@ def main(args):
         if isinstance(files, str):
             files = files.split()
         logging.info(f"Loading '{kind}' files:\n")
-        logging.info("\n".join(files))
+        logging.info("\n".join(files) + "\n")
         if kind == "codes":
             ix_col = [0, 1]
         else:
@@ -52,7 +52,16 @@ def main(args):
             for k, v in df.items()
         }
 
-        df = pd.concat(df.values(), axis=1)
+        # This handles repeated TaxIDs with different tax names
+        # It only keeps the first tax name
+        try:
+            df = pd.concat(df.values(), axis=1)
+        except pd.errors.InvalidIndexError:
+            df = (
+                v.groupby(v.index).agg({v.columns[0]: "first", v.columns[1]: sum})
+                for v in df.values()
+            )
+            df = pd.concat(df, axis=1)
 
         for count in ("absolute", "relative"):
             outdf = df[[i for i in df.columns if count in i]]
@@ -69,6 +78,25 @@ def main(args):
                     f"Attribute {attr} wasn't found, please check the passed args:\n{args}"
                 )
                 pass
+
+
+def parse_snakemake_args(snakemake):
+    args = argparse.Namespace()
+    args_dict = vars(args)
+
+    for directive in "input", "output", "params":
+        try:
+            # The following block prevents conflict with Python's reserved keyword 'class'
+            # An old problem for Pythonistas that work with taxonomy :)
+            # See the rule 'lineage_parser' output directive to see class is spelled with a 'k'
+            for k, v in getattr(snakemake, directive).items():
+                if "klass" in k:
+                    k = k.replace("klass", "class")
+                args_dict[k] = v
+        except AttributeError:
+            pass
+
+    return args
 
 
 def parse_args():
@@ -120,6 +148,7 @@ if __name__ == "__main__":
     # The driver function is standardized across scripts in this workflow
     # Please check the workflow/scripts/utils.py module for reference
     from utils import driver
+
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__)
+    driver(main, snakemake, __file__, parse_args_fn=parse_snakemake_args)

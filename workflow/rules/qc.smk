@@ -54,7 +54,7 @@ rule cutadapt_pe:
             + f"-U -{config['trimming']['clip_r3']} "
         ),
     wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/cutadapt/pe"))
+        get_wrapper("cutadapt/pe")
 
 
 rule merge_fastqs:
@@ -89,7 +89,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "output/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
     threads: 1
     wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/fastqc"))
+        get_wrapper("fastqc")
 
 
 rule fastqc_trimmed:  # qc on trimmed reads
@@ -106,7 +106,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "output/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
     threads: 1
     wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/fastqc"))
+        get_wrapper("fastqc")
 
 
 rule fastqc_merged:  # qc on trimmed, merged reads
@@ -123,7 +123,7 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         "output/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
     threads: 1
     wrapper:
-        str(Path(config["wrapper_version"]).joinpath("bio/fastqc"))
+        get_wrapper("fastqc")
 
 
 rule multiqc:
@@ -135,13 +135,5 @@ rule multiqc:
         "output/logs/qc/multiqc.log",
     benchmark:
         "output/benchmarks/qc/multiqc.txt"
-    conda:
-        "../envs/multiqc.yaml"
-    shell:
-        """
-        multiqc --force -o $(dirname {output.report}) -n $(basename {output.report}) {input}
-        """
-
-
-# wrapper:
-#     str(Path(config["wrapper_version"]).joinpath("bio/multiqc"))
+    wrapper:
+        get_wrapper("multiqc")

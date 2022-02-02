@@ -34,10 +34,12 @@ rule megahit:
     output:
         contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
     params:
+        # Turn 'remove_intermediates' on/off in config['megahit']
         out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
+        remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
     threads: round(workflow.cores * 0.75)
     log:
         "output/logs/assembly/megahit/{sample}.log",
@@ -57,6 +59,8 @@ rule megahit:
                 --min-contig-len {params.min_contig_len}    \
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
+
+        {params.remove_intermediate}
         """
 
 
@@ -67,10 +71,12 @@ rule megahit_coassembly:
     output:
         contigs="output/assembly/megahit/coassembly.contigs.fa",
     params:
+        # Turn 'remove_intermediates' on/off in config['megahit']
         out_dir=lambda w, output: get_parent(output.contigs),
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
+        remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
     threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,
@@ -92,15 +98,15 @@ rule megahit_coassembly:
                 --min-contig-len {params.min_contig_len}    \
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
+
+        {params.remove_intermediate}
         """
 
 
 rule metaquast:
     input:
         contigs=get_contigs_input(),
-        reference=get_metaquast_reference
-        if not config["coassembly"]
-        else config["metaquast"]["coassembly_reference"],
+        reference=get_metaquast_reference,
     output:
         outfile="output/assembly/metaquast/{sample}/report.html"
         if not config["coassembly"]
@@ -113,13 +119,9 @@ rule metaquast:
     resources:
         mem_mb=get_mem_mb,
     log:
-        "output/logs/assembly/metaquast/{sample}.log"
-        if not config["coassembly"]
-        else "output/logs/assembly/metaquast/coassembly.log",
+        get_coassembly_benchmark_or_log("log", "assembly", "metaquast"),
     benchmark:
-        "output/benchmarks/assembly/metaquast/{sample}.txt" if not config[
-        "coassembly"
-        ] else "output/benchmarks/assembly/metaquast/coassembly.txt"
+        get_coassembly_benchmark_or_log("benchmark", "assembly", "metaquast")
     conda:
         "../envs/quast.yaml"
     shell:

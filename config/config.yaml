@@ -13,7 +13,7 @@ samples: config/samples.csv
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version: "0.84.0"
+wrapper_version: "v0.86.0"
 
 coassembly: False
 
@@ -45,6 +45,7 @@ concatenate_contigs:
 
 megahit:
   preset: "meta-large"
+  cleanup: True
 
 metaquast:
   activate: False
@@ -58,6 +59,8 @@ prodigal:
   activate: True
   mode: "meta"
   quiet: True
+  genes: False
+  scores: False
 
 prokka:
   activate: False
