@@ -23,9 +23,9 @@ rule prodigal:
             "output/annotation/prodigal/{sample}/{sample}_genes.fna"
             if not config["coassembly"]
             else "output/annotation/prodigal/coassembly_genes.fna"
-        )
-        if config["prodigal"]["genes"]
-        else (),
+        ),
+        # if config["prodigal"]["genes"]
+        # else (),
         scores=(
             "output/annotation/prodigal/{sample}/{sample}_scores.cds"
             if not config["coassembly"]
@@ -35,9 +35,9 @@ rule prodigal:
         else [],
     params:
         mode=config["prodigal"]["mode"],
-        genes=lambda w, output: f"-d {output.genes}"
-        if config["prodigal"]["genes"]
-        else "",
+        genes=lambda w, output: f"-d {output.genes}",
+        # if config["prodigal"]["genes"]
+        # else "",
         scores=lambda w, output: f"-s {output.scores}"
         if config["prodigal"]["scores"]
         else "",
