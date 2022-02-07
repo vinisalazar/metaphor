@@ -1,6 +1,14 @@
-# MetaSnakePipe
-# Original MetaGenePipe workflow by Bobbie Shaban
-# Snakemake port by Vini Salazar (with modifications)
+"""
+Metaphor - Metagenomic Pipeline for Short Reads
+
+The University of Melbourne
+
+A joint effort between the School of Mathematics & Statistics, School of BioSciences
+and the Melbourne Data Analytics Platform (MDAP).
+"""
+
+__author__ = "Vini Salazar"
+
 from pathlib import Path
 
 
