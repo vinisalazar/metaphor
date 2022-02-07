@@ -8,13 +8,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 
-file = "output/assembly/megahit/RH_S001/RH_S001.contigs.fa"
-
-seqstats = Popen(f"seqstats {file}", shell=True, stdout=PIPE, stderr=PIPE)
-
-stdout, stderr = seqstats.communicate()
-
-
 def run_seqstats(fasta):
     """
     Runs seqstats and returns dictionary of metrics.
@@ -60,6 +53,9 @@ def metrics_to_df(fastas):
         "Max seq": "Max. length",
     }
     df = df.rename(columns=rename_dict)
+    outfile = "output/assembly/assembly_report.tsv"
+    df.to_csv(outfile, sep="\t")
+    logging.info(f"Generated assembly report: '{outfile}'.")
     return df
 
 

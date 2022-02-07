@@ -1,7 +1,7 @@
 .idea/
 .snakemake/
+.vscode/
 data/
-
 output/
 config/slurm*/
 config/spartan-*
