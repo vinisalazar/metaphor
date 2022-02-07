@@ -239,6 +239,7 @@ if __name__ == "__main__":
     # The driver function is standardized across scripts in this workflow
     # Please check the workflow/scripts/utils.py module for reference
     from utils import driver
+
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__)
+    driver(main, snakemake, __file__, parse_args)

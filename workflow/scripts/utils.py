@@ -20,7 +20,7 @@ def parse_snakemake_args(snakemake):
     return args
 
 
-def driver(main_fn, snakemake_obj, file, parse_args_fn=parse_snakemake_args):
+def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(message)s",
@@ -29,6 +29,8 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=parse_snakemake_args):
     if snakemake_obj:
         fh = logging.FileHandler(str(snakemake_obj.log), encoding="utf-8")
         logging.getLogger().addHandler(fh)
+        if not parse_args_fn:
+            parse_args_fn = parse_snakemake_args
         args = parse_args_fn(snakemake_obj)
     else:
         args = parse_args_fn()

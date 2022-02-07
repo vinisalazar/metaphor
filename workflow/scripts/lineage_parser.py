@@ -33,7 +33,6 @@ def main(args):
         rank_df.to_csv(vars(args).get(rank), sep="\t")
 
 
-
 def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
@@ -77,6 +76,10 @@ if __name__ == "__main__":
     # The driver function is standardized across scripts in this workflow
     # Please check the workflow/scripts/utils.py module for reference
     from utils import driver
+
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__, parse_args_fn=parse_snakemake_args)
+        parse_args_fn = parse_args
+    else:
+        parse_args_fn = parse_snakemake_args
+    driver(main, snakemake, __file__, parse_args_fn)

@@ -32,7 +32,7 @@ def create_heatmap(args):
         logging.info("Normalising data after filtering.")
         vmax, vmin = None, None
     else:
-        nlargest = categories.sum(axis=1).nlargest().index.to_list()
+        nlargest = dataframe.sum(axis=1).nlargest().index.to_list()
         for ix in nlargest:
             if ix not in ("Function unknown", "General function prediction only"):
                 vmax = dataframe.loc[ix].max()
