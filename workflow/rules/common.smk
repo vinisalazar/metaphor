@@ -287,6 +287,10 @@ def get_metaquast_output():
 #     if config["metaquast"]["cleanup"]:
 
 
+def get_assembly_report():
+    return "output/assembly/assembly_report/assembly_report.tsv"
+
+
 def get_all_assembly_outputs():
     if config["coassembly"]:
         assemblies = [
@@ -296,6 +300,7 @@ def get_all_assembly_outputs():
         assemblies = expand(
             "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
         )
+    assemblies.append(get_assembly_report())
     if is_activated("metaquast"):
         assemblies.append(get_metaquast_output())
 
@@ -546,7 +551,7 @@ def get_binning_output():
 def get_postprocessing_output():
     if is_activated("postprocessing"):
         return (
-            "output/benchmarks/processing_benchmarks.csv",
+            get_processing_benchmarks(),
             "output/postprocessing/runtime_barplot_sum.png",
             "output/postprocessing/runtime_barplot_errorbar.png",
             "output/postprocessing/memory_barplot_sum.png",
@@ -554,3 +559,7 @@ def get_postprocessing_output():
         )
     else:
         return ()
+
+
+def get_processing_benchmarks():
+    return "output/benchmarks/postprocessing/processing_benchmarks.csv"

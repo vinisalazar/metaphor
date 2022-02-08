@@ -68,6 +68,30 @@ rule megahit:
         """
 
 
+rule assembly_report:
+    input:
+        contigs=[
+            "output/assembly/megahit/coassembly.contigs.fa",
+        ]
+        if config["coassembly"]
+        else expand(
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
+            sample=sample_IDs,
+        ),
+    params:
+        fastas=lambda w, input: " ".join(input.contigs),
+    output:
+        assembly_report=get_assembly_report(),
+    log:
+        "output/logs/assembly/assembly_report.log",
+    benchmark:
+        "output/benchmarks/assembly/assembly_report.txt"
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/assembly_report.py"
+
+
 rule metaquast:
     input:
         contigs=get_contigs_input(),

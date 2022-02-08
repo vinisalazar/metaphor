@@ -38,11 +38,16 @@ def run_seqstats(fasta):
     return metrics
 
 
-def metrics_to_df(fastas):
-    samples = [str(Path(file).name).replace(".contigs.fa", "") for file in fastas] * 3
-    metrics = [run_seqstats(file) for file in fastas] * 3
+def metrics_to_df(fastas, outfile=None):
+    if isinstance(fastas, str):
+        fastas = [
+            fastas,
+        ]
+    samples = [str(Path(file).name).replace(".contigs.fa", "") for file in fastas]
+    metrics = [run_seqstats(file) for file in fastas]
     df = pd.DataFrame(metrics)
     df.index = samples
+    df.index.name = "Samples"
     rename_dict = {
         "Total n": "# contigs",
         "Total seq": "# bp",
@@ -53,7 +58,9 @@ def metrics_to_df(fastas):
         "Max seq": "Max. length",
     }
     df = df.rename(columns=rename_dict)
-    outfile = "output/assembly/assembly_report.tsv"
+    if not outfile:
+        # Default value is defined in the common.smk module
+        outfile = "output/assembly/megahit/assembly_report.tsv"
     df.to_csv(outfile, sep="\t")
     logging.info(f"Generated assembly report: '{outfile}'.")
     return df
@@ -67,7 +74,8 @@ def plot_column(df, column, outfile):
     fig.savefig(outfile, bbox_inches="tight")
 
 
-def plot_columns(df, outdir="./"):
+def plot_columns(df, assembly_report):
+    outdir = Path(assembly_report).parent
     for column in df.columns:
         outfile = Path(outdir).joinpath(
             column.replace(" ", "_").replace(".", "").replace("#", "n").lower() + ".pdf"
@@ -77,13 +85,14 @@ def plot_columns(df, outdir="./"):
 
 
 def main(args):
-    df = metrics_to_df(args.fastas)
-    plot_columns(df)
+    df = metrics_to_df(args.fastas, args.assembly_report)
+    plot_columns(df, args.assembly_report)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fastas", nargs="+")
+    parser.add_argument("--assembly-report")
     args = parser.parse_args()
     return args
 
