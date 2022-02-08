@@ -11,3 +11,4 @@ mgp/
 .*-bkp/
 run.sh
 *.code-workspace
+**/__pycache__
