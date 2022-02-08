@@ -9,7 +9,7 @@ from utils import cog_csv_names
 
 
 def main(args):
-    cog, org, outfile = args.cog_csv, args.org_csv, args.outfile
+    cog, org, outfile = args.cog_csv, args.org_csv, args.taxonmap
     cog_df = pd.read_csv(
         cog,
         names=cog_csv_names,
@@ -25,7 +25,7 @@ def main(args):
     org_df = pd.read_csv(org, names=org_names, usecols=["NCBI Assembly ID", "taxid"])
     df = cog_df.merge(org_df, on="NCBI Assembly ID")
     if outfile is None:
-        outfile = cog.replace("cog.csv", "accession2taxid.csv")
+        outfile = cog.replace("cog.csv", "taxonmap.tsv")
 
     # Add required columns
     df["accession"] = df["Protein ID"].str.split(".", expand=True).iloc[:, 0]
@@ -44,7 +44,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cog-csv")
     parser.add_argument("--org-csv")
-    parser.add_argument("--outfile")
+    parser.add_argument("--taxonmap")
     args = parser.parse_args()
     return args
 
