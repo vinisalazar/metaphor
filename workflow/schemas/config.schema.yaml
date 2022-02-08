@@ -147,12 +147,18 @@ properties:
     properties:
       activate:
         type: boolean
-      db:
+      rankedlineage:
+        type: string
+      names:
+        type: string
+      nodes:
         type: string
       download_url:
         type: string
     required:
-      - db
+      - rankedlineage
+      - names
+      - nodes
       - activate
       - download_url
 

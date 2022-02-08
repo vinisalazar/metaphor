@@ -78,7 +78,7 @@ cog_parser:
 
 lineage_parser:
   activate: False
-  ranked_lineage: "data/taxonomy/rankedlineage.dmp"
+  rankedlineage: "data/taxonomy/rankedlineage.dmp"
   names: "data/taxonomy/names.dmp"
   nodes: "data/taxonomy/nodes.dmp"
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"

@@ -418,7 +418,11 @@ def get_taxa_plot_outputs():
 
 def get_annotation_output():
     annotations = {
-        "diamond": get_all_diamond_outputs(),
+        "diamond": [
+            get_all_diamond_outputs(),
+            config["lineage_parser"]["names"],
+            config["lineage_parser"]["nodes"],
+        ],
         "cog_parser": (
             get_all_cog_parser_outputs(),
             get_concatenate_cog_outputs(),
@@ -426,7 +430,7 @@ def get_annotation_output():
         ),
         "lineage_parser": (
             get_all_lineage_parser_outputs(),
-            config["lineage_parser"]["db"],
+            config["lineage_parser"]["rankedlineage"],
         ),
         "plot_cog": get_taxa_plot_outputs(),
         "prokka": get_prokka_output(),

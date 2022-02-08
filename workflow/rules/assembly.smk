@@ -29,8 +29,12 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1="output/qc/merged/{sample}_R1.fq.gz" if not config["coassembly"] else "output/qc/merged/all_samples_R1.fq.gz",
-        fastq2="output/qc/merged/{sample}_R2.fq.gz" if not config["coassembly"] else "output/qc/merged/all_samples_R2.fq.gz",
+        fastq1="output/qc/merged/{sample}_R1.fq.gz"
+        if not config["coassembly"]
+        else "output/qc/merged/all_samples_R1.fq.gz",
+        fastq2="output/qc/merged/{sample}_R2.fq.gz"
+        if not config["coassembly"]
+        else "output/qc/merged/all_samples_R2.fq.gz",
     output:
         contigs=get_contigs_input(),
     params:
@@ -69,7 +73,9 @@ rule metaquast:
         contigs=get_contigs_input(),
         reference=get_metaquast_reference,
     output:
-        outfile=get_coassembly_or_sample_file("assembly", "metaquast", suffix="report.html", add_sample_to_suffix=False),
+        outfile=get_coassembly_or_sample_file(
+            "assembly", "metaquast", suffix="report.html", add_sample_to_suffix=False
+        ),
     params:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),

@@ -13,16 +13,12 @@ rule prodigal:
     input:
         contigs=get_contigs_input(),
     output:
-        proteins=get_coassembly_or_sample_file("annotation", "prodigal", "proteins.faa")
-        genbank=get_coassembly_or_sample_file("annotation", "prodigal", "genbank.gbk")
-        genes=(
-            get_coassembly_or_sample_file("annotation", "prodigal", "genes.fna")
-        ),
+        proteins=get_coassembly_or_sample_file("annotation", "prodigal", "proteins.faa"),
+        genbank=get_coassembly_or_sample_file("annotation", "prodigal", "genbank.gbk"),
+        genes=(get_coassembly_or_sample_file("annotation", "prodigal", "genes.fna")),
         # if config["prodigal"]["genes"]
         # else (),
-        scores=(
-            get_coassembly_or_sample_file("annotation", "prodigal", "scores.cds")
-        )
+        scores=(get_coassembly_or_sample_file("annotation", "prodigal", "scores.cds"))
         if config["prodigal"]["scores"]
         else [],
     params:
@@ -112,9 +108,6 @@ rule generate_COG_taxonmap:
         "../envs/bash.yaml"
     script:
         "../scripts/create_cog_taxonmap.py"
-        
-    
-
 
 
 rule diamond_makedb:
@@ -126,7 +119,7 @@ rule diamond_makedb:
     output:
         fname=config["diamond"]["db"],
     params:
-        extra=lambda w, input: "--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}"
+        extra=lambda w, input: "--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
     threads: round(workflow.cores * 0.25)
@@ -137,7 +130,7 @@ rule diamond_makedb:
 rule download_taxonomy_database:
     output:
         # Replace the .test/ directory with data/ directory if it is set like so
-        rankedlineage=config["lineage_parser"]["lineage_parser"],
+        rankedlineage=config["lineage_parser"]["rankedlineage"],
         names=config["lineage_parser"]["names"],
         nodes=config["lineage_parser"]["nodes"],
     params:
@@ -301,7 +294,7 @@ rule lineage_parser:
         tax_out="output/annotation/cog/{sample}/{sample}_tax.tsv"
         if not config["coassembly"]
         else "output/annotation/cog/coassembly_tax.tsv",
-        rankedlineage=config["lineage_parser"]["db"],
+        rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
         species="output/annotation/cog/{sample}/{sample}_species.tsv"
