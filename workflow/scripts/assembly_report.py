@@ -78,7 +78,7 @@ def plot_columns(df, assembly_report):
     outdir = Path(assembly_report).parent
     for column in df.columns:
         outfile = Path(outdir).joinpath(
-            column.replace(" ", "_").replace(".", "").replace("#", "n").lower() + ".pdf"
+            column.replace(" ", "_").replace(".", "").replace("#", "n").lower() + ".png"
         )
         plot_column(df, column, outfile)
         logging.info(f"Generated plot: '{outfile}'.")
