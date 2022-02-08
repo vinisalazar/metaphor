@@ -29,6 +29,7 @@ def main(args):
 
     # Add required columns
     df["accession"] = df["Protein ID"].str.split(".", expand=True).iloc[:, 0]
+    df["Protein ID"] = df["Protein ID"].str.replace(".", "_", regex=False)
     df["gi"] = ""
 
     # Rename and reorder

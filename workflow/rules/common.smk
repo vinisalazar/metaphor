@@ -287,8 +287,12 @@ def get_metaquast_output():
 #     if config["metaquast"]["cleanup"]:
 
 
-def get_assembly_report():
-    return "output/assembly/assembly_report/assembly_report.tsv"
+def get_assembly_report(plot=None):
+    base_dir = Path("output/assembly/assembly_report/")
+    if not plot:
+        return str(base_dir.joinpath("assembly_report.tsv"))
+    else:
+        return str(base_dir.joinpath(f"{plot}.png"))
 
 
 def get_all_assembly_outputs():
@@ -363,30 +367,30 @@ def get_all_cog_parser_outputs():
 def get_concatenate_cog_outputs():
     return (
         (
-            "output/annotation/cog/COG_categories_absolute.tsv",
-            "output/annotation/cog/COG_categories_relative.tsv",
-            "output/annotation/cog/COG_codes_absolute.tsv",
-            "output/annotation/cog/COG_codes_relative.tsv",
-            "output/annotation/cog/COG_taxs_absolute.tsv",
-            "output/annotation/cog/COG_taxs_relative.tsv",
-            "output/annotation/cog/COG_pathways_absolute.tsv",
-            "output/annotation/cog/COG_pathways_relative.tsv",
-            "output/annotation/cog/COG_species_absolute.tsv",
-            "output/annotation/cog/COG_species_relative.tsv",
-            "output/annotation/cog/COG_genus_absolute.tsv",
-            "output/annotation/cog/COG_genus_relative.tsv",
-            "output/annotation/cog/COG_family_absolute.tsv",
-            "output/annotation/cog/COG_family_relative.tsv",
-            "output/annotation/cog/COG_order_absolute.tsv",
-            "output/annotation/cog/COG_order_relative.tsv",
-            "output/annotation/cog/COG_class_absolute.tsv",
-            "output/annotation/cog/COG_class_relative.tsv",
-            "output/annotation/cog/COG_phylum_absolute.tsv",
-            "output/annotation/cog/COG_phylum_relative.tsv",
-            "output/annotation/cog/COG_kingdom_absolute.tsv",
-            "output/annotation/cog/COG_kingdom_relative.tsv",
-            "output/annotation/cog/COG_domain_absolute.tsv",
-            "output/annotation/cog/COG_domain_relative.tsv",
+            "output/annotation/cog/tables/COG_categories_absolute.tsv",
+            "output/annotation/cog/tables/COG_categories_relative.tsv",
+            "output/annotation/cog/tables/COG_codes_absolute.tsv",
+            "output/annotation/cog/tables/COG_codes_relative.tsv",
+            "output/annotation/cog/tables/COG_taxs_absolute.tsv",
+            "output/annotation/cog/tables/COG_taxs_relative.tsv",
+            "output/annotation/cog/tables/COG_pathways_absolute.tsv",
+            "output/annotation/cog/tables/COG_pathways_relative.tsv",
+            "output/annotation/cog/tables/COG_species_absolute.tsv",
+            "output/annotation/cog/tables/COG_species_relative.tsv",
+            "output/annotation/cog/tables/COG_genus_absolute.tsv",
+            "output/annotation/cog/tables/COG_genus_relative.tsv",
+            "output/annotation/cog/tables/COG_family_absolute.tsv",
+            "output/annotation/cog/tables/COG_family_relative.tsv",
+            "output/annotation/cog/tables/COG_order_absolute.tsv",
+            "output/annotation/cog/tables/COG_order_relative.tsv",
+            "output/annotation/cog/tables/COG_class_absolute.tsv",
+            "output/annotation/cog/tables/COG_class_relative.tsv",
+            "output/annotation/cog/tables/COG_phylum_absolute.tsv",
+            "output/annotation/cog/tables/COG_phylum_relative.tsv",
+            "output/annotation/cog/tables/COG_kingdom_absolute.tsv",
+            "output/annotation/cog/tables/COG_kingdom_relative.tsv",
+            "output/annotation/cog/tables/COG_domain_absolute.tsv",
+            "output/annotation/cog/tables/COG_domain_relative.tsv",
         )
         if not config["coassembly"]
         else ()
@@ -411,13 +415,13 @@ def get_prokka_output():
 
 def get_taxa_plot_outputs():
     return (
-        "output/annotation/cog/COG_species_relative.png",
-        "output/annotation/cog/COG_genus_relative.png",
-        "output/annotation/cog/COG_family_relative.png",
-        "output/annotation/cog/COG_order_relative.png",
-        "output/annotation/cog/COG_class_relative.png",
-        "output/annotation/cog/COG_phylum_relative.png",
-        "output/annotation/cog/COG_domain_relative.png",
+        "output/annotation/cog/plots/COG_species_relative.png",
+        "output/annotation/cog/plots/COG_genus_relative.png",
+        "output/annotation/cog/plots/COG_family_relative.png",
+        "output/annotation/cog/plots/COG_order_relative.png",
+        "output/annotation/cog/plots/COG_class_relative.png",
+        "output/annotation/cog/plots/COG_phylum_relative.png",
+        "output/annotation/cog/plots/COG_domain_relative.png",
     )
 
 
