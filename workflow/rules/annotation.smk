@@ -114,12 +114,12 @@ rule diamond_makedb:
     input:
         fname=get_cog_db_file("cog-20.fa.gz"),
         taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
-        taxonnodes=config["lineage_parser"]["names"],
-        taxonnames=config["lineage_parser"]["nodes"],
+        taxonnodes=config["lineage_parser"]["nodes"],
+        taxonnames=config["lineage_parser"]["names"],
     output:
         fname=config["diamond"]["db"],
     params:
-        extra=lambda w, input: "--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
+        extra=lambda w, input: f"--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
     threads: round(workflow.cores * 0.25)
@@ -146,7 +146,8 @@ rule download_taxonomy_database:
 
         DST={params.output_dir}/$(basename {params.download_url})
 
-        wget {params.download_url} -O $DST 2>> {log}
+        # No verbose (nv) option to avoid progress bar
+        wget -nv {params.download_url} -O $DST 2>> {log}
 
         tar zxvf $DST -C {params.output_dir} 2>> {log}
 
