@@ -151,4 +151,7 @@ if __name__ == "__main__":
 
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__, parse_args_fn=parse_snakemake_args)
+        parse_args_fn = parse_args
+    else:
+        parse_args_fn = parse_snakemake_args
+    driver(main, snakemake, __file__, parse_args_fn)
