@@ -317,6 +317,7 @@ def get_database_outputs():
     db_outputs = [
         get_cog_db_file("cog-20.fa.gz"),
         get_cog_db_file("cog-20.cog.csv"),
+        get_cog_db_file("cog-20.org.csv"),
         get_cog_db_file("cog-20.def.tab"),
         get_cog_db_file("fun-20.tab"),
     ]

@@ -98,11 +98,35 @@ rule download_COG_database:
         """
 
 
+rule generate_COG_taxonmap:
+    input:
+        cog_csv=get_cog_db_file("cog-20.cog.csv"),
+        org_csv=get_cog_db_file("cog-20.org.csv"),
+    output:
+        taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
+    log:
+        "output/logs/annotation/generate_COG_taxonmap.log",
+    benchmark:
+        "output/benchmarks/annotation/generate_COG_taxonmap.txt"
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/create_cog_taxonmap.py"
+        
+    
+
+
+
 rule diamond_makedb:
     input:
         fname=get_cog_db_file("cog-20.fa.gz"),
+        taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
+        taxonnodes=config["lineage_parser"]["names"],
+        taxonnames=config["lineage_parser"]["nodes"],
     output:
         fname=config["diamond"]["db"],
+    params:
+        extra=lambda w, input: "--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}"
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
     threads: round(workflow.cores * 0.25)
@@ -113,7 +137,9 @@ rule diamond_makedb:
 rule download_taxonomy_database:
     output:
         # Replace the .test/ directory with data/ directory if it is set like so
-        rankedlineage=config["lineage_parser"]["db"],
+        rankedlineage=config["lineage_parser"]["lineage_parser"],
+        names=config["lineage_parser"]["names"],
+        nodes=config["lineage_parser"]["nodes"],
     params:
         download_url=config["lineage_parser"]["download_url"],
         output_dir=lambda w, output: str(Path(output.rankedlineage).parent),
@@ -131,7 +157,7 @@ rule download_taxonomy_database:
 
         tar zxvf $DST -C {params.output_dir} 2>> {log}
 
-        ls {output.rankedlineage} 2>> {log}
+        ls {params.output_dir} 2>> {log}
         """
 
 
