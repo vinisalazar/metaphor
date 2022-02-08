@@ -287,8 +287,12 @@ def get_metaquast_output():
 #     if config["metaquast"]["cleanup"]:
 
 
-def get_assembly_report():
-    return "output/assembly/assembly_report/assembly_report.tsv"
+def get_assembly_report(plot=None):
+    base_dir = Path("output/assembly/assembly_report/")
+    if not plot:
+        return str(base_dir.joinpath("assembly_report.tsv"))
+    else:
+        return str(base_dir.joinpath(f"{plot}.png"))
 
 
 def get_all_assembly_outputs():
