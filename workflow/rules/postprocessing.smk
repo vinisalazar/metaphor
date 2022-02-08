@@ -15,9 +15,9 @@ rule concatenate_benchmarks:
     input:
         get_final_output(),
     output:
-        outfile="output/benchmarks/processing_benchmarks.csv",
+        outfile=get_processing_benchmarks(),
     params:
-        benchmarks_dir=lambda w, output: str(Path(output.outfile).parent),
+        benchmarks_dir=lambda w, output: str(Path(output.outfile).parent.parent),
     group:
         "postprocessing"
     log:
@@ -32,7 +32,7 @@ rule concatenate_benchmarks:
 
 rule plot_benchmarks:
     input:
-        benchmarks_df="output/benchmarks/processing_benchmarks.csv",
+        benchmarks_df=get_processing_benchmarks(),
     output:
         runtime_barplot_sum="output/postprocessing/runtime_barplot_sum.png",
         runtime_barplot_errorbar="output/postprocessing/runtime_barplot_errorbar.png",

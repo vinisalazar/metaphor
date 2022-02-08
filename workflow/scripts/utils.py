@@ -36,7 +36,7 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
         args = parse_args_fn()
     try:
         logging.info(f"Starting script '{file.split('/')[-1]}'.")
-        logging.debug(f"Full script path: '{file}'.")
+        logging.info(f"Full script path: '{file}'.\n")
         main_fn(args)
         logging.info("Done.")
     except Exception as e:
@@ -45,17 +45,17 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
 
 
 cog_csv_names = [
-        "Gene ID (GenBank or ad hoc)",
-        "NCBI Assembly ID",
-        "Protein ID",
-        "Protein length",
-        "COG footprint coordinates",
-        "Length of the COG footprint on the proteins",
-        "COG ID",
-        "reserved",
-        "COG membership class",
-        "PSI-BLAST bit score",
-        "PSI-BLAST e-value",
-        "COG profile length",
-        "Protein footprint coordinates on the COG profile",
-    ]
+    "Gene ID (GenBank or ad hoc)",
+    "NCBI Assembly ID",
+    "Protein ID",
+    "Protein length",
+    "COG footprint coordinates",
+    "Length of the COG footprint on the proteins",
+    "COG ID",
+    "reserved",
+    "COG membership class",
+    "PSI-BLAST bit score",
+    "PSI-BLAST e-value",
+    "COG profile length",
+    "Protein footprint coordinates on the COG profile",
+]

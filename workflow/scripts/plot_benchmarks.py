@@ -103,7 +103,7 @@ def memory_barplot_sum(df, **kwargs):
         kwargs["gb"],
     )
     if df[memory_unit].all() == "-":
-        print("Skipping plot, no memory stats recorded.")
+        logging.info("Skipping plot, no memory stats recorded.")
         return
     fig, ax = plt.subplots(figsize=(4, 8))
     df_ = df.copy()
@@ -153,7 +153,7 @@ def memory_barplot_errorbar(df, **kwargs):
         kwargs["gb"],
     )
     if df[memory_unit].all() == "-":
-        print("Skipping plot, no memory stats recorded.")
+        logging.info("Skipping plot, no memory stats recorded.")
         return
     fig, ax = plt.subplots(figsize=(4, 8))
     df_ = df.copy()
@@ -209,13 +209,17 @@ def main(args):
                 gb=args.gb,
             )
         except Exception as error:
-            print(f"Could not generate {outfile}. The following error occurred:")
-            print(error)
+            logging.info(f"Could not generate {outfile}. The following error occurred:")
+            logging.info(error)
             if "memory" in plot.__name__:
-                print(
+                logging.info(
                     "It is possible that your OS does not support capture of memory usage."
                 )
-                print("Therefore, only runtime plots will be generated.\n")
+                logging.info("Therefore, only runtime plots will be generated.")
+                logging.info(
+                    "Memory plot files will be touched so the workflow will finish correctly.\n"
+                )
+                Path(outfile).touch()
             pass
 
 
