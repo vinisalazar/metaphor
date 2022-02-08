@@ -14,6 +14,7 @@ import argparse
 import subprocess
 from pathlib import Path
 from functools import lru_cache
+from utils import cog_csv_names
 
 import pandas as pd
 
@@ -46,22 +47,6 @@ def main(args):
         assert Path(file).exists(), f"File '{file}' was not found."
 
     # Column names
-    cog_csv_names = [
-        "Gene ID (GenBank or ad hoc)",
-        "NCBI Assembly ID",
-        "Protein ID",
-        "Protein length",
-        "COG footprint coordinates",
-        "Length of the COG footprint on the proteins",
-        "COG ID",
-        "reserved",
-        "COG membership class",
-        "PSI-BLAST bit score",
-        "PSI-BLAST e-value",
-        "COG profile length",
-        "Protein footprint coordinates on the COG profile",
-    ]
-
     def_tab_names = [
         "COG ID",
         "COG functional category",

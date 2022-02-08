@@ -42,3 +42,20 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
     except Exception as e:
         logging.error(e)
         logging.error(traceback.format_exc())
+
+
+cog_csv_names = [
+        "Gene ID (GenBank or ad hoc)",
+        "NCBI Assembly ID",
+        "Protein ID",
+        "Protein length",
+        "COG footprint coordinates",
+        "Length of the COG footprint on the proteins",
+        "COG ID",
+        "reserved",
+        "COG membership class",
+        "PSI-BLAST bit score",
+        "PSI-BLAST e-value",
+        "COG profile length",
+        "Protein footprint coordinates on the COG profile",
+    ]
