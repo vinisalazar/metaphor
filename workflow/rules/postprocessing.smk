@@ -39,6 +39,7 @@ rule plot_benchmarks:
         memory_barplot_sum="output/postprocessing/memory_barplot_sum.png",
         memory_barplot_errorbar="output/postprocessing/memory_barplot_errorbar.png",
     params:
+        n_samples=len(set(sample_IDs)),
         time_unit=config["postprocessing"]["runtime_unit"],
         time_cutoff=config["postprocessing"]["runtime_cutoff"],
         memory_unit=config["postprocessing"]["memory_unit"],
