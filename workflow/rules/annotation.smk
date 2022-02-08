@@ -101,9 +101,9 @@ rule generate_COG_taxonmap:
     output:
         taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
     log:
-        "output/logs/annotation/cog/generate_COG_taxonmap.log",
+        "output/logs/annotation/generate_COG_taxonmap.log",
     benchmark:
-        "output/benchmarks/annotation/cog/generate_COG_taxonmap.txt"
+        "output/benchmarks/annotation/generate_COG_taxonmap.txt"
     conda:
         "../envs/bash.yaml"
     script:
