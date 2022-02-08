@@ -40,7 +40,10 @@ def create_heatmap(args):
 
         vmin = args.categories_cutoff
 
-    outfile = Path(args.categories_file).with_suffix(".png")
+    # TODO: improve this path construction
+    outfile = str(Path(args.categories_file).with_suffix(".png")).replace(
+        "tables", "plots"
+    )
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
     sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
     plt.savefig(outfile, bbox_inches="tight")
@@ -97,7 +100,7 @@ def create_tax_barplot(dataframe, save=True):
     axs[1].set_yticks([])
     axs[1].axis("off")
     if save:
-        outfile = f"output/annotation/cog/COG_{rank}_relative.png"
+        outfile = f"output/annotation/cog/plots/COG_{rank}_relative.png"
         plt.savefig(outfile, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
