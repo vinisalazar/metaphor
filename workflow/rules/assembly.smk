@@ -29,10 +29,10 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1="output/qc/merged/{sample}_R1.fq.gz",
-        fastq2="output/qc/merged/{sample}_R2.fq.gz",
+        fastq1="output/qc/merged/{sample}_R1.fq.gz" if not config["coassembly"] else "output/qc/merged/all_samples_R1.fq.gz",
+        fastq2="output/qc/merged/{sample}_R2.fq.gz" if not config["coassembly"] else "output/qc/merged/all_samples_R2.fq.gz",
     output:
-        contigs="output/assembly/megahit/{sample}/{sample}.contigs.fa",
+        contigs=get_contigs_input(),
     params:
         # Turn 'remove_intermediates' on/off in config['megahit']
         out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
@@ -42,9 +42,9 @@ rule megahit:
         remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
     threads: round(workflow.cores * 0.75)
     log:
-        "output/logs/assembly/megahit/{sample}.log",
+        get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
     benchmark:
-        "output/benchmarks/assembly/megahit/{sample}.txt"
+        get_coassembly_benchmark_or_log("benchmark", "assembly", "megahit")
     conda:
         "../envs/megahit.yaml"
     shell:
@@ -64,53 +64,12 @@ rule megahit:
         """
 
 
-rule megahit_coassembly:
-    input:
-        fastq1="output/qc/merged/all_samples_R1.fq.gz",
-        fastq2="output/qc/merged/all_samples_R2.fq.gz",
-    output:
-        contigs="output/assembly/megahit/coassembly.contigs.fa",
-    params:
-        # Turn 'remove_intermediates' on/off in config['megahit']
-        out_dir=lambda w, output: get_parent(output.contigs),
-        min_contig_len=200,
-        k_list="21,29,39,59,79,99,119,141",
-        preset=config["megahit"]["preset"],
-        remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
-    threads: round(workflow.cores * 0.75)
-    resources:
-        mem_mb=get_mem_mb,
-    log:
-        "output/logs/assembly/megahit/coassembly.log",
-    benchmark:
-        "output/benchmarks/assembly/megahit/coassembly.txt"
-    conda:
-        "../envs/megahit.yaml"
-    shell:
-        """
-        # MegaHit has no --force flag, so we must remove the created directory prior to running
-        rm -rf {params.out_dir}
-
-        megahit -1 {input.fastq1} -2 {input.fastq2}         \
-                -o {params.out_dir}                         \
-                --presets {params.preset}                   \
-                --out-prefix coassembly                     \
-                --min-contig-len {params.min_contig_len}    \
-                -t {threads}                                \
-                --k-list {params.k_list} &> {log}
-
-        {params.remove_intermediate}
-        """
-
-
 rule metaquast:
     input:
         contigs=get_contigs_input(),
         reference=get_metaquast_reference,
     output:
-        outfile="output/assembly/metaquast/{sample}/report.html"
-        if not config["coassembly"]
-        else "output/assembly/metaquast_coassembly/report.html",
+        outfile=get_coassembly_or_sample_file("assembly", "metaquast", suffix="report.html", add_sample_to_suffix=False),
     params:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),

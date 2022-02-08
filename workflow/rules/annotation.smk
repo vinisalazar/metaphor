@@ -13,23 +13,15 @@ rule prodigal:
     input:
         contigs=get_contigs_input(),
     output:
-        proteins="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_proteins.faa",
-        genbank="output/annotation/prodigal/{sample}/{sample}_genbank.gbk"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_genbank.gbk",
+        proteins=get_coassembly_or_sample_file("annotation", "prodigal", "proteins.faa")
+        genbank=get_coassembly_or_sample_file("annotation", "prodigal", "genbank.gbk")
         genes=(
-            "output/annotation/prodigal/{sample}/{sample}_genes.fna"
-            if not config["coassembly"]
-            else "output/annotation/prodigal/coassembly_genes.fna"
+            get_coassembly_or_sample_file("annotation", "prodigal", "genes.fna")
         ),
         # if config["prodigal"]["genes"]
         # else (),
         scores=(
-            "output/annotation/prodigal/{sample}/{sample}_scores.cds"
-            if not config["coassembly"]
-            else "output/annotation/prodigal/coassembly_scores.cds"
+            get_coassembly_or_sample_file("annotation", "prodigal", "scores.cds")
         )
         if config["prodigal"]["scores"]
         else [],
