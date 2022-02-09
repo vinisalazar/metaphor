@@ -81,6 +81,12 @@ rule assembly_report:
     params:
         fastas=lambda w, input: " ".join(input.contigs),
     output:
+        report(get_assembly_report("avg_length"), category="Assembly"),
+        report(get_assembly_report("max_length"), category="Assembly"),
+        report(get_assembly_report("median_length"), category="Assembly"),
+        report(get_assembly_report("n_bp"), category="Assembly"),
+        report(get_assembly_report("n_contigs"), category="Assembly"),
+        report(get_assembly_report("n50"), category="Assembly"),
         assembly_report=get_assembly_report(),
     log:
         "output/logs/assembly/assembly_report.log",

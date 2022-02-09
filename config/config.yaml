@@ -70,7 +70,7 @@ prokka:
 diamond:
   db: ".test/cog-20.dmnd"  # for testing purposes only
   output_type: 6
-  output_format: "qseqid sseqid stitle evalue bitscore staxids"
+  output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
 
 cog_parser:
   activate: False
