@@ -47,7 +47,7 @@ def main(args):
     list_of_dfs = [create_benchmark_df(file, benchmarks_dir) for file in files]
     df = cat_benchmark_dfs(list_of_dfs)
 
-    print(f"Writing {len(files)} benchmarks to {outfile}.\n")
+    logging.info(f"Writing {len(files)} benchmarks to {outfile}.\n")
     df.to_csv(outfile, index=False)
 
 
@@ -63,6 +63,10 @@ if __name__ == "__main__":
     # The driver function is standardized across scripts in this workflow
     # Please check the workflow/scripts/utils.py module for reference
     from utils import driver
+
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__)
+        parse_args_fn = parse_args
+    else:
+        parse_args_fn = None
+    driver(main, snakemake, __file__, parse_args_fn)

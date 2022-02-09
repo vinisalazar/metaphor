@@ -15,9 +15,9 @@ rule concatenate_benchmarks:
     input:
         get_final_output(),
     output:
-        outfile="output/benchmarks/processing_benchmarks.csv",
+        outfile=get_processing_benchmarks(),
     params:
-        benchmarks_dir=lambda w, output: str(Path(output.outfile).parent),
+        benchmarks_dir=lambda w, output: str(Path(output.outfile).parent.parent),
     group:
         "postprocessing"
     log:
@@ -32,13 +32,24 @@ rule concatenate_benchmarks:
 
 rule plot_benchmarks:
     input:
-        benchmarks_df="output/benchmarks/processing_benchmarks.csv",
+        benchmarks_df=get_processing_benchmarks(),
     output:
-        runtime_barplot_sum="output/postprocessing/runtime_barplot_sum.png",
-        runtime_barplot_errorbar="output/postprocessing/runtime_barplot_errorbar.png",
-        memory_barplot_sum="output/postprocessing/memory_barplot_sum.png",
-        memory_barplot_errorbar="output/postprocessing/memory_barplot_errorbar.png",
+        runtime_barplot_sum=report(
+            "output/postprocessing/runtime_barplot_sum.png", category="Postprocessing"
+        ),
+        runtime_barplot_errorbar=report(
+            "output/postprocessing/runtime_barplot_errorbar.png",
+            category="Postprocessing",
+        ),
+        memory_barplot_sum=report(
+            "output/postprocessing/memory_barplot_sum.png", category="Postprocessing"
+        ),
+        memory_barplot_errorbar=report(
+            "output/postprocessing/memory_barplot_errorbar.png",
+            category="Postprocessing",
+        ),
     params:
+        n_samples=len(set(sample_IDs)),
         time_unit=config["postprocessing"]["runtime_unit"],
         time_cutoff=config["postprocessing"]["runtime_cutoff"],
         memory_unit=config["postprocessing"]["memory_unit"],

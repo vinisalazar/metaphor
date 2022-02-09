@@ -1,7 +1,7 @@
 .idea/
 .snakemake/
+.vscode/
 data/
-
 output/
 config/slurm*/
 config/spartan-*
@@ -11,3 +11,4 @@ mgp/
 .*-bkp/
 run.sh
 *.code-workspace
+**/__pycache__

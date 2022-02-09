@@ -51,7 +51,7 @@ def runtime_barplot_sum(df, **kwargs):
         plt.savefig(outfile, bbox_inches="tight")
 
 
-def runtime_barplot_errorbar(df, **kwargs):
+def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
     """
     Generates barplot of rules' runtimes for each sample.
 
@@ -72,6 +72,16 @@ def runtime_barplot_errorbar(df, **kwargs):
     plot_data = df.sort_values(time_unit + "_corrected", ascending=False).query(
         f"{time_unit} > {cutoff}"
     )
+
+    # Divide rules that run once for all samples by the number of samples
+    if n_samples:
+        plot_data[time_unit + "_corrected"] = plot_data.apply(
+            lambda row: row[time_unit + "_corrected"] / float(n_samples)
+            if row["sample"] != row["sample"]
+            else row[time_unit + "_corrected"],
+            axis=1,
+        )
+
     sns.barplot(
         x=time_unit + "_corrected",
         y="rule",
@@ -103,7 +113,7 @@ def memory_barplot_sum(df, **kwargs):
         kwargs["gb"],
     )
     if df[memory_unit].all() == "-":
-        print("Skipping plot, no memory stats recorded.")
+        logging.info("Skipping plot, no memory stats recorded.")
         return
     fig, ax = plt.subplots(figsize=(4, 8))
     df_ = df.copy()
@@ -142,7 +152,7 @@ def memory_barplot_sum(df, **kwargs):
         plt.savefig(outfile, bbox_inches="tight")
 
 
-def memory_barplot_errorbar(df, **kwargs):
+def memory_barplot_errorbar(df, n_samples=None, **kwargs):
     """
     Generates barplot of sum of rules' memory usage.
     """
@@ -153,7 +163,7 @@ def memory_barplot_errorbar(df, **kwargs):
         kwargs["gb"],
     )
     if df[memory_unit].all() == "-":
-        print("Skipping plot, no memory stats recorded.")
+        logging.info("Skipping plot, no memory stats recorded.")
         return
     fig, ax = plt.subplots(figsize=(4, 8))
     df_ = df.copy()
@@ -162,6 +172,16 @@ def memory_barplot_errorbar(df, **kwargs):
     plot_data = df_.query(f"{memory_unit} > {cutoff}").sort_values(
         memory_unit, ascending=False
     )
+
+    # Divide rules that run once for all samples by the number of samples
+    if n_samples:
+        plot_data[memory_unit] = plot_data.apply(
+            lambda row: row[memory_unit] / n_samples
+            if row["sample"] != row["sample"]
+            else row[memory_unit],
+            axis=1,
+        )
+
     sns.barplot(
         x=memory_unit,
         y="rule",
@@ -201,6 +221,7 @@ def main(args):
             outfile = getattr(args, plot.__name__)
             plot(
                 df,
+                n_samples=args.n_samples,
                 outfile=outfile,
                 time_unit=args.time_unit,
                 memory_unit=args.memory_unit,
@@ -209,19 +230,25 @@ def main(args):
                 gb=args.gb,
             )
         except Exception as error:
-            print(f"Could not generate {outfile}. The following error occurred:")
-            print(error)
+            logging.info(f"Could not generate {outfile}. The following error occurred:")
+            logging.info(error)
+            logging.info("\n")
             if "memory" in plot.__name__:
-                print(
+                logging.info(
                     "It is possible that your OS does not support capture of memory usage."
                 )
-                print("Therefore, only runtime plots will be generated.\n")
+                logging.info("Therefore, only runtime plots will be generated.")
+                logging.info(
+                    "Memory plot files will be touched so the workflow will finish correctly.\n"
+                )
+                Path(outfile).touch()
             pass
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--benchmarks_df")
+    parser.add_argument("--n_samples")
     parser.add_argument("--time_unit", default="m")
     parser.add_argument("--memory_unit", default="max_vms")
     parser.add_argument("--time_cutoff", default=0)
@@ -239,6 +266,10 @@ if __name__ == "__main__":
     # The driver function is standardized across scripts in this workflow
     # Please check the workflow/scripts/utils.py module for reference
     from utils import driver
+
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__)
+        parse_args_fn = parse_args
+    else:
+        parse_args_fn = None
+    driver(main, snakemake, __file__, parse_args_fn)

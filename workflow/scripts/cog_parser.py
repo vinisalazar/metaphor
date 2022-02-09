@@ -14,6 +14,7 @@ import argparse
 import subprocess
 from pathlib import Path
 from functools import lru_cache
+from utils import cog_csv_names
 
 import pandas as pd
 
@@ -46,22 +47,6 @@ def main(args):
         assert Path(file).exists(), f"File '{file}' was not found."
 
     # Column names
-    cog_csv_names = [
-        "Gene ID (GenBank or ad hoc)",
-        "NCBI Assembly ID",
-        "Protein ID",
-        "Protein length",
-        "COG footprint coordinates",
-        "Length of the COG footprint on the proteins",
-        "COG ID",
-        "reserved",
-        "COG membership class",
-        "PSI-BLAST bit score",
-        "PSI-BLAST e-value",
-        "COG profile length",
-        "Protein footprint coordinates on the COG profile",
-    ]
-
     def_tab_names = [
         "COG ID",
         "COG functional category",
@@ -79,7 +64,11 @@ def main(args):
 
     # Load data
     logging.info(f"Loading annotation data: '{dmnd_out}'.")
-    df = pd.read_csv(dmnd_out, sep="\t", usecols=["qseqid", "sseqid", "bitscore"])
+    df = pd.read_csv(
+        dmnd_out,
+        sep="\t",
+        usecols=["qseqid", "sseqid", "bitscore", "staxids", "sscinames"],
+    )
 
     # Keep the best score
     df = df.sort_values("bitscore", ascending=False)
@@ -171,50 +160,11 @@ def main(args):
     logging.info(f"Wrote {len(cog_counts)} rows to '{codes_out}.'")
     del cog_counts
 
-    # COG taxonomies
-    logging.info("Write taxonomies (takes more time than the previous steps).")
-
-    @lru_cache(1024)
-    def get_taxid_and_name(protein_id, cog_code):
-        try:
-            suffix = ".tsv.gz"
-            cog_tsv_file = cog_dir.joinpath(Path(cog_code).with_suffix(suffix))
-            if not cog_tsv_file.exists():
-                suffix = ".tsv"
-                cog_tsv_file = cog_dir.joinpath(Path(cog_code).with_suffix(suffix))
-            zgrep_out = subprocess.getoutput(f"zgrep '{protein_id}' {cog_tsv_file}")
-            # Only get first occurrence as sometimes entries appear twice
-            zgrep_out = zgrep_out.split("\n")[0]
-            protid, plen, taxid, name, footprint = zgrep_out.split("\t")
-            fmt_name = name.replace("_", " ") + f" {footprint}"
-            return taxid, fmt_name
-        except:
-            logging.info(f"Couldn't find tax ID for '{cog_code}': {protein_id}.")
-            logging.info(
-                f"Please check the '{cog_tsv_file}' file in the fasta/ directory of the COG database: {cog_dir}."
-            )
-            # raise
-            return None, None
-
-    # The `zip(*df.apply(...))` expands the result of the apply into two columns.
-    # Source:
-    #   https://stackoverflow.com/questions/29550414/how-can-i-split-a-column-of-tuples-in-a-pandas-dataframe
-    try:
-        merged_df["taxid"], merged_df["taxname"] = zip(
-            *merged_df.apply(
-                lambda row: get_taxid_and_name(row["Protein ID"], row["COG ID"]), axis=1
-            )
-        )
-        merged_df = merged_df[["taxid", "taxname"]].value_counts()
-        merged_df.name = "absolute"
-        logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
-    except Exception as e:
-        logging.info(
-            "Couldn't write taxonomies. Writing empty file so workflow continues."
-        )
-        logging.error(e)
-
+    merged_df = merged_df.rename(columns={"staxids": "taxid", "sscinames": "taxname"})
+    merged_df = merged_df[["taxid", "taxname"]].value_counts()
+    merged_df.name = "absolute"
     merged_df.to_csv(tax_out, sep="\t")
+    logging.info(f"Wrote {len(merged_df)} rows to '{tax_out}'.")
     del merged_df
 
 
@@ -249,6 +199,10 @@ if __name__ == "__main__":
     # The driver function is standardized across scripts in this workflow
     # Please check the workflow/scripts/utils.py module for reference
     from utils import driver
+
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__)
+        parse_args_fn = parse_args
+    else:
+        parse_args_fn = None
+    driver(main, snakemake, __file__, parse_args_fn)

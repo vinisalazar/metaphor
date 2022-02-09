@@ -18,8 +18,6 @@ def create_heatmap(args):
     dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0)
     logging.info(f"{len(dataframe)} categories detected.")
 
-    if args.coassembly:
-        dataframe = dataframe[["relative"]].rename(columns={"relative": "coassembly"})
     if args.filter_categories:
         logging.info("Filtering categories.")
         dataframe = dataframe.drop("Function unknown")
@@ -32,7 +30,7 @@ def create_heatmap(args):
         logging.info("Normalising data after filtering.")
         vmax, vmin = None, None
     else:
-        nlargest = categories.sum(axis=1).nlargest().index.to_list()
+        nlargest = dataframe.sum(axis=1).nlargest().index.to_list()
         for ix in nlargest:
             if ix not in ("Function unknown", "General function prediction only"):
                 vmax = dataframe.loc[ix].max()
@@ -40,7 +38,10 @@ def create_heatmap(args):
 
         vmin = args.categories_cutoff
 
-    outfile = Path(args.categories_file).with_suffix(".png")
+    # TODO: improve this path construction
+    outfile = str(Path(args.categories_file).with_suffix(".png")).replace(
+        "tables", "plots"
+    )
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
     sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
     plt.savefig(outfile, bbox_inches="tight")
@@ -97,7 +98,7 @@ def create_tax_barplot(dataframe, save=True):
     axs[1].set_yticks([])
     axs[1].axis("off")
     if save:
-        outfile = f"output/annotation/cog/COG_{rank}_relative.png"
+        outfile = f"output/annotation/cog/plots/COG_{rank}_relative.png"
         plt.savefig(outfile, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
@@ -113,15 +114,6 @@ def process_rank_files(args):
     cutoff = 0.05
     for rank, file in zip(ranks, rank_files):
         rank_df = pd.read_csv(file, sep="\t", index_col=0)
-
-        # When it's a coassembly, the columns will already look like this
-        # If it's not a coassembly, the script will already consume the relative data
-        if args.coassembly:
-            rank_df = rank_df[
-                [
-                    "relative",
-                ]
-            ].rename(columns={"relative": "coassembly"})
         rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
         rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
         rank_df.index.name = rank
@@ -176,4 +168,7 @@ if __name__ == "__main__":
 
     if "snakemake" not in locals():
         snakemake = None
-    driver(main, snakemake, __file__)
+        parse_args_fn = parse_args
+    else:
+        parse_args_fn = None
+    driver(main, snakemake, __file__, parse_args_fn)
