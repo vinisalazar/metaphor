@@ -44,7 +44,7 @@ rule megahit:
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
         remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
-        sample=lambda w: w.sample if getattr(w, 'sample', None) else 'coassembly'
+        sample=lambda w: w.sample if getattr(w, "sample", None) else "coassembly",
     threads: round(workflow.cores * 0.75)
     log:
         get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
@@ -73,7 +73,13 @@ rule assembly_report:
     input:
         contigs=get_contigs_input(expand_=True),
     params:
-        fastas=lambda w, input: " ".join(input.contigs if not isinstance(input.contigs, str) else [input.contigs, ]),
+        fastas=lambda w, input: " ".join(
+            input.contigs
+            if not isinstance(input.contigs, str)
+            else [
+                input.contigs,
+            ]
+        ),
     output:
         report(get_assembly_report("avg_length"), category="Assembly"),
         report(get_assembly_report("max_length"), category="Assembly"),

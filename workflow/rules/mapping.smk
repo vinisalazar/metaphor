@@ -12,7 +12,7 @@ from pathlib import Path
 
 rule concatenate_contigs:
     input:
-        contigs=get_contigs_input(expand_=True)
+        contigs=get_contigs_input(expand_=True),
     output:
         catalogue="output/mapping/catalogue.fna.gz",
     params:

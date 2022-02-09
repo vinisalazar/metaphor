@@ -203,9 +203,9 @@ def get_contigs_input(expand_=False):
     else:
         if expand_:
             contigs = expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-            sample=sample_IDs,
-        )
+                "output/assembly/megahit/{sample}/{sample}.contigs.fa",
+                sample=sample_IDs,
+            )
         else:
             contigs = "output/assembly/megahit/{sample}/{sample}.contigs.fa"
     return contigs
@@ -302,7 +302,9 @@ def get_assembly_report(plot=None):
 
 
 def get_all_assembly_outputs():
-    assemblies=[get_contigs_input(expand_=True),]
+    assemblies = [
+        get_contigs_input(expand_=True),
+    ]
     assemblies.append(get_assembly_report())
     if is_activated("metaquast"):
         assemblies.append(get_metaquast_output())
@@ -398,7 +400,8 @@ def get_concatenate_cog_outputs():
 
 def get_lineage_parser_outputs():
     return (
-        get_coassembly_or_sample_file("annotation", "cog", f"{rank}.tsv") for rank in ranks
+        get_coassembly_or_sample_file("annotation", "cog", f"{rank}.tsv")
+        for rank in ranks
     )
 
 
