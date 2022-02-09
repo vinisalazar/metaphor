@@ -334,8 +334,8 @@ rule plot_cog:
         kingdom="output/annotation/cog/tables/COG_kingdom_relative.tsv",
         domain="output/annotation/cog/tables/COG_domain_relative.tsv",
     output:
-        categories_plt="output/annotation/cog/plots/COG_categories_relative.png",
-        taxa_barplots=get_taxa_plot_outputs(),
+        categories_plt=report("output/annotation/cog/plots/COG_categories_relative.png",category="Annotation"),
+        taxa_barplots=report(get_taxa_plot_outputs(), category="Annotation"),
     params:
         filter_categories=config["plot_cog"]["filter_categories"],
         categories_cutoff=config["plot_cog"]["categories_cutoff"],

@@ -34,10 +34,10 @@ rule plot_benchmarks:
     input:
         benchmarks_df=get_processing_benchmarks(),
     output:
-        runtime_barplot_sum="output/postprocessing/runtime_barplot_sum.png",
-        runtime_barplot_errorbar="output/postprocessing/runtime_barplot_errorbar.png",
-        memory_barplot_sum="output/postprocessing/memory_barplot_sum.png",
-        memory_barplot_errorbar="output/postprocessing/memory_barplot_errorbar.png",
+        runtime_barplot_sum=report("output/postprocessing/runtime_barplot_sum.png", category="Postprocessing"),
+        runtime_barplot_errorbar=report("output/postprocessing/runtime_barplot_errorbar.png", category="Postprocessing"),
+        memory_barplot_sum=report("output/postprocessing/memory_barplot_sum.png", category="Postprocessing"),
+        memory_barplot_errorbar=report("output/postprocessing/memory_barplot_errorbar.png", category="Postprocessing"),
     params:
         n_samples=len(set(sample_IDs)),
         time_unit=config["postprocessing"]["runtime_unit"],
