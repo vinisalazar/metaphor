@@ -516,12 +516,12 @@ def get_mapping_output():
 # Binning
 ###############################################################
 
-binners = ("concoct", "metabat2", "vamb")
+binners = [b for b in ("concoct", "metabat2", "vamb") if is_activated(b)]
 
 
 def get_DAS_tool_input():
     scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{binner}_scaffolds2bin.tsv"
-    return sorted(scaffolds2bin(b) for b in binners if is_activated(b))
+    return sorted(scaffolds2bin(b) for b in binners)
 
 
 def get_fasta_bins():

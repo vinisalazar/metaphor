@@ -184,8 +184,11 @@ properties:
     properties:
       activate:
         type: boolean
+      minfasta:
+        type: integer
     required:
       - activate
+      - minfasta
 
   metabat2:
     type: object

@@ -16,7 +16,7 @@ rule vamb:
     params:  # defaults in vamb's README
         outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
-        minfasta=200000,
+        minfasta=config["vamb"]["minfasta"],
         batchsize=256,
     threads: round(workflow.cores * 0.75)
     resources:

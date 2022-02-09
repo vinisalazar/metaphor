@@ -95,6 +95,7 @@ plot_cog:
 
 vamb:
   activate: False
+  minfasta: 200000
 
 metabat2:
   activate: True
