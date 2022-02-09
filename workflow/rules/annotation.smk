@@ -157,9 +157,9 @@ rule download_taxonomy_database:
 
 rule diamond:
     input:
-        fname_fasta="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_proteins.faa",
+        fname_fasta=get_coassembly_or_sample_file(
+            "annotation", "prodigal", "proteins.faa"
+        ),
         fname_db=config["diamond"]["db"],
     output:
         fname=get_diamond_output(),
@@ -199,9 +199,7 @@ rule cog_parser:
         ),
         codes_out=get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
         tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
-        pathways_out=get_coassembly_or_sample_file(
-            "annotation", "cog", "pathways.tsv"
-        ),
+        pathways_out=get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
     benchmark:
@@ -216,40 +214,64 @@ rule concatenate_cog:
     input:
         categories=expand(
             "output/annotation/cog/{sample}/{sample}_categories.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "categories.tsv"),
         codes=expand(
             "output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
         taxs=expand(
             "output/annotation/cog/{sample}/{sample}_tax.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
         pathways=expand(
             "output/annotation/cog/{sample}/{sample}_pathways.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
         species=expand(
             "output/annotation/cog/{sample}/{sample}_species.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "species.tsv"),
         genus=expand(
             "output/annotation/cog/{sample}/{sample}_genus.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "genus.tsv"),
         family=expand(
             "output/annotation/cog/{sample}/{sample}_family.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "family.tsv"),
         order=expand(
             "output/annotation/cog/{sample}/{sample}_order.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "order.tsv"),
         klass=expand(
             "output/annotation/cog/{sample}/{sample}_class.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "class.tsv"),
         phylum=expand(
             "output/annotation/cog/{sample}/{sample}_phylum.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
         kingdom=expand(
             "output/annotation/cog/{sample}/{sample}_kingdom.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
         domain=expand(
             "output/annotation/cog/{sample}/{sample}_domain.tsv", sample=sample_IDs
-        ),
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
     output:
         # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
         categories_absolute="output/annotation/cog/tables/COG_categories_absolute.tsv",
@@ -288,30 +310,18 @@ rule concatenate_cog:
 
 rule lineage_parser:
     input:
-        tax_out=get_coassembly_or_sample_file(
-            "annotation", "cog", "tax.tsv"
-        ),
+        tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species=get_coassembly_or_sample_file(
-            "annotation", "cog", "species.tsv"
-        ),
+        species=get_coassembly_or_sample_file("annotation", "cog", "species.tsv"),
         genus=get_coassembly_or_sample_file("annotation", "cog", "genus.tsv"),
-        family=get_coassembly_or_sample_file(
-            "annotation", "cog", "family.tsv"
-        ),
+        family=get_coassembly_or_sample_file("annotation", "cog", "family.tsv"),
         order=get_coassembly_or_sample_file("annotation", "cog", "order.tsv"),
         klass=get_coassembly_or_sample_file("annotation", "cog", "class.tsv"),
-        phylum=get_coassembly_or_sample_file(
-            "annotation", "cog", "phylum.tsv"
-        ),
-        kingdom=get_coassembly_or_sample_file(
-            "annotation", "cog", "kingdom.tsv"
-        ),
-        domain=get_coassembly_or_sample_file(
-            "annotation", "cog", "domain.tsv"
-        ),
+        phylum=get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
+        kingdom=get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
+        domain=get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
@@ -334,7 +344,10 @@ rule plot_cog:
         kingdom="output/annotation/cog/tables/COG_kingdom_relative.tsv",
         domain="output/annotation/cog/tables/COG_domain_relative.tsv",
     output:
-        categories_plt=report("output/annotation/cog/plots/COG_categories_relative.png",category="Annotation"),
+        categories_plt=report(
+            "output/annotation/cog/plots/COG_categories_relative.png",
+            category="Annotation",
+        ),
         taxa_barplots=report(get_taxa_plot_outputs(), category="Annotation"),
     params:
         filter_categories=config["plot_cog"]["filter_categories"],

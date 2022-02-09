@@ -12,11 +12,7 @@ from pathlib import Path
 
 rule concatenate_contigs:
     input:
-        contigs="output/assembly/megahit/coassembly.contigs.fa"
-        if config["coassembly"]
-        else expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
-        ),
+        contigs=get_contigs_input(expand_=True),
     output:
         catalogue="output/mapping/catalogue.fna.gz",
     params:
