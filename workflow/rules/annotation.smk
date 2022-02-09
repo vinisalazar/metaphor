@@ -157,9 +157,7 @@ rule download_taxonomy_database:
 
 rule diamond:
     input:
-        fname_fasta="output/annotation/prodigal/{sample}/{sample}_proteins.faa"
-        if not config["coassembly"]
-        else "output/annotation/prodigal/coassembly_proteins.faa",
+        fname_fasta=get_coassembly_or_sample_file("annotation", "prodigal", "proteins.faa"),
         fname_db=config["diamond"]["db"],
     output:
         fname=get_diamond_output(),
@@ -214,40 +212,40 @@ rule concatenate_cog:
     input:
         categories=expand(
             "output/annotation/cog/{sample}/{sample}_categories.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "categories.tsv"),
         codes=expand(
             "output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
         taxs=expand(
             "output/annotation/cog/{sample}/{sample}_tax.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
         pathways=expand(
             "output/annotation/cog/{sample}/{sample}_pathways.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
         species=expand(
             "output/annotation/cog/{sample}/{sample}_species.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "species.tsv"),
         genus=expand(
             "output/annotation/cog/{sample}/{sample}_genus.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "genus.tsv"),
         family=expand(
             "output/annotation/cog/{sample}/{sample}_family.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "family.tsv"),
         order=expand(
             "output/annotation/cog/{sample}/{sample}_order.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "order.tsv"),
         klass=expand(
             "output/annotation/cog/{sample}/{sample}_class.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "class.tsv"),
         phylum=expand(
             "output/annotation/cog/{sample}/{sample}_phylum.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
         kingdom=expand(
             "output/annotation/cog/{sample}/{sample}_kingdom.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
         domain=expand(
             "output/annotation/cog/{sample}/{sample}_domain.tsv", sample=sample_IDs
-        ),
+        ) if not config["coassembly"] else get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
     output:
         # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
         categories_absolute="output/annotation/cog/tables/COG_categories_absolute.tsv",

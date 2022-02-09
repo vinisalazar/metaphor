@@ -39,10 +39,6 @@ def run_seqstats(fasta):
 
 
 def metrics_to_df(fastas, outfile=None):
-    if isinstance(fastas, str):
-        fastas = [
-            fastas,
-        ]
     samples = [str(Path(file).name).replace(".contigs.fa", "") for file in fastas]
     metrics = [run_seqstats(file) for file in fastas]
     df = pd.DataFrame(metrics)

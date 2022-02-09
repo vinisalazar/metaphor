@@ -196,12 +196,18 @@ def get_qc_output():
 ###############################################################
 
 
-def get_contigs_input():
+def get_contigs_input(expand_=False):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
     if config["coassembly"]:
         contigs = "output/assembly/megahit/coassembly/coassembly.contigs.fa"
     else:
-        contigs = "output/assembly/megahit/{sample}/{sample}.contigs.fa"
+        if expand_:
+            contigs = expand(
+            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
+            sample=sample_IDs,
+        )
+        else:
+            contigs = "output/assembly/megahit/{sample}/{sample}.contigs.fa"
     return contigs
 
 
@@ -296,14 +302,7 @@ def get_assembly_report(plot=None):
 
 
 def get_all_assembly_outputs():
-    if config["coassembly"]:
-        assemblies = [
-            "output/assembly/megahit/coassembly.contigs.fa",
-        ]
-    else:
-        assemblies = expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa", sample=sample_IDs
-        )
+    assemblies=[get_contigs_input(expand_=True),]
     assemblies.append(get_assembly_report())
     if is_activated("metaquast"):
         assemblies.append(get_metaquast_output())
@@ -357,7 +356,7 @@ def get_all_cog_parser_outputs():
         )
         if not config["coassembly"]
         else expand(
-            "output/annotation/cog/coassembly_{kind}.tsv",
+            "output/annotation/cog/coassembly/coassembly_{kind}.tsv",
             sample=sample_IDs,
             kind=cog_valid_output_kinds,
         )
@@ -399,9 +398,7 @@ def get_concatenate_cog_outputs():
 
 def get_lineage_parser_outputs():
     return (
-        (f"output/annotation/cog/{{sample}}/{{sample}}_{rank}.tsv" for rank in ranks)
-        if not config["coassembly"]
-        else (f"output/annotation/cog/coassembly_{rank}.tsv" for rank in ranks)
+        get_coassembly_or_sample_file("annotation", "cog", f"{rank}.tsv") for rank in ranks
     )
 
 

@@ -44,6 +44,7 @@ rule megahit:
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
         remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
+        sample=lambda w: w.sample if getattr(w, 'sample', None) else 'coassembly'
     threads: round(workflow.cores * 0.75)
     log:
         get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
@@ -54,12 +55,12 @@ rule megahit:
     shell:
         """
         # MegaHit has no --force flag, so we must remove the created directory prior to running
-        rm -rf {params.out_dir}/{wildcards.sample}
+        rm -rf {params.out_dir}/{params.sample}
 
         megahit -1 {input.fastq1} -2 {input.fastq2}         \
-                -o {params.out_dir}/{wildcards.sample}      \
+                -o {params.out_dir}/{params.sample}         \
                 --presets {params.preset}                   \
-                --out-prefix {wildcards.sample}             \
+                --out-prefix {params.sample}                \
                 --min-contig-len {params.min_contig_len}    \
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
@@ -70,16 +71,9 @@ rule megahit:
 
 rule assembly_report:
     input:
-        contigs=[
-            "output/assembly/megahit/coassembly.contigs.fa",
-        ]
-        if config["coassembly"]
-        else expand(
-            "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-            sample=sample_IDs,
-        ),
+        contigs=get_contigs_input(expand_=True),
     params:
-        fastas=lambda w, input: " ".join(input.contigs),
+        fastas=lambda w, input: " ".join(input.contigs if not isinstance(input.contigs, str) else [input.contigs, ]),
     output:
         report(get_assembly_report("avg_length"), category="Assembly"),
         report(get_assembly_report("max_length"), category="Assembly"),
