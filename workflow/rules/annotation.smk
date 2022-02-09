@@ -199,9 +199,7 @@ rule cog_parser:
         ),
         codes_out=get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
         tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
-        pathways_out=get_coassembly_or_sample_file(
-            "annotation", "cog", "pathways.tsv"
-        ),
+        pathways_out=get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
     benchmark:
@@ -288,30 +286,18 @@ rule concatenate_cog:
 
 rule lineage_parser:
     input:
-        tax_out=get_coassembly_or_sample_file(
-            "annotation", "cog", "tax.tsv"
-        ),
+        tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species=get_coassembly_or_sample_file(
-            "annotation", "cog", "species.tsv"
-        ),
+        species=get_coassembly_or_sample_file("annotation", "cog", "species.tsv"),
         genus=get_coassembly_or_sample_file("annotation", "cog", "genus.tsv"),
-        family=get_coassembly_or_sample_file(
-            "annotation", "cog", "family.tsv"
-        ),
+        family=get_coassembly_or_sample_file("annotation", "cog", "family.tsv"),
         order=get_coassembly_or_sample_file("annotation", "cog", "order.tsv"),
         klass=get_coassembly_or_sample_file("annotation", "cog", "class.tsv"),
-        phylum=get_coassembly_or_sample_file(
-            "annotation", "cog", "phylum.tsv"
-        ),
-        kingdom=get_coassembly_or_sample_file(
-            "annotation", "cog", "kingdom.tsv"
-        ),
-        domain=get_coassembly_or_sample_file(
-            "annotation", "cog", "domain.tsv"
-        ),
+        phylum=get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
+        kingdom=get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
+        domain=get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
@@ -334,7 +320,10 @@ rule plot_cog:
         kingdom="output/annotation/cog/tables/COG_kingdom_relative.tsv",
         domain="output/annotation/cog/tables/COG_domain_relative.tsv",
     output:
-        categories_plt=report("output/annotation/cog/plots/COG_categories_relative.png",category="Annotation"),
+        categories_plt=report(
+            "output/annotation/cog/plots/COG_categories_relative.png",
+            category="Annotation",
+        ),
         taxa_barplots=report(get_taxa_plot_outputs(), category="Annotation"),
     params:
         filter_categories=config["plot_cog"]["filter_categories"],
