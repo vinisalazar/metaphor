@@ -24,9 +24,9 @@ def main():
     test = subparsers.add_parser("test", help="Test Metaphor with example data.")
     test.add_argument("-d", "--directory", help="Directory to run tests.")
     test.add_argument(
-        "--rm-conda",
-        help="If this option is selected, conda environments created during tests will be deleted after tests are completed. "
-        "You may want to keep conda directories if you are running the pipeline right after testing.",
+        "--preserve-conda",
+        help="If this option is selected, conda environments will be created in the current "
+             "directory instead of the test directory (which is deleted when tests finish).",
         action="store_true",
     )
     test.set_defaults(func=metaphor_test, directory="metaphor_test")

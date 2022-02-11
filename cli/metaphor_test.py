@@ -63,11 +63,11 @@ def metaphor_test(args):
 
     def check_test_directory(directory):
         directory = Path(directory)
-        print(f"Checking test directory: '{directory}'.")
         if not (directory.exists() and directory.is_dir()):
             print(f"Creating test directory: '{directory}'.")
             directory.mkdir(exist_ok=True)
-
+        else:
+            print("Directory exists, skipping.")
         return directory
 
     def download_data(directory):
@@ -94,7 +94,7 @@ def metaphor_test(args):
     create_input_table_args.input_dir = directory
     create_input_table_args.output_file = samples_file
     create_input_table_args.join_units = False
-    conda_prefix = directory if args.rm_conda else None
+    conda_prefix = None if args.preserve_conda else directory
 
     # Start execution
     download_data(directory)
@@ -110,7 +110,19 @@ def metaphor_test(args):
         configfiles=[
             "/Users/vwsalazar/Bio/phd/metaphor/config/test-config.yaml",
         ],
-        config={"samples": samples_file},
+        config={
+            "samples": samples_file,
+            "cog_parser": {
+                "db": str(Path(directory).joinpath("data/COG2020")),
+            },
+            "lineage_parser": {
+                "rankedlineage": str(
+                    Path(directory).joinpath("data/taxonomy/rankedlineage.dmp")
+                ),
+                "names": str(Path(directory).joinpath("data/taxonomy/names.dmp")),
+                "nodes": str(Path(directory).joinpath("data/taxonomy/nodes.dmp")),
+            },
+        },
         cores=4,
         resources={"mem_mb": 4096},
         use_conda=True,
