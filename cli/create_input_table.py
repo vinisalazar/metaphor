@@ -118,7 +118,7 @@ def create_paired_files_dict(R1, R2, n_files, s_as_units):
 
 def create_paired_samples_df(paired_samples_dict, s_as_units):
     df = pd.DataFrame(paired_samples_dict).T
-    df.columns = ["unit", "R1", "R2"]
+    df.columns = ["unit_name", "R1", "R2"]
     df.index.name = "sample_name"
 
     if s_as_units:
@@ -159,8 +159,7 @@ def main(args):
     ]
     final_df = process_final_df(dfs, input_dir)
 
-    if args.output_file is None:
-        outfile = "./samples.csv"
+    outfile = "./samples.csv" if args.output_file is None else args.output_file
     final_df.to_csv(outfile)
 
 
