@@ -3,6 +3,7 @@
 .vscode/
 data/
 output/
+docs/build/
 config/slurm*/
 config/spartan-*
 slurm-*.out
