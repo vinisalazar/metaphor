@@ -131,7 +131,7 @@ properties:
     required:
       - db
 
-  cog_parser:
+  cog_functional_parser:
     type: object
     properties:
       db:
@@ -147,6 +147,8 @@ properties:
     properties:
       activate:
         type: boolean
+      taxonmap:
+        type: string
       rankedlineage:
         type: string
       names:
@@ -156,13 +158,14 @@ properties:
       download_url:
         type: string
     required:
+      - taxonmap
       - rankedlineage
       - names
       - nodes
       - activate
       - download_url
 
-  plot_cog:
+  plot_cog_functional:
     type: object
     properties:
       activate:
@@ -171,12 +174,17 @@ properties:
         type: boolean
       categories_cutoff:
         type: number
-      tax_cutoff:
-        type: number
     required:
       - activate
       - filter_categories
       - categories_cutoff
+
+  plot_taxonomies:
+    type: object
+    properties:
+      tax_cutoff:
+        type: number
+    required:
       - tax_cutoff
 
   vamb:
@@ -256,9 +264,10 @@ required:
   - prodigal
   - prokka
   - diamond
-  - cog_parser
+  - cog_functional_parser 
   - lineage_parser
-  - plot_cog
+  - plot_cog_functional
+  - plot_taxonomies
   - vamb
   - metabat2
   - concoct
