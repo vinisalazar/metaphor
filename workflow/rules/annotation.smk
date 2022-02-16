@@ -113,7 +113,7 @@ rule generate_COG_taxonmap:
 rule diamond_makedb:
     input:
         fname=get_cog_db_file("cog-20.fa.gz"),
-        taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
+        taxonmap=config["lineage_parser"]["taxonmap"],
         taxonnodes=config["lineage_parser"]["nodes"],
         taxonnames=config["lineage_parser"]["names"],
     output:
@@ -187,7 +187,7 @@ rule diamond:
         """
 
 
-rule cog_parser:
+rule cog_functional_parser:
     input:
         dmnd_out=get_diamond_output(),
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
@@ -200,9 +200,9 @@ rule cog_parser:
         codes_out=get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
         pathways_out=get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
     log:
-        get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
+        get_coassembly_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_parser")
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_functional_parser")
     conda:
         "../envs/bash.yaml"
     script:
@@ -222,6 +222,7 @@ rule taxonomy_parser:
         "../envs/bash.yaml"
     script:
         "../scripts/taxonomy_parser.py"
+
 
 
 rule concatenate_cog_functional:
@@ -257,7 +258,7 @@ rule concatenate_taxonomies:
         absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
         relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
     wildcard_constraints:
-        rank="|".join(ranks)
+        rank="|".join(ranks + ["tax",])
     log:
         "output/logs/annotation/concatenate_cog_{rank}.log",
     benchmark:
@@ -297,17 +298,16 @@ rule plot_cog_functional:
         categories_file="output/annotation/cog/tables/COG_categories_relative.tsv",
     output:
         categories_plt=report(
-            "output/annotation/cog/plots/COG_categories_relative.png",
+            get_cog_functional_plot_outputs(),
             category="Annotation",
         ),
     params:
-        filter_categories=config["plot_cog"]["filter_categories"],
-        categories_cutoff=config["plot_cog"]["categories_cutoff"],
-        tax_cutoff=config["plot_cog"]["tax_cutoff"],
+        filter_categories=config["plot_cog_functional"]["filter_categories"],
+        categories_cutoff=config["plot_cog_functional"]["categories_cutoff"],
     log:
-        "output/logs/annotation/plot_cog.log",
+        "output/logs/annotation/plot_cog_functional.log",
     benchmark:
-        "output/benchmarks/annotation/plot_cog.txt"
+        "output/benchmarks/annotation/plot_cog_functional.txt"
     conda:
         "../envs/bash.yaml"
     script:
@@ -320,13 +320,11 @@ rule plot_cog_taxonomy:
     output:
         taxonomy_barplot=report("output/annotation/cog/plots/COG_{rank}_relative.png", category="Annotation"),
     params:
-        filter_categories=config["plot_cog"]["filter_categories"],
-        categories_cutoff=config["plot_cog"]["categories_cutoff"],
-        tax_cutoff=config["plot_cog"]["tax_cutoff"],
+        tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
     log:
-        "output/logs/annotation/plot_cog_taxonomy_{rank}.log",
+        "output/logs/annotation/plot_taxonomies_{rank}.log",
     benchmark:
-        "output/benchmarks/annotation/plot_cog_taxonomy_{rank}.txt"
+        "output/benchmarks/annotation/plot_taxonomies_{rank}.txt"
     conda:
         "../envs/bash.yaml"
     script:

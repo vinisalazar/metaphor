@@ -320,7 +320,7 @@ ranks = "species genus family order class phylum kingdom domain".split()
 
 
 def get_cog_db_file(filename):
-    return str(Path(config["cog_parser"]["db"]).joinpath(filename))
+    return str(Path(config["cog_functional_parser"]["db"]).joinpath(filename))
 
 
 def get_database_outputs():
@@ -347,55 +347,20 @@ def get_all_diamond_outputs():
     return expand(get_diamond_output(), sample=sample_IDs)
 
 
-def get_all_cog_parser_outputs():
-    cog_outputs = ["categories", "codes", "tax", "pathways"]
-    cog_valid_output_kinds = cog_outputs + ranks
-    return (
-        expand(
-            "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
-            sample=sample_IDs,
-            kind=cog_valid_output_kinds,
+def get_concatenate_taxonomies_outputs():
+    return expand(
+            "output/annotation/cog/tables/COG_{rank}_{kind}.tsv",
+            rank=ranks + ["tax",],
+            kind=("absolute", "relative")
         )
-        if not config["coassembly"]
-        else expand(
-            "output/annotation/cog/coassembly/coassembly_{kind}.tsv",
-            sample=sample_IDs,
-            kind=cog_valid_output_kinds,
-        )
-    )
 
 
-def get_concatenate_cog_outputs():
-    return (
-        (
-            "output/annotation/cog/tables/COG_categories_absolute.tsv",
-            "output/annotation/cog/tables/COG_categories_relative.tsv",
-            "output/annotation/cog/tables/COG_codes_absolute.tsv",
-            "output/annotation/cog/tables/COG_codes_relative.tsv",
-            "output/annotation/cog/tables/COG_taxs_absolute.tsv",
-            "output/annotation/cog/tables/COG_taxs_relative.tsv",
-            "output/annotation/cog/tables/COG_pathways_absolute.tsv",
-            "output/annotation/cog/tables/COG_pathways_relative.tsv",
-            "output/annotation/cog/tables/COG_species_absolute.tsv",
-            "output/annotation/cog/tables/COG_species_relative.tsv",
-            "output/annotation/cog/tables/COG_genus_absolute.tsv",
-            "output/annotation/cog/tables/COG_genus_relative.tsv",
-            "output/annotation/cog/tables/COG_family_absolute.tsv",
-            "output/annotation/cog/tables/COG_family_relative.tsv",
-            "output/annotation/cog/tables/COG_order_absolute.tsv",
-            "output/annotation/cog/tables/COG_order_relative.tsv",
-            "output/annotation/cog/tables/COG_class_absolute.tsv",
-            "output/annotation/cog/tables/COG_class_relative.tsv",
-            "output/annotation/cog/tables/COG_phylum_absolute.tsv",
-            "output/annotation/cog/tables/COG_phylum_relative.tsv",
-            "output/annotation/cog/tables/COG_kingdom_absolute.tsv",
-            "output/annotation/cog/tables/COG_kingdom_relative.tsv",
-            "output/annotation/cog/tables/COG_domain_absolute.tsv",
-            "output/annotation/cog/tables/COG_domain_relative.tsv",
+def get_concatenate_cog_functional_outputs():
+    return expand(
+            "output/annotation/cog/tables/COG_{functional_kinds}_{kind}.tsv",
+            functional_kinds=["categories", "codes", "pathways"],
+            kind=("absolute", "relative")
         )
-        if not config["coassembly"]
-        else ()
-    )
 
 
 def get_lineage_parser_outputs():
@@ -414,15 +379,14 @@ def get_prokka_output():
 
 
 def get_taxa_plot_outputs():
-    return (
-        "output/annotation/cog/plots/COG_species_relative.png",
-        "output/annotation/cog/plots/COG_genus_relative.png",
-        "output/annotation/cog/plots/COG_family_relative.png",
-        "output/annotation/cog/plots/COG_order_relative.png",
-        "output/annotation/cog/plots/COG_class_relative.png",
-        "output/annotation/cog/plots/COG_phylum_relative.png",
-        "output/annotation/cog/plots/COG_domain_relative.png",
+    return expand(
+        "output/annotation/cog/plots/COG_{rank}_relative.png",
+        rank=ranks
     )
+
+
+def get_cog_functional_plot_outputs():
+    return "output/annotation/cog/tables/COG_categories_relative.tsv"
 
 
 def get_annotation_output():
@@ -432,25 +396,26 @@ def get_annotation_output():
             config["lineage_parser"]["names"],
             config["lineage_parser"]["nodes"],
         ],
-        "cog_parser": (
-            get_all_cog_parser_outputs(),
-            get_concatenate_cog_outputs(),
+        "taxonomy_parser": (
+            get_concatenate_taxonomies_outputs()
+        ),
+        "plot_taxonomies": (
+            get_taxa_plot_outputs()
+        ),
+        "cog_functional_parser": (
+            get_concatenate_cog_functional_outputs(),
             get_database_outputs(),
         ),
         "lineage_parser": (
             get_all_lineage_parser_outputs(),
             config["lineage_parser"]["rankedlineage"],
         ),
-        "plot_cog": get_taxa_plot_outputs(),
+        "plot_cog": get_cog_functional_plot_outputs(),
         "prokka": get_prokka_output(),
     }
 
-    needs_activation = ("cog_parser", "lineage_parser", "plot_cog", "prokka")
+    needs_activation = ("cog_functional_parser", "lineage_parser", "plot_cog_functional", "plot_taxonomies", "prokka")
     annotation_output = []
-
-    if not is_activated("cog_parser"):
-        config["lineage_parser"]["activate"] = False
-        config["plot_cog"]["activate"] = False
 
     for k, v in annotations.items():
         if not is_activated(k) and k in needs_activation:
