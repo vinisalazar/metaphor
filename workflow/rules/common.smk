@@ -355,10 +355,11 @@ def get_concatenate_taxonomies_outputs():
         )
 
 
+functional_kinds = ["categories", "codes", "pathways"]
 def get_concatenate_cog_functional_outputs():
     return expand(
             "output/annotation/cog/tables/COG_{functional_kinds}_{kind}.tsv",
-            functional_kinds=["categories", "codes", "pathways"],
+            functional_kinds=functional_kinds,
             kind=("absolute", "relative")
         )
 

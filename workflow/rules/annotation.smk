@@ -228,15 +228,15 @@ rule taxonomy_parser:
 rule concatenate_cog_functional:
     input:
         functional_counts=expand(
-            "output/annotation/cog/{sample}/{sample}_{kind}.tsv", sample=sample_IDs
+            "output/annotation/cog/{sample}/{sample}_{kind}.tsv", sample=sample_IDs, kind=functional_kinds,
         )
         if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"),
+        else expand(get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"), kind=functional_kinds),
     output:
         functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
         functional_relative_counts="output/annotation/cog/tables/COG_{kind}_relative.tsv",
     wildcard_constraints:
-        kind="categories|codes|pathways"
+        kind="|".join(functional_kinds),
     log:
         "output/logs/annotation/concatenate_cog_{kind}.log",
     benchmark:
@@ -250,10 +250,10 @@ rule concatenate_cog_functional:
 rule concatenate_taxonomies:
     input:
         files=expand(
-            "output/annotation/cog/{sample}/{sample}_{rank}.tsv", sample=sample_IDs
+            "output/annotation/cog/{sample}/{sample}_{rank}.tsv", sample=sample_IDs, rank=ranks + ["tax",]
         )
         if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"),
+        else expand(get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"), rank=ranks + ["tax",]),
     output:
         absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
         relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
