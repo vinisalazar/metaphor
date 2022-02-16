@@ -14,13 +14,10 @@ def main(args):
     cog = [
         "categories",
         "codes",
-        "taxs",
         "pathways",
     ]
-    ranks = "species genus family order class phylum kingdom domain".split()
 
-    kinds = cog + ranks
-    for kind in kinds:
+    for kind in cog:
         try:
             files = getattr(args, kind)
         except AttributeError:
@@ -80,25 +77,6 @@ def main(args):
                 pass
 
 
-def parse_snakemake_args(snakemake):
-    args = argparse.Namespace()
-    args_dict = vars(args)
-
-    for directive in "input", "output", "params":
-        try:
-            # The following block prevents conflict with Python's reserved keyword 'class'
-            # An old problem for Pythonistas that work with taxonomy :)
-            # See the rule 'lineage_parser' output directive to see class is spelled with a 'k'
-            for k, v in getattr(snakemake, directive).items():
-                if "klass" in k:
-                    k = k.replace("klass", "class")
-                args_dict[k] = v
-        except AttributeError:
-            pass
-
-    return args
-
-
 def parse_args():
     # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
     # 'Simple is better than complex.'
@@ -106,40 +84,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--categories")
     parser.add_argument("--codes")
-    parser.add_argument("--taxs")
     parser.add_argument("--pathways")
-    parser.add_argument("--species")
-    parser.add_argument("--genus")
-    parser.add_argument("--family")
-    parser.add_argument("--order")
-    parser.add_argument("--class")
-    parser.add_argument("--phylum")
-    parser.add_argument("--kingdom")
-    parser.add_argument("--domain")
     parser.add_argument("--categories_absolute")
     parser.add_argument("--categories_relative")
     parser.add_argument("--codes_absolute")
     parser.add_argument("--codes_relative")
-    parser.add_argument("--taxs_absolute")
-    parser.add_argument("--taxs_relative")
     parser.add_argument("--pathways_absolute")
     parser.add_argument("--pathways_relative")
-    parser.add_argument("--species_absolute")
-    parser.add_argument("--species_relative")
-    parser.add_argument("--genus_absolute")
-    parser.add_argument("--genus_relative")
-    parser.add_argument("--family_absolute")
-    parser.add_argument("--family_relative")
-    parser.add_argument("--order_absolute")
-    parser.add_argument("--order_relative")
-    parser.add_argument("--class_absolute")
-    parser.add_argument("--class_relative")
-    parser.add_argument("--phylum_absolute")
-    parser.add_argument("--phylum_relative")
-    parser.add_argument("--kingdom_absolute")
-    parser.add_argument("--kingdom_relative")
-    parser.add_argument("--domain_absolute")
-    parser.add_argument("--domain_relative")
     args = parser.parse_args()
     return args
 
@@ -153,5 +104,5 @@ if __name__ == "__main__":
         snakemake = None
         parse_args_fn = parse_args
     else:
-        parse_args_fn = parse_snakemake_args
+        parse_args_fn = None
     driver(main, snakemake, __file__, parse_args_fn)

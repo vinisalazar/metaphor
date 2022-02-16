@@ -222,90 +222,47 @@ rule concatenate_cog:
         )
         if not config["coassembly"]
         else get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
-        taxs=expand(
-            "output/annotation/cog/{sample}/{sample}_tax.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
         pathways=expand(
             "output/annotation/cog/{sample}/{sample}_pathways.tsv", sample=sample_IDs
         )
         if not config["coassembly"]
         else get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
-        species=expand(
-            "output/annotation/cog/{sample}/{sample}_species.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "species.tsv"),
-        genus=expand(
-            "output/annotation/cog/{sample}/{sample}_genus.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "genus.tsv"),
-        family=expand(
-            "output/annotation/cog/{sample}/{sample}_family.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "family.tsv"),
-        order=expand(
-            "output/annotation/cog/{sample}/{sample}_order.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "order.tsv"),
-        klass=expand(
-            "output/annotation/cog/{sample}/{sample}_class.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "class.tsv"),
-        phylum=expand(
-            "output/annotation/cog/{sample}/{sample}_phylum.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
-        kingdom=expand(
-            "output/annotation/cog/{sample}/{sample}_kingdom.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
-        domain=expand(
-            "output/annotation/cog/{sample}/{sample}_domain.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
     output:
         # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
         categories_absolute="output/annotation/cog/tables/COG_categories_absolute.tsv",
         categories_relative="output/annotation/cog/tables/COG_categories_relative.tsv",
         codes_absolute="output/annotation/cog/tables/COG_codes_absolute.tsv",
         codes_relative="output/annotation/cog/tables/COG_codes_relative.tsv",
-        taxs_absolute="output/annotation/cog/tables/COG_taxs_absolute.tsv",
-        taxs_relative="output/annotation/cog/tables/COG_taxs_relative.tsv",
         pathways_absolute="output/annotation/cog/tables/COG_pathways_absolute.tsv",
         pathways_relative="output/annotation/cog/tables/COG_pathways_relative.tsv",
-        species_absolute="output/annotation/cog/tables/COG_species_absolute.tsv",
-        species_relative="output/annotation/cog/tables/COG_species_relative.tsv",
-        genus_absolute="output/annotation/cog/tables/COG_genus_absolute.tsv",
-        genus_relative="output/annotation/cog/tables/COG_genus_relative.tsv",
-        family_absolute="output/annotation/cog/tables/COG_family_absolute.tsv",
-        family_relative="output/annotation/cog/tables/COG_family_relative.tsv",
-        order_absolute="output/annotation/cog/tables/COG_order_absolute.tsv",
-        order_relative="output/annotation/cog/tables/COG_order_relative.tsv",
-        klass_absolute="output/annotation/cog/tables/COG_class_absolute.tsv",
-        klass_relative="output/annotation/cog/tables/COG_class_relative.tsv",
-        phylum_absolute="output/annotation/cog/tables/COG_phylum_absolute.tsv",
-        phylum_relative="output/annotation/cog/tables/COG_phylum_relative.tsv",
-        kingdom_absolute="output/annotation/cog/tables/COG_kingdom_absolute.tsv",
-        kingdom_relative="output/annotation/cog/tables/COG_kingdom_relative.tsv",
-        domain_absolute="output/annotation/cog/tables/COG_domain_absolute.tsv",
-        domain_relative="output/annotation/cog/tables/COG_domain_relative.tsv",
     log:
-        "output/logs/annotation/concatenate_cog.log",
+        "output/logs/annotation/concatenate_cog_categories.log",
     benchmark:
-        "output/benchmarks/annotation/concatenate_cog.txt"
+        "output/benchmarks/annotation/concatenate_cog_categories.txt"
     conda:
         "../envs/bash.yaml"
     script:
         "../scripts/concatenate_cog.py"
+
+
+rule concatenate_taxonomies:
+    input:
+        files=expand(
+            "output/annotation/cog/{sample}/{sample}_{kind}.tsv", sample=sample_IDs
+        )
+        if not config["coassembly"]
+        else get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"),
+    output:
+        absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
+        relative_counts="output/annotation/cog/tables/COG_{kind}_relative.tsv",
+    log:
+        "output/logs/annotation/concatenate_cog_{kind}.log",
+    benchmark:
+        "output/benchmarks/annotation/concatenate_cog_{kind}.txt"
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/concatenate_taxonomies.py"
 
 
 rule lineage_parser:
@@ -351,7 +308,7 @@ rule plot_cog_functional:
     conda:
         "../envs/bash.yaml"
     script:
-        "../scripts/plot_cog.py"
+        "../scripts/plot_cog_functional.py"
 
 
 rule plot_cog_taxonomy:
