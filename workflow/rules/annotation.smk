@@ -348,7 +348,6 @@ rule plot_cog:
             "output/annotation/cog/plots/COG_categories_relative.png",
             category="Annotation",
         ),
-        taxa_barplots=report(get_taxa_plot_outputs(), category="Annotation"),
     params:
         filter_categories=config["plot_cog"]["filter_categories"],
         categories_cutoff=config["plot_cog"]["categories_cutoff"],
@@ -362,3 +361,22 @@ rule plot_cog:
         "../envs/bash.yaml"
     script:
         "../scripts/plot_cog.py"
+
+
+rule plot_cog_taxonomy:
+    input:
+        taxonomy_relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
+    output:
+        taxonomy_barplot=report("output/annotation/cog/plots/COG_{rank}_relative.png", category="Annotation"),
+    params:
+        filter_categories=config["plot_cog"]["filter_categories"],
+        categories_cutoff=config["plot_cog"]["categories_cutoff"],
+        tax_cutoff=config["plot_cog"]["tax_cutoff"],
+    log:
+        "output/logs/annotation/plot_cog_taxonomy_{rank}.log",
+    benchmark:
+        "output/benchmarks/annotation/plot_cog_taxonomy_{rank}.txt"
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/plot_taxonomy.py"

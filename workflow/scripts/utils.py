@@ -10,9 +10,9 @@ def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for directive in "input", "output", "params":
+    for attr in "input", "output", "params", "wildcards":
         try:
-            for k, v in getattr(snakemake, directive).items():
+            for k, v in getattr(snakemake, attr).items():
                 args_dict[k] = v
         except AttributeError:
             pass
