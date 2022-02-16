@@ -332,17 +332,9 @@ rule lineage_parser:
         "../scripts/lineage_parser.py"
 
 
-rule plot_cog:
+rule plot_cog_functional:
     input:
         categories_file="output/annotation/cog/tables/COG_categories_relative.tsv",
-        species="output/annotation/cog/tables/COG_species_relative.tsv",
-        genus="output/annotation/cog/tables/COG_genus_relative.tsv",
-        family="output/annotation/cog/tables/COG_family_relative.tsv",
-        order="output/annotation/cog/tables/COG_order_relative.tsv",
-        klass="output/annotation/cog/tables/COG_class_relative.tsv",
-        phylum="output/annotation/cog/tables/COG_phylum_relative.tsv",
-        kingdom="output/annotation/cog/tables/COG_kingdom_relative.tsv",
-        domain="output/annotation/cog/tables/COG_domain_relative.tsv",
     output:
         categories_plt=report(
             "output/annotation/cog/plots/COG_categories_relative.png",
@@ -352,7 +344,6 @@ rule plot_cog:
         filter_categories=config["plot_cog"]["filter_categories"],
         categories_cutoff=config["plot_cog"]["categories_cutoff"],
         tax_cutoff=config["plot_cog"]["tax_cutoff"],
-        coassembly=config["coassembly"],
     log:
         "output/logs/annotation/plot_cog.log",
     benchmark:
