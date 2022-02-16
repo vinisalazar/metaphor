@@ -10,14 +10,14 @@ import pandas as pd
 
 
 def main(args):
-    kind = args.kind
+    rank = args.rank
     files = args.files
     if isinstance(files, str):
         files = files.split()
-    logging.info(f"Loading '{kind}' files:\n")
+    logging.info(f"Loading '{rank}' files:\n")
     logging.info("\n".join(files) + "\n")
     df = {
-        str(Path(file).stem).replace(f"_{kind}", ""): pd.read_csv(
+        str(Path(file).stem).replace(f"_{rank}", ""): pd.read_csv(
             file, sep="\t", index_col=0
         )
         for file in files
@@ -66,7 +66,7 @@ def parse_args():
     parser.add_argument("--files")
     parser.add_argument("--absolute-counts")
     parser.add_argument("--relative-counts")
-    parser.add_argument("--kind")
+    parser.add_argument("--rank")
     return args
 
 
