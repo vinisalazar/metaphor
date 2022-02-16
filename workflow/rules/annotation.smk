@@ -206,7 +206,7 @@ rule cog_parser:
     conda:
         "../envs/bash.yaml"
     script:
-        "../scripts/cog_parser.py"
+        "../scripts/cog_functional_parser.py"
 
 
 rule taxonomy_parser:
