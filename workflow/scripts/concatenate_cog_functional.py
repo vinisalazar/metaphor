@@ -10,8 +10,8 @@ import pandas as pd
 
 
 def main(args):
-
     kind = args.kind
+    files = args.functional_counts
     if isinstance(files, str):
         files = files.split()
     logging.info(f"Loading '{kind}' files:\n")
@@ -50,7 +50,7 @@ def main(args):
         outdf = outdf.rename(lambda s: s.replace(f"_{count}", ""), axis="columns")
         outdf = outdf.round(6).reset_index()
         try:
-            attr = f"{kind}_{count}"
+            attr = f"functional_{count}_counts"
             outfile = getattr(args, attr)
             outdf.to_csv(outfile, index=False, sep="\t")
             if outfile:

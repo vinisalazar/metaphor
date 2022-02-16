@@ -52,7 +52,7 @@ def create_tax_barplot(dataframe, save=True, outfile=None):
     handles, labels = axs[0].get_legend_handles_labels()
     axs[0].get_legend().remove()
     axs[0].set_xlabel("Relative abundance")
-    axs[1].legend(handles, labels, title=rank.capitalize())
+    axs[1].legend(handles, labels, title=rank.capitalize() if rank else "")
     axs[1].set_xticks([])
     axs[1].set_yticks([])
     axs[1].axis("off")

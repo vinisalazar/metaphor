@@ -38,7 +38,7 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
         logging.info(f"Starting script '{file.split('/')[-1]}'.")
         logging.info(f"Full script path: '{file}'.\n")
         main_fn(args)
-        logging.info("Done.")
+        logging.info("Done.\n")
     except Exception as e:
         logging.error(e)
         logging.error(traceback.format_exc())

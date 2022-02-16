@@ -8,11 +8,8 @@ reduces memory usage, as lots of unnecessary columns are required.
 In the future, a configurable option may be added to enable the output of all columns.
 """
 
-import sys
 import logging
 import argparse
-import subprocess
-from pathlib import Path
 from functools import lru_cache
 from utils import cog_csv_names
 
@@ -40,7 +37,7 @@ def main(args):
 
     logging.info(f"Loaded {len(df)} records.")
 
-    df = df[["taxid", "taxname"]].value_counts()
+    df = df[["staxids", "sscinames"]].value_counts()
     df.name = "absolute"
     df.to_csv(tax_out, sep="\t")
     logging.info(f"Wrote {len(df)} rows to '{tax_out}'.")

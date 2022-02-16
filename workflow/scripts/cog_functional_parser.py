@@ -8,10 +8,8 @@ reduces memory usage, as lots of unnecessary columns are required.
 In the future, a configurable option may be added to enable the output of all columns.
 """
 
-import sys
 import logging
 import argparse
-import subprocess
 from pathlib import Path
 from functools import lru_cache
 from utils import cog_csv_names
@@ -40,7 +38,7 @@ def main(args):
     # Notice that each function starts and ends with a logging call,
     # with the latter logging call being followed by deletion of the
     # DataFrame that was just processed.
-    merged_df = create_merged_df(dmnd_out, cog_csv, def_tab)
+    merged_df, def_tab = create_merged_df(dmnd_out, cog_csv, def_tab)
     merged_df = write_cog_pathways(merged_df, pathways_out)
     merged_df = write_cog_categories(merged_df, fun_tab, categories_out)
     merged_df = write_cog_codes(merged_df, def_tab, codes_out)
@@ -66,7 +64,11 @@ def create_merged_df(dmnd_out, cog_csv, def_tab):
     df = pd.read_csv(
         dmnd_out,
         sep="\t",
-        usecols=["qseqid", "sseqid", "bitscore", "staxids", "sscinames"],
+        usecols=[
+            "qseqid",
+            "sseqid",
+            "bitscore",
+        ],
     )
 
     # Keep the best score
@@ -91,26 +93,37 @@ def create_merged_df(dmnd_out, cog_csv, def_tab):
     merged_df = df.merge(cog_csv, left_on="Protein ID", right_index=True).reset_index(
         drop=True
     )
-    del cog_csv, df  # This one won't be used anymore, let's free up the memory
     def_tab = load_dataframe(
-        def_tab, sep="\t", names=def_tab_names, index_col=0, use_cols=def_tab_names[:3]
+        def_tab,
+        sep="\t",
+        names=def_tab_names,
+        index_col=0,
+        usecols=[
+            "COG ID",
+            "COG functional category",
+            "COG name",
+            "Functional pathway",
+        ],
     )
     merged_df = merged_df.merge(
         def_tab, left_on="COG ID", right_index=True
     ).drop_duplicates("qseqid")
     logging.info(f"{len(merged_df)} records after merging.")
-    return merged_df
+    return merged_df, def_tab
 
 
 # COG pathways
 def write_cog_pathways(merged_df, pathways_out):
     logging.info("Writing COG pathways.")
+    print(merged_df.head())
+    print(merged_df.columns)
     pathways = merged_df["Functional pathway"].fillna("Unknown").value_counts()
     pathways.index.name = "Functional pathway"
     pathways = pd.concat((pathways, pathways / pathways.sum()), axis=1)
     pathways.columns = "absolute", "relative"
     pathways.to_csv(pathways_out, sep="\t")
     logging.info(f"Wrote {len(pathways)} rows to '{pathways_out}'.")
+    return merged_df
 
 
 # COG categories
