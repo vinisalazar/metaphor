@@ -198,7 +198,6 @@ rule cog_parser:
             "annotation", "cog", "categories.tsv"
         ),
         codes_out=get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
-        tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
         pathways_out=get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
@@ -208,6 +207,21 @@ rule cog_parser:
         "../envs/bash.yaml"
     script:
         "../scripts/cog_parser.py"
+
+
+rule taxonomy_parser:
+    input:
+        dmnd_out=get_diamond_output(),
+    output:
+        tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
+    log:
+        get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
+    benchmark:
+        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_parser")
+    conda:
+        "../envs/bash.yaml"
+    script:
+        "../scripts/taxonomy_parser.py"
 
 
 rule concatenate_cog_functional:
