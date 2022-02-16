@@ -210,39 +210,24 @@ rule cog_parser:
         "../scripts/cog_parser.py"
 
 
-rule concatenate_cog:
+rule concatenate_cog_functional:
     input:
-        categories=expand(
-            "output/annotation/cog/{sample}/{sample}_categories.tsv", sample=sample_IDs
+        functional_counts=expand(
+            "output/annotation/cog/{sample}/{sample}_{kind}.tsv", sample=sample_IDs
         )
         if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "categories.tsv"),
-        codes=expand(
-            "output/annotation/cog/{sample}/{sample}_codes.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
-        pathways=expand(
-            "output/annotation/cog/{sample}/{sample}_pathways.tsv", sample=sample_IDs
-        )
-        if not config["coassembly"]
-        else get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
+        else get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"),
     output:
-        # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
-        categories_absolute="output/annotation/cog/tables/COG_categories_absolute.tsv",
-        categories_relative="output/annotation/cog/tables/COG_categories_relative.tsv",
-        codes_absolute="output/annotation/cog/tables/COG_codes_absolute.tsv",
-        codes_relative="output/annotation/cog/tables/COG_codes_relative.tsv",
-        pathways_absolute="output/annotation/cog/tables/COG_pathways_absolute.tsv",
-        pathways_relative="output/annotation/cog/tables/COG_pathways_relative.tsv",
+        functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
+        functional_relative_counts="output/annotation/cog/tables/COG_{kind}_relative.tsv",
     log:
-        "output/logs/annotation/concatenate_cog_categories.log",
+        "output/logs/annotation/concatenate_cog_{kind}.log",
     benchmark:
-        "output/benchmarks/annotation/concatenate_cog_categories.txt"
+        "output/benchmarks/annotation/concatenate_cog_{kind}.txt"
     conda:
         "../envs/bash.yaml"
     script:
-        "../scripts/concatenate_cog.py"
+        "../scripts/concatenate_cog_functional.py"
 
 
 rule concatenate_taxonomies:
