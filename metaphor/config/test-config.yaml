@@ -1,0 +1,127 @@
+# Based on the Snakemake RNASeq workflow:
+#   https://github.com/snakemake-workflows/rna-seq-star-deseq2/
+
+###############################################################
+# TOP LEVEL
+# These settings are valid for all steps in the workflow.
+###############################################################
+
+# Path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
+# Units are technical replicates (e.g. lanes, or resequencing of the same biological
+# sample).
+samples: config/samples.csv
+
+# Snakemake wrapper version
+# This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
+wrapper_version: "v1.1.0"
+
+coassembly: False
+
+resources:
+  mb_per_thread: 1024  # how many MBs per processor
+
+###############################################################
+# QC
+###############################################################
+
+trimming:
+  activate: True
+  phred: 33
+  minimum_length: 50
+  quality_cutoff: 30
+  clip_r5: 10
+  clip_r3: 5
+
+merge_reads:
+  activate: True
+
+###############################################################
+# Assembly
+###############################################################
+
+# Parameters should be named after the corresponding rule
+concatenate_contigs:
+  sequence_length_cutoff: 500
+
+megahit:
+  preset: "meta-large"
+  cleanup: True
+
+metaquast:
+  activate: False
+  coassembly_reference: ""  # only required if 'coassembly' is True
+
+###############################################################
+# Annotation
+###############################################################
+
+prodigal:
+  activate: True
+  mode: "meta"
+  quiet: True
+  genes: False
+  scores: False
+
+prokka:
+  activate: False
+  args: "--metagenome --quiet --force"
+  kingdom: "Bacteria"
+
+diamond:
+  db: "data/COG2020/cog-20.dmnd"  # for testing purposes only
+  output_type: 6
+  output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
+
+cog_functional_parser:
+  activate: True
+  db: "data/COG2020"
+
+lineage_parser:
+  activate: False
+  taxonmap: "data/COG2020/cog-20.taxonmap.tsv"
+  rankedlineage: "data/taxonomy/rankedlineage.dmp"
+  names: "data/taxonomy/names.dmp"
+  nodes: "data/taxonomy/nodes.dmp"
+  download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
+
+plot_cog_functional:
+  activate: True
+  filter_categories: True
+  categories_cutoff: 0.01
+
+
+plot_taxonomies:
+  activate: True
+  tax_cutoff: 0.01
+
+###############################################################
+# Binning
+###############################################################
+
+vamb:
+  activate: True
+  minfasta: 1000
+
+metabat2:
+  activate: True
+  seed: 0
+  preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
+
+concoct:
+  activate: False
+
+das_tool:
+  activate: True
+  score_threshold: 0.0
+
+###############################################################
+# Postprocessing
+###############################################################
+
+postprocessing:
+  activate: True
+  runtime_unit: "m"
+  runtime_cutoff: 0
+  memory_unit: "max_vms"
+  memory_cutoff: 0
+  memory_gb: True
