@@ -14,7 +14,7 @@ Commands:
 
 import argparse
 
-from metaphor_test import metaphor_test
+from .metaphor_test import metaphor_test
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     test.add_argument(
         "--remove-conda",
         help="If this option is selected, conda environments will be created in the test "
-             "directory instead of the current directory (and therefore are deleted when tests finish).",
+        "directory instead of the current directory (and therefore are deleted when tests finish).",
         action="store_true",
     )
     test.set_defaults(func=metaphor_test, directory="metaphor_test")

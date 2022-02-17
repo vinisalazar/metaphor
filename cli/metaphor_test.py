@@ -18,9 +18,9 @@ from hashlib import md5
 
 import requests
 from tqdm import tqdm
-
-from create_input_table import main as create_input_table
 from snakemake import snakemake
+
+from .create_input_table import main as create_input_table
 
 
 def metaphor_test(args):
@@ -117,5 +117,5 @@ def metaphor_test(args):
         resources={"mem_mb": 4096},
         use_conda=True,
         conda_prefix=conda_prefix,
-        printshellcmds=True
+        printshellcmds=True,
     )
