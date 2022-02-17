@@ -21,7 +21,7 @@ setup(
     description="Metaphor - Metagenomic Pipeline for Short Reads",
     long_description=readme,
     long_description_content_type="text/markdown",
-    packages=["metaphor", "metaphor.cli", "metaphor.workflow"],
+    packages=["metaphor", "metaphor.cli", "metaphor.workflow", "metaphor.config"],
     data_files=[
         (
             ".",
