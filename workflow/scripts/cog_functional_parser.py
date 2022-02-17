@@ -115,8 +115,6 @@ def create_merged_df(dmnd_out, cog_csv, def_tab):
 # COG pathways
 def write_cog_pathways(merged_df, pathways_out):
     logging.info("Writing COG pathways.")
-    print(merged_df.head())
-    print(merged_df.columns)
     pathways = merged_df["Functional pathway"].fillna("Unknown").value_counts()
     pathways.index.name = "Functional pathway"
     pathways = pd.concat((pathways, pathways / pathways.sum()), axis=1)
