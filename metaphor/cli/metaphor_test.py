@@ -20,6 +20,7 @@ import requests
 from tqdm import tqdm
 from snakemake import snakemake
 
+from metaphor import snakefile
 from .create_input_table import main as create_input_table
 
 
@@ -106,7 +107,7 @@ def metaphor_test(args):
         "This may require the installation of conda environments which should take a while.\n"
     )
     snakemake(
-        snakefile="/Users/vwsalazar/Bio/phd/metaphor/workflow/Snakefile",
+        snakefile=snakefile,
         configfiles=[
             "/Users/vwsalazar/Bio/phd/metaphor/config/test-config.yaml",
         ],
