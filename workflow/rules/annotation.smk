@@ -249,11 +249,11 @@ rule concatenate_cog_functional:
 
 rule concatenate_taxonomies:
     input:
-        files=expand(
-            "output/annotation/cog/{sample}/{sample}_{rank}.tsv", sample=sample_IDs, rank=ranks + ["tax",]
+        files=lambda wildcards: expand(
+            "output/annotation/cog/{sample}/{sample}_{rank}.tsv", sample=sample_IDs, rank=wildcards.rank
         )
         if not config["coassembly"]
-        else expand(get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"), rank=ranks + ["tax",]),
+        else lambda wildcards: expand(get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"), rank=wildcards.rank),
     output:
         absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
         relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
