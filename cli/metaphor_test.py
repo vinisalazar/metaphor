@@ -117,4 +117,5 @@ def metaphor_test(args):
         resources={"mem_mb": 4096},
         use_conda=True,
         conda_prefix=conda_prefix,
+        printshellcmds=True
     )
