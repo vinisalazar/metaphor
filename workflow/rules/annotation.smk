@@ -202,7 +202,9 @@ rule cog_functional_parser:
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_functional_parser")
+        get_coassembly_benchmark_or_log(
+            "benchmark", "annotation", "cog_functional_parser"
+        )
     conda:
         "../envs/bash.yaml"
     script:
@@ -224,14 +226,18 @@ rule taxonomy_parser:
         "../scripts/taxonomy_parser.py"
 
 
-
 rule concatenate_cog_functional:
     input:
         functional_counts=expand(
-            "output/annotation/cog/{sample}/{sample}_{kind}.tsv", sample=sample_IDs, kind=functional_kinds,
+            "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
+            sample=sample_IDs,
+            kind=functional_kinds,
         )
         if not config["coassembly"]
-        else expand(get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"), kind=functional_kinds),
+        else expand(
+            get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"),
+            kind=functional_kinds,
+        ),
     output:
         functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
         functional_relative_counts="output/annotation/cog/tables/COG_{kind}_relative.tsv",
@@ -250,15 +256,25 @@ rule concatenate_cog_functional:
 rule concatenate_taxonomies:
     input:
         files=lambda wildcards: expand(
-            "output/annotation/cog/{sample}/{sample}_{rank}.tsv", sample=sample_IDs, rank=wildcards.rank
+            "output/annotation/cog/{sample}/{sample}_{rank}.tsv",
+            sample=sample_IDs,
+            rank=wildcards.rank,
         )
         if not config["coassembly"]
-        else lambda wildcards: expand(get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"), rank=wildcards.rank),
+        else lambda wildcards: expand(
+            get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"),
+            rank=wildcards.rank,
+        ),
     output:
         absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
         relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
     wildcard_constraints:
-        rank="|".join(ranks + ["tax",])
+        rank="|".join(
+            ranks
+            + [
+                "tax",
+            ]
+        ),
     log:
         "output/logs/annotation/concatenate_cog_{rank}.log",
     benchmark:
@@ -318,7 +334,10 @@ rule plot_cog_taxonomy:
     input:
         taxonomy_relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
     output:
-        taxonomy_barplot=report("output/annotation/cog/plots/COG_{rank}_relative.png", category="Annotation"),
+        taxonomy_barplot=report(
+            "output/annotation/cog/plots/COG_{rank}_relative.png",
+            category="Annotation",
+        ),
     params:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
     log:

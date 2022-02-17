@@ -64,7 +64,6 @@ def cleanup_rule(config_object, path):
         return ""
 
 
-
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
     return str(Path(path).parent)
@@ -275,7 +274,6 @@ def get_coassembly_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffi
         return str(base_path.joinpath(f"{{sample}}/{suffix}"))
 
 
-
 def get_metaquast_output():
     if config["coassembly"]:
         if Path(config["metaquast"]["coassembly_reference"]).is_file():
@@ -348,19 +346,24 @@ def get_all_diamond_outputs():
 
 def get_concatenate_taxonomies_outputs():
     return expand(
-            "output/annotation/cog/tables/COG_{rank}_{kind}.tsv",
-            rank=ranks + ["tax",],
-            kind=("absolute", "relative")
-        )
+        "output/annotation/cog/tables/COG_{rank}_{kind}.tsv",
+        rank=ranks
+        + [
+            "tax",
+        ],
+        kind=("absolute", "relative"),
+    )
 
 
 functional_kinds = ["categories", "codes", "pathways"]
+
+
 def get_concatenate_cog_functional_outputs():
     return expand(
-            "output/annotation/cog/tables/COG_{functional_kinds}_{kind}.tsv",
-            functional_kinds=functional_kinds,
-            kind=("absolute", "relative")
-        )
+        "output/annotation/cog/tables/COG_{functional_kinds}_{kind}.tsv",
+        functional_kinds=functional_kinds,
+        kind=("absolute", "relative"),
+    )
 
 
 def get_lineage_parser_outputs():
@@ -379,10 +382,7 @@ def get_prokka_output():
 
 
 def get_taxa_plot_outputs():
-    return expand(
-        "output/annotation/cog/plots/COG_{rank}_relative.png",
-        rank=ranks
-    )
+    return expand("output/annotation/cog/plots/COG_{rank}_relative.png", rank=ranks)
 
 
 def get_cog_functional_plot_outputs():
@@ -396,12 +396,8 @@ def get_annotation_output():
             config["lineage_parser"]["names"],
             config["lineage_parser"]["nodes"],
         ],
-        "taxonomy_parser": (
-            get_concatenate_taxonomies_outputs()
-        ),
-        "plot_taxonomies": (
-            get_taxa_plot_outputs()
-        ),
+        "taxonomy_parser": (get_concatenate_taxonomies_outputs()),
+        "plot_taxonomies": (get_taxa_plot_outputs()),
         "cog_functional_parser": (
             get_concatenate_cog_functional_outputs(),
             get_database_outputs(),
@@ -414,7 +410,13 @@ def get_annotation_output():
         "prokka": get_prokka_output(),
     }
 
-    needs_activation = ("cog_functional_parser", "lineage_parser", "plot_cog_functional", "plot_taxonomies", "prokka")
+    needs_activation = (
+        "cog_functional_parser",
+        "lineage_parser",
+        "plot_cog_functional",
+        "plot_taxonomies",
+        "prokka",
+    )
     annotation_output = []
 
     for k, v in annotations.items():
