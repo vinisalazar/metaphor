@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - stage
+      - cli
 
 jobs:
   formatting:
@@ -43,14 +44,8 @@ jobs:
       with:
         submodules: recursive
     - name: Test workflow
-      uses: snakemake/snakemake-github-action@v1.24.0
-      with:
-        directory: .
-        snakefile: workflow/Snakefile
-        args: "--use-conda                    \
-              --cores 3                       \ 
-              --conda-cleanup-pkgs cache      \
-              --dryrun"
+      run: |
+        metaphor test --confirm -p 2 -m 6144
     # Report testing is deactivated for now
     # - name: Test report
     #   uses: snakemake/snakemake-github-action@v1.24.0
