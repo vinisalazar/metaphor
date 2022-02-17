@@ -57,6 +57,14 @@ def is_activated(xpath):
     return bool(c.get("activate", False))
 
 
+def cleanup_rule(config_object, path):
+    if config[config_object].get("cleanup", False):
+        return f"rm -rf {Path(path)}"
+    else:
+        return ""
+
+
+
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
     return str(Path(path).parent)
@@ -266,15 +274,6 @@ def get_coassembly_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffi
             suffix = f"{{sample}}_{suffix}"
         return str(base_path.joinpath(f"{{sample}}/{suffix}"))
 
-
-def cleanup_megahit(contigs):
-    if config["megahit"]["cleanup"]:
-        intermediate_contigs = str(
-            Path(contigs).parent.joinpath("intermediate_contigs")
-        )
-        return f"rm -rf {intermediate_contigs}"
-    else:
-        return ""
 
 
 def get_metaquast_output():
