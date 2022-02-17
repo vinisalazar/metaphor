@@ -64,8 +64,9 @@ def create_tax_barplot(dataframe, save=True, outfile=None):
 
 
 def process_rank_file(args):
+    cutoff = float(args.tax_cutoff)
     rank_df = pd.read_csv(args.taxonomy_relative_counts, sep="\t", index_col=0)
-    rank_df = rank_df[rank_df.sum(axis=1) > args.tax_cutoff]
+    rank_df = rank_df[rank_df.mean(axis=1) > cutoff]
     rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
     rank_df.index.name = args.rank
 
@@ -74,7 +75,7 @@ def process_rank_file(args):
 
     # Group low abundance and undetermined taxa
     filtered = abs(rank_df.sum() - 1)
-    if filtered.sum() < args.tax_cutoff:
+    if filtered.sum() < cutoff:
         pass
     else:
         rank_df.loc["Undetermined/other"] = filtered
