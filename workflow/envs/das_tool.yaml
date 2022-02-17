@@ -4,3 +4,4 @@ channels:
 dependencies:
   - das_tool
   - diamond
+  - coreutils  # for shuf command on OS X

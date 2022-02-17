@@ -13,7 +13,7 @@ samples: config/samples.csv
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version: "v0.86.0"
+wrapper_version: "v1.1.0"
 
 coassembly: False
 
@@ -72,21 +72,25 @@ diamond:
   output_type: 6
   output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
 
-cog_parser:
+cog_functional_parser:
   activate: False
   db: "data/COG2020"
 
 lineage_parser:
   activate: False
+  taxonmap: "data/COG2020/cog-20.taxonmap.tsv"
   rankedlineage: "data/taxonomy/rankedlineage.dmp"
   names: "data/taxonomy/names.dmp"
   nodes: "data/taxonomy/nodes.dmp"
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
 
-plot_cog:
+plot_cog_functional:
   activate: False
   filter_categories: True
   categories_cutoff: 0.01
+
+plot_taxonomies:
+  activate: False
   tax_cutoff: 0.000001  # 1e-6
 
 ###############################################################
@@ -95,6 +99,7 @@ plot_cog:
 
 vamb:
   activate: False
+  minfasta: 200000
 
 metabat2:
   activate: True
@@ -106,6 +111,7 @@ concoct:
 
 das_tool:
   activate: False
+  score_threshold: 0.5
 
 ###############################################################
 # Postprocessing

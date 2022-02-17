@@ -43,7 +43,9 @@ rule megahit:
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
-        remove_intermediate=lambda w, output: cleanup_megahit(output.contigs),
+        cleanup=lambda w, output: cleanup_rule(
+            "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
+        ),
         sample=lambda w: w.sample if getattr(w, "sample", None) else "coassembly",
     threads: round(workflow.cores * 0.75)
     log:
@@ -65,7 +67,7 @@ rule megahit:
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
 
-        {params.remove_intermediate}
+        {params.cleanup}
         """
 
 

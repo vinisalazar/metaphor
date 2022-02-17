@@ -10,9 +10,9 @@ def parse_snakemake_args(snakemake):
     args = argparse.Namespace()
     args_dict = vars(args)
 
-    for directive in "input", "output", "params":
+    for attr in "input", "output", "params", "wildcards":
         try:
-            for k, v in getattr(snakemake, directive).items():
+            for k, v in getattr(snakemake, attr).items():
                 args_dict[k] = v
         except AttributeError:
             pass
@@ -38,7 +38,7 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
         logging.info(f"Starting script '{file.split('/')[-1]}'.")
         logging.info(f"Full script path: '{file}'.\n")
         main_fn(args)
-        logging.info("Done.")
+        logging.info("Done.\n")
     except Exception as e:
         logging.error(e)
         logging.error(traceback.format_exc())
