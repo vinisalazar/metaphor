@@ -163,6 +163,7 @@ rule DAS_tool:
         outpreffix=lambda w, output: str(
             Path(output.proteins).parent.joinpath("DAS_tool")
         ),
+        score_threshold=config["das_tool"]["score_threshold"]
     threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,
@@ -174,11 +175,12 @@ rule DAS_tool:
         "../envs/das_tool.yaml"
     shell:
         """
-        DAS_Tool -i {params.fmt_scaffolds2bin}  \
-                 -l {params.binners}            \
-                 -c {input.contigs}             \
-                 -o {params.outpreffix}         \
-                 --search_engine diamond        \
-                 --write_bins 1                 \
+        DAS_Tool -i {params.fmt_scaffolds2bin}                      \
+                 -l {params.binners}                                \
+                 -c {input.contigs}                                 \
+                 -o {params.outpreffix}                             \
+                 --score_threshold {params.score_threshold}         \
+                 --search_engine diamond                            \
+                 --write_bins 1                                     \
                  --threads {threads} &> {log}
         """

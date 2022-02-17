@@ -225,8 +225,11 @@ properties:
     properties:
       activate:
         type: boolean
+      score_threshold:
+        type: number
     required:
       - activate
+      - score_threshold
 
   postprocessing:
     type: object

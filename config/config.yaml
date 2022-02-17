@@ -111,6 +111,7 @@ concoct:
 
 das_tool:
   activate: False
+  score_threshold: 0.5
 
 ###############################################################
 # Postprocessing
