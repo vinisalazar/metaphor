@@ -64,6 +64,10 @@ def cleanup_rule(config_object, path):
         return ""
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f348c40 (Add generalized 'cleanup' function)
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
     return str(Path(path).parent)
