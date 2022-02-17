@@ -31,7 +31,7 @@ setup(
         )
     ],
     include_package_data=True,
-    package_data={"metaphor": ["workflow/*", "workflow/*/*"]},
+    package_data={"metaphor": ["workflow/*", "workflow/*/*", "config/*"]},
     entry_points={"console_scripts": ["metaphor = metaphor.cli.metaphor:main"]},
     install_requires=["pandas", "tqdm"],
     keywords="metagenomics binning assembly snakemake workflow pipeline",
