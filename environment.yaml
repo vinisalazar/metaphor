@@ -6,3 +6,4 @@ dependencies:
   - pandas
   - snakemake-minimal
   - snakefmt            # required for development
+  - tqdm                # required for cli
