@@ -138,3 +138,4 @@ def main(args):
         conda_prefix=conda_prefix,
         printshellcmds=True,
     )
+    print("Ok.")
