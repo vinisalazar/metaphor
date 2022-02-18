@@ -4,6 +4,7 @@ channels:
 dependencies:
   - mamba               # recommended for use with conda
   - pandas
+  - requests
   - snakemake-minimal
   - snakefmt            # required for development
   - tqdm                # required for cli
