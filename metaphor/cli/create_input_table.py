@@ -5,7 +5,6 @@ Create Metaphor input table from directory of fastq files.
 """
 
 
-from concurrent.futures import process
 import re
 import difflib
 import argparse
