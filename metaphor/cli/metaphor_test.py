@@ -137,5 +137,6 @@ def main(args):
         use_conda=True,
         conda_prefix=conda_prefix,
         printshellcmds=True,
+        dryrun=True,
     )
     print("Ok.")
