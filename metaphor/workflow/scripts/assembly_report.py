@@ -56,6 +56,7 @@ def metrics_to_df(fastas, outfile=None):
         "Max seq": "Max. length",
     }
     df = df.rename(columns=rename_dict)
+    df = df.sort_index()
     if not outfile:
         # Default value is defined in the common.smk module
         outfile = "output/assembly/megahit/assembly_report.tsv"
@@ -65,7 +66,9 @@ def metrics_to_df(fastas, outfile=None):
 
 
 def plot_column(df, column, outfile):
-    fig, ax = plt.subplots(figsize=(4, 4))
+    # Calculate figsize based on number of samples
+    dimensions = round(len(df) / 2)
+    fig, ax = plt.subplots(figsize=(dimensions, dimensions))
     df[column].plot(kind="barh", ax=ax)
     ax.set_xlabel(column)
     plt.ticklabel_format(axis="x", style="sci", scilimits=(0, 4))
