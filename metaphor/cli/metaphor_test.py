@@ -97,7 +97,7 @@ download_url = "https://github.com/vinisalazar/mg-example-data/raw/main/data/"
 def main(args):
     directory = args.directory
     coassembly = args.coassembly
-    cores = args.cores
+    cores = int(args.cores)
     mem_mb = args.mem_mb
     samples_file = str(Path(directory).joinpath("samples.csv"))
     create_input_table_args = Namespace()
