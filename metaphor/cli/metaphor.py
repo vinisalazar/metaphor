@@ -68,7 +68,7 @@ def main():
     test.add_argument("-p", "--cores", help="Number of processors to use in tests.")
     test.add_argument("-m", "--mem_mb", help="Amount of RAM to use in tests.")
     test.add_argument(
-        "-c",
+        "-co",
         "--coassembly",
         action="store_true",
         help="Whether to run tests in coassembly mode, "

@@ -1,6 +1,13 @@
 from .workflow import snakefile
 from .config import test_config, default_config
 
+
+def get_successful_completion(bool, msg):
+   if not bool:
+      raise Exception("The workflow did not complete successfully.")
+   else:
+      print(msg)
+
 ascii_art = """
    __  ___      __               __            
   /  |/  /___  / /_ ___ _ ___   / /  ___   ____

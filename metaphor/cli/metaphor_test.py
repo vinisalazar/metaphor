@@ -21,7 +21,7 @@ import requests
 from tqdm import tqdm
 from snakemake import snakemake
 
-from metaphor import snakefile, test_config, ascii_art
+from metaphor import snakefile, test_config, ascii_art, get_successful_completion
 from .create_input_table import main as create_input_table
 
 
@@ -123,7 +123,7 @@ def main(args):
             print("Metaphor test cancelled.")
             sys.exit()
     print(ascii_art)
-    snakemake(
+    sm_exit = snakemake(
         snakefile=snakefile,
         configfiles=[
             test_config,
@@ -138,4 +138,4 @@ def main(args):
         conda_prefix=conda_prefix,
         printshellcmds=True,
     )
-    print("Ok.")
+    get_successful_completion(sm_exit, "Test complete.")

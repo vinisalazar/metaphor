@@ -20,7 +20,7 @@ from pathlib import Path
 import yaml
 from snakemake import snakemake
 
-from metaphor import snakefile, default_config, ascii_art
+from metaphor import get_successful_completion, snakefile, default_config, ascii_art
 from .create_input_table import main as create_input_table
 
 
@@ -129,7 +129,7 @@ def main(args):
             print("Metaphor execution cancelled.")
             sys.exit()
     print(ascii_art)
-    snakemake(
+    sm_exit = snakemake(
         snakefile=snakefile,
         configfiles=[
             config_file,
@@ -146,5 +146,5 @@ def main(args):
         cluster=args.cluster,
         cluster_config=args.cluster_config,
         cluster_sync=args.cluster_sync,
-        report_stylesheet=args.report_stylesheet,
     )
+    get_successful_completion(sm_exit, "Metaphor finished successfully.")
