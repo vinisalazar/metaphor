@@ -12,7 +12,7 @@ __author__ = "Vini Salazar"
 from pathlib import Path
 
 
-configfile: "metaphor/config/config.yaml"
+configfile: "metaphor/config/default-config.yaml"
 
 
 report: "metaphor/report/metaphor.rst"
