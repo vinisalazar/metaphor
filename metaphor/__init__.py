@@ -1,5 +1,5 @@
 from .workflow import snakefile
-from .config import test_config
+from .config import test_config, default_config
 
 ascii_art = """
    __  ___      __               __            
