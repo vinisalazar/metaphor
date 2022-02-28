@@ -21,7 +21,7 @@ import requests
 from tqdm import tqdm
 from snakemake import snakemake
 
-from metaphor import snakefile, test_config, ascii_art, get_successful_completion
+from metaphor import snakefile, test_config, ascii_art, get_successful_completion, wrapper_prefix
 from .create_input_table import main as create_input_table
 
 
@@ -137,5 +137,6 @@ def main(args):
         use_conda=True,
         conda_prefix=conda_prefix,
         printshellcmds=True,
+        wrapper_prefix=wrapper_prefix,
     )
     get_successful_completion(sm_exit, "Test complete.")

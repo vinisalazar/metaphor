@@ -1,6 +1,7 @@
 from .workflow import snakefile
 from .config import test_config, default_config
 
+wrapper_prefix="https://github.com/snakemake/snakemake-wrappers/raw/",
 
 def get_successful_completion(bool, msg):
    if not bool:

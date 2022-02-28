@@ -20,7 +20,7 @@ from pathlib import Path
 import yaml
 from snakemake import snakemake
 
-from metaphor import get_successful_completion, snakefile, default_config, ascii_art
+from metaphor import get_successful_completion, snakefile, default_config, ascii_art, wrapper_prefix
 from .create_input_table import main as create_input_table
 
 
@@ -136,6 +136,7 @@ def main(args):
         cores=cores,
         use_conda=True,
         printshellcmds=True,
+        wrapper_prefix=wrapper_prefix,
         # profile settings
         report_stylesheet=vars(args).get("report_stylesheet", None),
         cluster=vars(args).get("cluster", None),
