@@ -24,6 +24,17 @@ from metaphor import get_successful_completion, snakefile, default_config, ascii
 from .create_input_table import main as create_input_table
 
 
+def load_yaml(file_path):
+    with open(file_path) as f:
+        try:
+            yaml_dict = yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            print(f"Something wrong with your config file: '{file_path}.'")
+            print("Please check if it's valid YAML.")
+            raise
+    return yaml_dict
+
+
 def main(args):
 
     # Initial sanity check
@@ -37,36 +48,24 @@ def main(args):
 
     if args.profile:
         # Code taken from snakemake.__init__.py main function
-        from snakemake import get_argument_parser, get_profile_file
+        from snakemake import get_profile_file
 
         # reparse args while inferring config file from profile
-        parser = get_argument_parser(args.profile)
-        args = parser.parse_args()
+        profile_file = get_profile_file(args.profile, "config.yaml")
+        profile = load_yaml(profile_file)
 
         def adjust_path(f):
             if os.path.exists(f) or os.path.isabs(f):
                 return f
             else:
                 return get_profile_file(args.profile, f, return_default=True)
-
         # update file paths to be relative to the profile
         # (if they do not exist relative to CWD)
-        if args.jobscript:
-            args.jobscript = adjust_path(args.jobscript)
-        if args.cluster:
-            args.cluster = adjust_path(args.cluster)
-        if args.cluster_config:
-            if isinstance(args.cluster_config, list):
-                args.cluster_config = [adjust_path(cfg) for cfg in args.cluster_config]
+        for key, value in profile.items():
+            if isinstance(value, list):
+                setattr(args, key, [adjust_path(cfg) for cfg in value])
             else:
-                args.cluster_config = adjust_path(args.cluster_config)
-        if args.cluster_sync:
-            args.cluster_sync = adjust_path(args.cluster_sync)
-        for key in "cluster_status", "cluster_cancel", "cluster_sidecar":
-            if getattr(args, key):
-                setattr(args, key, adjust_path(getattr(args, key)))
-        if args.report_stylesheet:
-            args.report_stylesheet = adjust_path(args.report_stylesheet)
+                setattr(args, key, adjust_path(value))
     else:
         for arg_ in (
             "jobscript",
@@ -92,13 +91,7 @@ def main(args):
             sys.exit()
 
     # Load config file to check for input_dir
-    with open(config_file) as f:
-        try:
-            config = yaml.safe_load(f)
-        except yaml.YAMLError as exc:
-            print(f"Something wrong with your config file: '{config_file}.'")
-            print("Please check if it's valid YAML.")
-            raise
+   config = load_yaml(config_file)
 
     samples_file = config["samples"]
     mem_mb = config["resources"]["mb_per_thread"]
