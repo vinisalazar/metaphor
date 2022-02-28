@@ -79,6 +79,8 @@ def main(args):
                     setattr(args, key, [adjust_path(cfg) for cfg in value])
                 else:
                     setattr(args, key, adjust_path(value))
+            else:
+                setattr(args, key, None)
     else:
         for arg_ in profile_args:
             setattr(args, arg_, None)
