@@ -79,11 +79,6 @@ def main(args):
                     setattr(args, key, [adjust_path(cfg) for cfg in value])
                 else:
                     setattr(args, key, adjust_path(value))
-            else:
-                setattr(args, key, None)
-    else:
-        for arg_ in profile_args:
-            setattr(args, arg_, None)
 
     if config_file == default_config:
         if not confirm:
@@ -142,9 +137,9 @@ def main(args):
         use_conda=True,
         printshellcmds=True,
         # profile settings
-        report_stylesheet=args.report_stylesheet,
-        cluster=args.cluster,
-        cluster_config=args.cluster_config,
-        cluster_sync=args.cluster_sync,
+        report_stylesheet=vars(args).get("report_stylesheet", None),
+        cluster=vars(args).get("cluster", None),
+        cluster_config=vars(args).get("cluster_config", None),
+        cluster_sync=vars(args).get("cluster_sync", None),
     )
     get_successful_completion(sm_exit, "Metaphor finished successfully.")
