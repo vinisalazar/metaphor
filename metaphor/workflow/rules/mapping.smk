@@ -45,7 +45,7 @@ rule concatenate_proteins:
     benchmark:
         "output/benchmarks/mapping/concatenate_proteins.txt"
     conda:
-        "../envs/bash.yaml"
+        "../envs/base.yaml"
     shell:
         """cat {input} > {output}"""
 

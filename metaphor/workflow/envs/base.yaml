@@ -1,6 +1,7 @@
 # Base environment for miscellaneous tasks
 channels:
   - conda-forge
+  - bioconda
 dependencies:
   - bash>=4
   - biopython

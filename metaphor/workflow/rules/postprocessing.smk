@@ -25,7 +25,7 @@ rule concatenate_benchmarks:
     benchmark:
         "output/benchmarks/postprocessing/concatenate_benchmarks.txt"
     conda:
-        "../envs/bash.yaml"
+        "../envs/base.yaml"
     script:
         "../scripts/concatenate_benchmarks.py"
 
@@ -62,7 +62,7 @@ rule plot_benchmarks:
     benchmark:
         "output/benchmarks/postprocessing/plot_benchmarks.txt"
     conda:
-        "../envs/bash.yaml"
+        "../envs/base.yaml"
     script:
         "../scripts/plot_benchmarks.py"
 
