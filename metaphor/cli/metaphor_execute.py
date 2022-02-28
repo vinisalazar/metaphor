@@ -12,6 +12,7 @@ __doc__ = """
     """
 
 
+import os
 import sys
 from argparse import Namespace
 from pathlib import Path
@@ -24,14 +25,59 @@ from .create_input_table import main as create_input_table
 
 
 def main(args):
+
+    # Initial sanity check
     config_file = args.configfile
     input_dir = args.input_dir
     join_units = args.join_units
     cores = int(args.cores)
     coassembly = args.coassembly
     confirm = args.confirm
-
     assert Path(config_file).exists(), f"Could not find config file: {config_file}"
+
+    if args.profile:
+        # Code taken from snakemake.__init__.py main function
+        from snakemake import get_argument_parser, get_profile_file
+
+        # reparse args while inferring config file from profile
+        parser = get_argument_parser(args.profile)
+        args = parser.parse_args(args)
+
+        def adjust_path(f):
+            if os.path.exists(f) or os.path.isabs(f):
+                return f
+            else:
+                return get_profile_file(args.profile, f, return_default=True)
+
+        # update file paths to be relative to the profile
+        # (if they do not exist relative to CWD)
+        if args.jobscript:
+            args.jobscript = adjust_path(args.jobscript)
+        if args.cluster:
+            args.cluster = adjust_path(args.cluster)
+        if args.cluster_config:
+            if isinstance(args.cluster_config, list):
+                args.cluster_config = [adjust_path(cfg) for cfg in args.cluster_config]
+            else:
+                args.cluster_config = adjust_path(args.cluster_config)
+        if args.cluster_sync:
+            args.cluster_sync = adjust_path(args.cluster_sync)
+        for key in "cluster_status", "cluster_cancel", "cluster_sidecar":
+            if getattr(args, key):
+                setattr(args, key, adjust_path(getattr(args, key)))
+        if args.report_stylesheet:
+            args.report_stylesheet = adjust_path(args.report_stylesheet)
+    else:
+        for arg_ in (
+            "jobscript",
+            "cluster",
+            "cluster_config",
+            "cluster_sync",
+            "cluster_status",
+            "cluster_cancel",
+            "cluster_sidecar",
+        ):
+            setattr(args, arg_, None)
 
     if config_file == default_config:
         if not confirm:
@@ -55,6 +101,8 @@ def main(args):
 
     samples_file = config["samples"]
     mem_mb = config["resources"]["mb_per_thread"]
+    if coassembly is None:
+        coassembly = config["coassembly"]
     if not input_dir:
         assert Path(
             samples_file
@@ -93,4 +141,10 @@ def main(args):
         cores=cores,
         use_conda=True,
         printshellcmds=True,
+        # profile settings
+        report_stylesheet=args.report_stylesheet,
+        cluster=args.cluster,
+        cluster_config=args.cluster_config,
+        cluster_sync=args.cluster_sync,
+        report_stylesheet=args.report_stylesheet,
     )
