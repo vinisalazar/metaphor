@@ -52,7 +52,7 @@ jobs:
         $CONDA/bin/conda env update --file environment.yaml --name base
     - name: Test workflow
       run: |
-        $CONDA/bin/conda activate base
+        pip install .
         python -m metaphor.cli.metaphor test --confirm
     # Report testing is deactivated for now
     # - name: Test report
