@@ -41,7 +41,7 @@ def main(args):
 
         # reparse args while inferring config file from profile
         parser = get_argument_parser(args.profile)
-        args = parser.parse_args(args)
+        args = parser.parse_args()
 
         def adjust_path(f):
             if os.path.exists(f) or os.path.isabs(f):
@@ -76,6 +76,7 @@ def main(args):
             "cluster_status",
             "cluster_cancel",
             "cluster_sidecar",
+            "report_stylesheet",
         ):
             setattr(args, arg_, None)
 
