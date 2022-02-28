@@ -261,9 +261,9 @@ rule concatenate_taxonomies:
             rank=wildcards.rank,
         )
         if not config["coassembly"]
-        else lambda wildcards: expand(
+        else expand(
             get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"),
-            rank=wildcards.rank,
+            rank=ranks,
         ),
     output:
         absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
