@@ -59,6 +59,7 @@ def main(args):
                 return f
             else:
                 return get_profile_file(args.profile, f, return_default=True)
+
         # update file paths to be relative to the profile
         # (if they do not exist relative to CWD)
         for key, value in profile.items():
@@ -91,7 +92,7 @@ def main(args):
             sys.exit()
 
     # Load config file to check for input_dir
-   config = load_yaml(config_file)
+    config = load_yaml(config_file)
 
     samples_file = config["samples"]
     mem_mb = config["resources"]["mb_per_thread"]
