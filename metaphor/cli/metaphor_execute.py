@@ -46,6 +46,17 @@ def main(args):
     confirm = args.confirm
     assert Path(config_file).exists(), f"Could not find config file: {config_file}"
 
+    profile_args = (
+        "jobscript",
+        "cluster",
+        "cluster_config",
+        "cluster_sync",
+        "cluster_status",
+        "cluster_cancel",
+        "cluster_sidecar",
+        "report_stylesheet",
+    )
+
     if args.profile:
         # Code taken from snakemake.__init__.py main function
         from snakemake import get_profile_file
@@ -63,21 +74,13 @@ def main(args):
         # update file paths to be relative to the profile
         # (if they do not exist relative to CWD)
         for key, value in profile.items():
-            if isinstance(value, list):
-                setattr(args, key, [adjust_path(cfg) for cfg in value])
-            else:
-                setattr(args, key, adjust_path(value))
+            if key in profile_args:
+                if isinstance(value, list):
+                    setattr(args, key, [adjust_path(cfg) for cfg in value])
+                else:
+                    setattr(args, key, adjust_path(value))
     else:
-        for arg_ in (
-            "jobscript",
-            "cluster",
-            "cluster_config",
-            "cluster_sync",
-            "cluster_status",
-            "cluster_cancel",
-            "cluster_sidecar",
-            "report_stylesheet",
-        ):
+        for arg_ in profile_args:
             setattr(args, arg_, None)
 
     if config_file == default_config:
