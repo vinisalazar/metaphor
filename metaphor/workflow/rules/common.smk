@@ -16,6 +16,8 @@ from pathlib import Path
 import pandas as pd
 from snakemake.utils import validate
 
+from metaphor import wrapper_version
+
 
 ###############################################################
 # VALIDATION
@@ -87,7 +89,7 @@ def get_wrapper(wrapper):
     Builds the string for the 'wrapper' directive
     based on 'wrapper_version' key in the config.
     """
-    return str(Path(config["wrapper_version"]).joinpath(f"bio/{wrapper}"))
+    return str(Path(wrapper_version).joinpath(f"bio/{wrapper}"))
 
 
 def get_mem_mb(wildcards, threads):

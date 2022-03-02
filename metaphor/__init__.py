@@ -1,13 +1,18 @@
 from .workflow import snakefile
 from .config import test_config, default_config
 
-wrapper_prefix="https://github.com/snakemake/snakemake-wrappers/raw/",
+# Snakemake wrapper version
+# This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
+wrapper_version = "v1.2.0"
+wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/"
+
 
 def get_successful_completion(bool, msg):
-   if not bool:
-      raise Exception("The workflow did not complete successfully.")
-   else:
-      print(msg)
+    if not bool:
+        raise Exception("The workflow did not complete successfully.")
+    else:
+        print(msg)
+
 
 ascii_art = """
    __  ___      __               __            

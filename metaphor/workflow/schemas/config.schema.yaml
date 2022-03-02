@@ -11,12 +11,6 @@ properties:
   units:
     type: string
 
-  wrapper_version:
-    type: string
-
-  coassembly:
-    type: boolean
-
   resources:
     type: object
     properties:
@@ -24,6 +18,10 @@ properties:
         type: integer
     required:
       - mb_per_thread
+
+###############################################################
+# QC
+###############################################################
 
   trimming:
     type: object
@@ -56,6 +54,13 @@ properties:
     required:
       - activate
 
+###############################################################
+# Assembly
+###############################################################
+
+  coassembly:
+    type: boolean
+
   concatenate_contigs:
     type: object
     properties:
@@ -84,6 +89,10 @@ properties:
         type: string
     required:
       - activate
+
+###############################################################
+# Annotation
+###############################################################
 
   prodigal:
     type: object
@@ -187,6 +196,10 @@ properties:
     required:
       - tax_cutoff
 
+###############################################################
+# Binning
+###############################################################
+
   vamb:
     type: object
     properties:
@@ -230,6 +243,10 @@ properties:
     required:
       - activate
       - score_threshold
+
+###############################################################
+# Postprocessing
+###############################################################
 
   postprocessing:
     type: object
