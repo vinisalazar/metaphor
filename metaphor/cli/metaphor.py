@@ -14,9 +14,9 @@ Commands:
 
 import argparse
 
-from .metaphor_test import main as metaphor_test
-from .metaphor_execute import main as metaphor_execute
-from .metaphor_execute import default_config
+from .test import main as metaphor_test
+from .execute import main as metaphor_execute
+from .execute import default_config
 
 
 def main():
