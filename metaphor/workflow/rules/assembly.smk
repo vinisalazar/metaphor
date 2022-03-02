@@ -111,7 +111,7 @@ rule metaquast:
     params:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),
-        extra_params="--fragmented --no-icarus --no-plots --no-gc --no-sv",
+        extra_params="--fragmented --unique-mapping --no-icarus --no-plots --no-gc --no-sv",
     threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,
