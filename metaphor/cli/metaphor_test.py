@@ -21,7 +21,13 @@ import requests
 from tqdm import tqdm
 from snakemake import snakemake
 
-from metaphor import snakefile, test_config, ascii_art, get_successful_completion, wrapper_prefix
+from metaphor import (
+    snakefile,
+    test_config,
+    ascii_art,
+    get_successful_completion,
+    wrapper_prefix,
+)
 from .create_input_table import main as create_input_table
 
 
@@ -98,7 +104,7 @@ def main(args):
     directory = args.directory
     coassembly = args.coassembly
     cores = int(args.cores)
-    mem_mb = args.mem_mb
+    mem_mb = int(args.mem_mb)
     samples_file = str(Path(directory).joinpath("samples.csv"))
     create_input_table_args = Namespace()
     create_input_table_args.input_dir = directory
