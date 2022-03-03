@@ -11,27 +11,14 @@ from argparse import Namespace
 from pathlib import Path
 from shutil import copyfile
 
-import yaml
 from snakemake import snakemake
 
-from metaphor import (
-    snakefile,
-    default_config,
-    wrapper_prefix,
-    get_successful_completion,
-)
+from metaphor import wrapper_prefix
+from metaphor.workflow import snakefile
+from metaphor.config import default_config
+from metaphor.utils import get_successful_completion, load_yaml
+
 from .create_input_table import main as create_input_table
-
-
-def load_yaml(file_path):
-    with open(file_path) as f:
-        try:
-            yaml_dict = yaml.safe_load(f)
-        except yaml.YAMLError as exc:
-            print(f"Something wrong with your config file: '{file_path}.'")
-            print("Please check if it's valid YAML.")
-            raise
-    return yaml_dict
 
 
 def main(args):

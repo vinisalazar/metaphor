@@ -21,12 +21,11 @@ import requests
 from tqdm import tqdm
 from snakemake import snakemake
 
-from metaphor import (
-    snakefile,
-    test_config,
-    wrapper_prefix,
-    get_successful_completion,
-)
+from metaphor import wrapper_prefix
+from metaphor.workflow import snakefile
+from metaphor.config import test_config
+from metaphor.utils import get_successful_completion
+
 from .create_input_table import main as create_input_table
 
 

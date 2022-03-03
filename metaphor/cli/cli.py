@@ -77,6 +77,7 @@ def main():
         profile=None,
         coassembly=None,
     )
+
     ###############################################################
     # TEST
     # Test command subparser
@@ -123,10 +124,18 @@ def main():
         dry_run=False,
     )
 
+    ###############################################################
+    # CONFIG
+    # Config command subparser
+    ###############################################################
+
     config = subparsers.add_parser(
         "config", help="Sets up Metaphor input data and settings file."
     )
     config_subparsers = config.add_subparsers(help="Config command to be executed.")
+
+    # Input table
+    ###############################################################
     create_input_table = config_subparsers.add_parser(
         "input_table",
         help=create_input_table_doc,
@@ -148,6 +157,12 @@ def main():
     )
     create_input_table.add_argument("-o", "--output-file", help="Path to output file.")
     create_input_table.set_defaults(func=create_input_table_main)
+
+    # Config YAML
+    ###############################################################
+    create_config_yaml = config_subparsers.add_parser(
+        "config_yaml"
+    )
 
     args = parser.parse_args()
     args.func(args)
