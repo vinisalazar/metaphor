@@ -10,9 +10,11 @@ and the Melbourne Data Analytics Platform (MDAP).
 __author__ = "Vini Salazar"
 
 from pathlib import Path
+from metaphor import ascii_art
+from metaphor.config import default_config
 
 
-configfile: "metaphor/config/default-config.yaml"
+configfile: default_config
 
 
 report: "metaphor/report/metaphor.rst"
@@ -26,6 +28,9 @@ include: "rules/mapping.smk"
 include: "rules/binning.smk"
 include: "rules/annotation.smk"
 include: "rules/postprocessing.smk"
+
+
+print(ascii_art)
 
 
 rule all:

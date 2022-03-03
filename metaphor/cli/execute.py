@@ -123,7 +123,6 @@ def main(args):
         if yn.lower() != "y":
             print("Metaphor execution cancelled.")
             sys.exit()
-    print(ascii_art)
     sm_exit = snakemake(
         snakefile=snakefile,
         configfiles=[

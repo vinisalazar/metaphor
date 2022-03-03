@@ -24,9 +24,8 @@ from snakemake import snakemake
 from metaphor import (
     snakefile,
     test_config,
-    ascii_art,
-    get_successful_completion,
     wrapper_prefix,
+    get_successful_completion,
 )
 from .create_input_table import main as create_input_table
 
@@ -128,7 +127,6 @@ def main(args):
         if confirm.lower() != "y":
             print("Metaphor test cancelled.")
             sys.exit()
-    print(ascii_art)
     sm_exit = snakemake(
         snakefile=snakefile,
         configfiles=[
