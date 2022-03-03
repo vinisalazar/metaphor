@@ -1,6 +1,6 @@
 $schema: "http://json-schema.org/draft-06/schema#"
 
-description: snakemake configuration file
+description: Snakemake configuration file
 
 type: object
 
@@ -273,7 +273,6 @@ properties:
 
 required:
   - samples
-  - wrapper_version
   - coassembly
   - resources
   - trimming
