@@ -1,8 +1,11 @@
 """
+assembly.smk
+
+    Assemble short reads with MEGAHIT. Additionally, evalute reads with MetaQuast if a reference is provided.
+
 Assembly rules:
-    - concatenate_merged_reads: prepare MegaHIT input if there coassembly is True in config file
-    - megahit: assemble preprocessed reads with Megahit
-    - megahit_coassembly: perform coassembly of pool of reads of all samples with Megahit
+    - concatenate_merged_reads: prepare MEGAHIT input if there coassembly is True in config file
+    - megahit: assemble preprocessed reads with MEGAHIT
     - metaquast: evaluate assembly results with MetaQuast
 """
 

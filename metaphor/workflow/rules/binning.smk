@@ -1,7 +1,13 @@
 """
+binning.smk
+
+    Cluster contigs into genome bins and refine said bins.
+
 Binning rules:
     - vamb: Bin contigs with vamb
     - MetaBAT2: Bin contigs with MetaBat2
+    - concoct: Bin contigs with CONCOCT
+    - DAS_tool: Refine bins with DAS_tool
 """
 from pathlib import Path
 

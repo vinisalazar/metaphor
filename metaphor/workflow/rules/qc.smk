@@ -1,11 +1,17 @@
 """
-Preprocess rules:
+qc.smk
+
+    Quality Control module. Filter reads by quality and trim with CutAdapt. Run FastQC at each stage
+    and join results in MultiQC report.
+
+QC rules:
     - cutadapt_pipe: get pipe input for cutadapt
     - cutadapt_pe: trim paired end reads with cutadapt
     - merge_fastqs: merge files from different lanes in the same sample with cat
     - fastqc_raw: check quality of raw reads with FastQC
+    - fastqc_trimmed: check quality of trimmed reads with FastQC
     - fastqc_merged: check quality of trimmed and merged reads with FastQC
-    - multiqc: combine reports of rules 'fastqc_raw' and 'fastqc_clean' with MultiQC
+    - multiqc: combine reports of rules 'fastqc_raw', '_trimmed' and '_merged' with MultiQC
 """
 from pathlib import Path
 

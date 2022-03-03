@@ -1,9 +1,27 @@
 """
+annotation.smk
+
+    Generates annotation data from contigs. First, coding sequences are predicted from contigs using Prodigal.
+    Then, annotation (both taxonomic and functional) are done with the NCBI COG database
+    (https://ftp.ncbi.nih.gov/pub/COG/COG2020/data/). A Diamond database is built from the reference amino acid sequences
+    and taxonomy is added with the NCBI Taxonomy database. It is possible to use a custom database for taxonomic annotation
+    as long as a taxonmap (mapping of sequence accession number to TaxIDs) is provided.
+
 Annotation rules:
 
     - prodigal: gene prediction with Prodigal
+    - prokka: annotate bins with Prokka (WIP, may be deprecated)
+    - download_COG_database: download COG database from NCBI URL
+    - generate_COG_taxonmap: generate taxon map for Diamond db with NCBI COG and Taxonomy DBs
+    - download_taxonomy_database: download NCBI taxonomy database
     - diamond: protein annotation with Diamond
-    - cog_parser: parse collated outputs with custom Python script
+    - cog_functional_parser: parses output of Diamond to get COG functional counts
+    - taxonomy_parser: parses staxids columns from Diamond output
+    - concatenate_cog_functional: concatenates cog_functional_parser output of all samples
+    - concatenate_taxonomies: concatenates taxonomy_parser output of all samples
+    - lineage_parser: gets complete lineage for each TaxID
+    - plot_cog_functional: plots COG_functional counts
+    - plot_cog_taxonomy: plots COG_taxonomy counts
 """
 
 from pathlib import Path

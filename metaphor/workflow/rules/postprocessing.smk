@@ -1,13 +1,17 @@
 """
-Post-processing module.
+postprocessing.smk
 
-After all third-party programs are done running, this module performs additional steps such
-as visualizations, removal of unnecessary intermediary files, and so on.
+    After all third-party programs are done running, this module performs additional steps such
+    as visualizations, removal of unnecessary intermediary files, and so on.
 
-Rules in this module are submitted as a single 'group', see
-https://snakemake.readthedocs.io/en/stable/executing/grouping.html;
+    Rules in this module are submitted as a single 'group', see
+    https://snakemake.readthedocs.io/en/stable/executing/grouping.html;
 
-this way they are submitted to a single node and can be run in succession.
+    this way they are submitted to a single node and can be run in succession.
+
+Postprocessing rules:
+    - concatenate_benchmarks: join benchmarks of all previous rules into a single table
+    - plot_benchmarks: plot benchmarks
 """
 
 

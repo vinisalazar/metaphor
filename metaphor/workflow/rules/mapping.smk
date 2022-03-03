@@ -1,11 +1,17 @@
 """
-Mapping rules:
+mapping.smk
 
+    Map reads to contigs. Files generated in this module are required for binning.
+
+Mapping rules:
     - concatenate_contigs: concatenate contigs into a compressed file with vamb script
+    - concatenate_contigs: concatenate proteins into a single file to be used by CONCOCT
     - create_index: create index file from contig catalogue with minimap2
     - map_reads: map short reads against contigs with minimap2 and samtools
     - sort_reads: sort BAM file with samtools
+    - index_reads: index sorte BAM file with samtools
     - flagstat: calculate flagstat with samtools
+    - jgi_summarize_bam_contig_depths: calculate coverage depth of each contig
 """
 from pathlib import Path
 
