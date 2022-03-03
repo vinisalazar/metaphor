@@ -1,12 +1,5 @@
-__author__ = "Vini Salazar"
-__email__ = "17276653+vinisalazar@users.noreply.github.com"
-__license__ = "MIT"
-__copyright__ = "2022, The University of Melbourne"
-__version__ = "1.0.0"
-
-from importlib.metadata import entry_points
-from pathlib import Path
 from setuptools import setup
+from metaphor import __author__, __email__, __copyright__, __license__, __version__
 
 with open("README.md", "r") as f:
     readme = f.read()
