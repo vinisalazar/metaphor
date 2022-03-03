@@ -130,7 +130,7 @@ rule generate_COG_taxonmap:
 
 rule diamond_makedb:
     input:
-        fname=get_cog_db_file("cog-20.fa.gz"),
+        fname=config["diamond"]["db_source"],
         taxonmap=config["lineage_parser"]["taxonmap"],
         taxonnodes=config["lineage_parser"]["nodes"],
         taxonnames=config["lineage_parser"]["names"],

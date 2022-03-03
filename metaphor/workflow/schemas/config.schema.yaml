@@ -133,12 +133,15 @@ properties:
     properties:
       db:
         type: string
+      db_source:
+        type: string
       output_type:
         type: integer
       output_format:
         type: string
     required:
       - db
+      - db_source
 
   cog_functional_parser:
     type: object
@@ -167,11 +170,11 @@ properties:
       download_url:
         type: string
     required:
+      - activate
       - taxonmap
       - rankedlineage
       - names
       - nodes
-      - activate
       - download_url
 
   plot_cog_functional:

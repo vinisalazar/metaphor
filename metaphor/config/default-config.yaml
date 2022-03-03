@@ -65,7 +65,8 @@ prokka:
   kingdom: "Bacteria"
 
 diamond:
-  db: ".test/cog-20.dmnd"  # for testing purposes only
+  db: "data/COG2020/cog-20.dmnd"      # will try to create from db_source if it doesn't exist
+  db_source: "data/COG2020/cog-20.fa.gz"
   output_type: 6
   output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
 
