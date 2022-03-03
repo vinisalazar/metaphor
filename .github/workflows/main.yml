@@ -45,9 +45,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Install dependencies
-      run: |
-        $CONDA/bin/conda env update --file environment.yaml --name base
+    # Deactivate this for now
+    # - name: Install dependencies
+    #   run: |
+    #     $CONDA/bin/conda env update --file environment.yaml --name base
     - name: Test workflow
       run: |
         pip install .
