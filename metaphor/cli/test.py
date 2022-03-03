@@ -123,7 +123,7 @@ def main(args):
     )
     if not confirm and not dry_run:
         confirm = input(
-            f"Snakemake will start with {cores} cores and {mem_mb} MB RAM. Ok to continue? [y/N]"
+            f"Snakemake will start with {cores} cores and {mem_mb} MB RAM. Ok to continue? [y/N]\n"
         )
         if confirm.lower() != "y":
             print("Metaphor test cancelled.")

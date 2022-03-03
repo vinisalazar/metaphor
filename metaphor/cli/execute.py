@@ -74,7 +74,7 @@ def main(args):
             yn = input(
                 f"Config file '{config_file}' does not exist yet. Metaphor will create one based on the default config contained on: '{default_config}'.\n"
                 "This does not include all of Metaphor's features. We recommend you create your own config file with the 'metaphor config settings' command.\n"
-                "Ok to continue? [y/N]"
+                "Ok to continue? [y/N]\n"
             )
         if yn.lower() == "y":
             print(f"Copying default config {config_file} to current directory.")
@@ -110,7 +110,7 @@ def main(args):
     )
     if not confirm:
         yn = input(
-            f"Snakemake will start with {cores} cores and {mem_mb} MB RAM PER THREAD. Ok to continue? [y/N]"
+            f"Snakemake will start with {cores} cores and {mem_mb} MB RAM PER THREAD. Ok to continue? [y/N]\n"
         )
         if yn.lower() != "y":
             print("Metaphor execution cancelled.")
