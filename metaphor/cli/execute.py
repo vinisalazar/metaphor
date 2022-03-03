@@ -9,6 +9,7 @@ import os
 import sys
 from argparse import Namespace
 from pathlib import Path
+from shutil import copyfile
 
 import yaml
 from snakemake import snakemake
@@ -45,7 +46,6 @@ def main(args):
     until = args.until
     if until and not isinstance(until, list):
         until = until.split()
-    assert Path(config_file).exists(), f"Could not find config file: {config_file}"
 
     profile_args = (
         "jobscript",
@@ -81,14 +81,17 @@ def main(args):
                 else:
                     setattr(args, key, adjust_path(value))
 
-    if config_file == default_config:
+    if not Path(config_file).exists():
         if not confirm:
             yn = input(
-                f"You haven't specified a custom config file. Metaphor will run with the default config: {config_file}.\n"
-                "This does not include all of Metaphor's features. We recommend you create your own config file.\n"
+                f"Config file '{config_file}' does not exist yet. Metaphor will create one based on the default config contained on: '{default_config}'.\n"
+                "This does not include all of Metaphor's features. We recommend you create your own config file with the 'metaphor config' command.\n"
                 "Ok to continue? [y/N]"
             )
-        if yn.lower() != "y":
+        if yn.lower() == "y":
+            print(f"Copying default config {config_file} to current directory.")
+            copyfile(default_config, config_file)
+        else:
             print("Metaphor execution cancelled.")
             sys.exit()
 

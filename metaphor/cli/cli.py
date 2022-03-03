@@ -70,7 +70,7 @@ def main():
     execute.set_defaults(
         func=metaphor_execute,
         input_dir=None,
-        configfile=default_config,
+        configfile="metaphor_config.yaml",
         join_units=False,
         cores=8,
         profile=None,
