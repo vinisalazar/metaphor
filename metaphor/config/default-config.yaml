@@ -71,11 +71,11 @@ diamond:
   output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
 
 cog_functional_parser:
-  activate: False
+  activate: True
   db: "data/COG2020"
 
 lineage_parser:
-  activate: False
+  activate: True
   taxonmap: "data/COG2020/cog-20.taxonmap.tsv"
   rankedlineage: "data/taxonomy/rankedlineage.dmp"
   names: "data/taxonomy/names.dmp"
@@ -83,12 +83,12 @@ lineage_parser:
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
 
 plot_cog_functional:
-  activate: False
+  activate: True
   filter_categories: True
   categories_cutoff: 0.01
 
 plot_taxonomies:
-  activate: False
+  activate: True
   tax_cutoff: 0.000001  # 1e-6
 
 ###############################################################
@@ -118,7 +118,7 @@ das_tool:
 postprocessing:
   activate: True
   runtime_unit: "m"
-  runtime_cutoff: 0
+  runtime_cutoff: 5
   memory_unit: "max_vms"
-  memory_cutoff: 0
+  memory_cutoff: 1
   memory_gb: True

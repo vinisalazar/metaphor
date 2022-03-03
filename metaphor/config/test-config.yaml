@@ -11,10 +11,6 @@
 # sample).
 samples: config/samples.csv
 
-# Snakemake wrapper version
-# This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version: "v1.1.0"
-
 coassembly: False
 
 resources:
