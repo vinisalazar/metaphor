@@ -1,0 +1,13 @@
+# Base environment for miscellaneous tasks
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bash>=4
+  - biopython
+  - pandas
+  - perl
+  - python>=3.7
+  - seaborn
+  - seqstats
+  - wget

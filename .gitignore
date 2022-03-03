@@ -2,6 +2,7 @@
 .snakemake/
 .vscode/
 data/
+build/
 output/
 docs/build/
 config/slurm*/
@@ -13,3 +14,4 @@ mgp/
 run.sh
 *.code-workspace
 **/__pycache__
+metaphor.egg-info/

@@ -2,7 +2,12 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
+  - jinja2              # required for reports
   - mamba               # recommended for use with conda
+  - networkx            # required for reports
   - pandas
-  - snakemake-minimal
+  - pyyaml              # required for cli
+  - requests
+  - snakemake
   - snakefmt            # required for development
+  - tqdm                # required for cli
