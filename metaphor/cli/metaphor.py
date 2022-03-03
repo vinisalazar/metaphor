@@ -60,6 +60,12 @@ def main():
         action="store_true",
         help="Don't ask for confirmation when running tests.",
     )
+    execute.add_argument(
+        "--until",
+        help="Only run workflow until the listed files are generated (see Snakemake docs). "
+        "Files must be space separated with the complete output path.",
+        nargs="+",
+    )
 
     execute.set_defaults(
         func=metaphor_execute,

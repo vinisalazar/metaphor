@@ -44,6 +44,9 @@ def main(args):
     cores = int(args.cores)
     coassembly = args.coassembly
     confirm = args.confirm
+    until = args.until
+    if until and not isinstance(until, list):
+        until = until.split()
     assert Path(config_file).exists(), f"Could not find config file: {config_file}"
 
     profile_args = (
@@ -136,6 +139,7 @@ def main(args):
         use_conda=True,
         printshellcmds=True,
         wrapper_prefix=wrapper_prefix,
+        until=[] if not until else until,
         # profile settings
         report_stylesheet=vars(args).get("report_stylesheet", None),
         cluster=vars(args).get("cluster", None),
