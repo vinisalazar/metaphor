@@ -6,7 +6,8 @@ import argparse
 from metaphor import __version__
 from .test import main as metaphor_test
 from .execute import main as metaphor_execute
-from .execute import default_config
+from .create_input_table import main as create_input_table_main
+from .create_input_table import __doc__ as create_input_table_doc
 
 __doc__ = f"""
 Metaphor v{__version__}  CLI - wraps commands for easier execution.
@@ -125,6 +126,29 @@ def main():
     config = subparsers.add_parser(
         "config", help="Sets up Metaphor input data and settings file."
     )
+    config_subparsers = config.add_subparsers(help="Config command to be executed.")
+    create_input_table = config_subparsers.add_parser(
+        "input_table",
+        help=create_input_table_doc,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    create_input_table.add_argument(
+        "-i",
+        "--input-dir",
+        help="Input directory containing FASTQ files.",
+        required=True,
+    )
+    create_input_table.add_argument(
+        "-j",
+        "--join-units",
+        help="If this option is on, files with the same preffix but with "
+        "S001, S002, S00N distinctions in the filenames will be treated as different units of the same sample, "
+        "i.e. they will be joined into a single file.",
+        action="store_true",
+    )
+    create_input_table.add_argument("-o", "--output-file", help="Path to output file.")
+    create_input_table.set_defaults(func=create_input_table_main)
+
     args = parser.parse_args()
     args.func(args)
 

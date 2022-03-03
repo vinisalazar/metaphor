@@ -158,8 +158,14 @@ def main(args):
     ]
     final_df = process_final_df(dfs, input_dir)
 
-    outfile = "./samples.csv" if args.output_file is None else args.output_file
+    outfile = (
+        Path(input_dir).joinpath("samples.csv")
+        if args.output_file is None
+        else args.output_file
+    )
     final_df.to_csv(outfile)
+    print()
+    print(f"Generated input table '{outfile}'.\n")
 
 
 if __name__ == "__main__":
