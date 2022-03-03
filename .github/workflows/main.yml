@@ -52,7 +52,7 @@ jobs:
     - name: Test workflow
       run: |
         pip install .
-        python -m metaphor.cli.metaphor test --confirm
+        python -m metaphor.cli.metaphor test --dry-run
     # Report testing is deactivated for now
     # - name: Test report
     #   uses: snakemake/snakemake-github-action@v1.24.0
