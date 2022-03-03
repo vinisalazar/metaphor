@@ -110,6 +110,8 @@ def main(args):
     create_input_table_args.output_file = samples_file
     create_input_table_args.join_units = False
     conda_prefix = directory if args.remove_conda else None
+    confirm = args.confirm
+    dry_run = args.dry_run
 
     # Start execution
     download_data(directory, test_files, download_url)
@@ -120,7 +122,7 @@ def main(args):
     print(
         "This may require the installation of conda environments which should take a while.\n"
     )
-    if not args.confirm:
+    if not confirm and not dry_run:
         confirm = input(
             f"Snakemake will start with {cores} cores and {mem_mb} MB RAM. Ok to continue? [y/N]"
         )
@@ -138,6 +140,7 @@ def main(args):
         },
         cores=cores,
         resources={"mem_mb": mem_mb},
+        dryrun=dry_run,
         use_conda=True,
         conda_prefix=conda_prefix,
         printshellcmds=True,
