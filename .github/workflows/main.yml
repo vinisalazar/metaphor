@@ -52,10 +52,3 @@ jobs:
       run: |
         pip install .
         python -m metaphor.cli.metaphor test --dry-run
-    # Report testing is deactivated for now
-    # - name: Test report
-    #   uses: snakemake/snakemake-github-action@v1.24.0
-    #   with:
-    #     directory: .test
-    #     snakefile: workflow/Snakefile
-    #     args: "--report report.zip"
