@@ -19,6 +19,7 @@ from metaphor.config import default_config
 from metaphor.utils import get_successful_completion, load_yaml
 
 from .create_input_table import main as create_input_table
+from .create_config_yaml import main as create_config_yaml
 
 
 def main(args):
@@ -72,7 +73,7 @@ def main(args):
         if not confirm:
             yn = input(
                 f"Config file '{config_file}' does not exist yet. Metaphor will create one based on the default config contained on: '{default_config}'.\n"
-                "This does not include all of Metaphor's features. We recommend you create your own config file with the 'metaphor config' command.\n"
+                "This does not include all of Metaphor's features. We recommend you create your own config file with the 'metaphor config settings' command.\n"
                 "Ok to continue? [y/N]"
             )
         if yn.lower() == "y":

@@ -6,9 +6,9 @@ import argparse
 from metaphor import __version__
 from .test import main as metaphor_test
 from .execute import main as metaphor_execute
-from .create_input_table import main as create_input_table_main
+from .create_input_table import main as create_input_table
 from .create_input_table import __doc__ as create_input_table_doc
-from .create_config_yaml import main as create_config_yaml_main
+from .create_config_yaml import main as create_config_yaml
 from .create_config_yaml import __doc__ as create_config_yaml_doc
 
 __doc__ = f"""
@@ -138,18 +138,18 @@ def main():
 
     # Input table
     ###############################################################
-    create_input_table = config_subparsers.add_parser(
+    create_input_table_parser = config_subparsers.add_parser(
         "input",
         help=create_input_table_doc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    create_input_table.add_argument(
+    create_input_table_parser.add_argument(
         "-i",
         "--input-dir",
         help="Input directory containing FASTQ files.",
         required=True,
     )
-    create_input_table.add_argument(
+    create_input_table_parser.add_argument(
         "-j",
         "--join-units",
         help="If this option is on, files with the same preffix but with "
@@ -157,21 +157,21 @@ def main():
         "i.e. they will be joined into a single file.",
         action="store_true",
     )
-    create_input_table.add_argument("-o", "--output-file", help="Path to output file.")
-    create_input_table.set_defaults(func=create_input_table_main)
+    create_input_table_parser.add_argument("-o", "--output-file", help="Path to output file.")
+    create_input_table_parser.set_defaults(func=create_input_table)
 
     # Config YAML
     ###############################################################
-    create_config_yaml = config_subparsers.add_parser(
+    create_config_yaml_parser = config_subparsers.add_parser(
         "settings",
         help=create_config_yaml_doc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    create_config_yaml.add_argument(
+    create_config_yaml_parser.add_argument(
         "-o", "--outfile", help="Output path of config YAML file."
     )
-    create_config_yaml.set_defaults(
-        func=create_config_yaml_main, outfile="metaphor_settings.yaml"
+    create_config_yaml_parser.set_defaults(
+        func=create_config_yaml, outfile="metaphor_settings.yaml"
     )
 
     ###############################################################
