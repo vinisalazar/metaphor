@@ -1,14 +1,7 @@
 #!/usr/bin/env python
 
 __doc__ = """
-    Tests Metaphor.
-
-    1. Checks for test data.
-        1a. Downloads if doesn't match the checksum.
-    2. Create input file.
-    3. Run workflow with default config.
-    4. Generate report.
-    5. Delete output.
+    Executes Metaphor on real data.
     """
 
 
@@ -20,7 +13,12 @@ from pathlib import Path
 import yaml
 from snakemake import snakemake
 
-from metaphor import get_successful_completion, snakefile, default_config, ascii_art, wrapper_prefix
+from metaphor import (
+    snakefile,
+    default_config,
+    wrapper_prefix,
+    get_successful_completion,
+)
 from .create_input_table import main as create_input_table
 
 

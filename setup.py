@@ -25,7 +25,7 @@ setup(
     ],
     include_package_data=True,
     package_data={"metaphor": ["workflow/*", "workflow/*/*", "config/*"]},
-    entry_points={"console_scripts": ["metaphor = metaphor.cli.metaphor:main"]},
+    entry_points={"console_scripts": ["metaphor = metaphor.cli.cli:main"]},
     install_requires=[  # PyPI dependencies only
         "jinja2",
         "networkx",
