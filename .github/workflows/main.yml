@@ -52,4 +52,4 @@ jobs:
     - name: Test workflow
       run: |
         pip install .
-        python -m metaphor.cli.metaphor test --dry-run
+        python -m metaphor.cli.cli test --dry-run
