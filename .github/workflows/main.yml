@@ -25,6 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        pip install .
     - name: Linting
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
