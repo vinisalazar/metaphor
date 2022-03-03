@@ -8,6 +8,8 @@ from .test import main as metaphor_test
 from .execute import main as metaphor_execute
 from .create_input_table import main as create_input_table_main
 from .create_input_table import __doc__ as create_input_table_doc
+from .create_config_yaml import main as create_config_yaml_main
+from .create_config_yaml import __doc__ as create_config_yaml_doc
 
 __doc__ = f"""
 Metaphor v{__version__}  CLI - wraps commands for easier execution.
@@ -71,7 +73,7 @@ def main():
     execute.set_defaults(
         func=metaphor_execute,
         input_dir=None,
-        configfile="metaphor_config.yaml",
+        configfile="metaphor_settings.yaml",
         join_units=False,
         cores=8,
         profile=None,
@@ -137,7 +139,7 @@ def main():
     # Input table
     ###############################################################
     create_input_table = config_subparsers.add_parser(
-        "input_table",
+        "input",
         help=create_input_table_doc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -161,9 +163,20 @@ def main():
     # Config YAML
     ###############################################################
     create_config_yaml = config_subparsers.add_parser(
-        "config_yaml"
+        "settings",
+        help=create_config_yaml_doc,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    create_config_yaml.add_argument(
+        "-o", "--outfile", help="Output path of config YAML file."
+    )
+    create_config_yaml.set_defaults(
+        func=create_config_yaml_main, outfile="metaphor_settings.yaml"
     )
 
+    ###############################################################
+    # PARSE ALL ARGS
+    ###############################################################
     args = parser.parse_args()
     args.func(args)
 
