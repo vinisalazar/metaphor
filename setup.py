@@ -2,7 +2,7 @@ __author__ = "Vini Salazar"
 __email__ = "17276653+vinisalazar@users.noreply.github.com"
 __license__ = "MIT"
 __copyright__ = "2022, The University of Melbourne"
-__version__ = "0.5.0"
+__version__ = "1.0.0"
 
 from importlib.metadata import entry_points
 from pathlib import Path
@@ -33,7 +33,15 @@ setup(
     include_package_data=True,
     package_data={"metaphor": ["workflow/*", "workflow/*/*", "config/*"]},
     entry_points={"console_scripts": ["metaphor = metaphor.cli.metaphor:main"]},
-    install_requires=["pandas", "tqdm", "requests", "snakemake", "pyyaml"],
+    install_requires=[  # PyPI dependencies only
+        "jinja2",
+        "networkx",
+        "pandas",
+        "pyyaml",
+        "requests",
+        "snakemake",
+        "tqdm",
+    ],
     keywords="metagenomics binning assembly snakemake workflow pipeline",
     python_requires=">=3.6",
     classifiers=[
