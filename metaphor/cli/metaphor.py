@@ -1,22 +1,22 @@
 #!/usr/bin/env python
 
-__doc__ = """
-Metaphor CLI - wraps commands for easier execution.
+
+import argparse
+
+from metaphor import __version__
+from .test import main as metaphor_test
+from .execute import main as metaphor_execute
+from .execute import default_config
+
+__doc__ = f"""
+Metaphor v{__version__}  CLI - wraps commands for easier execution.
 
 Commands: 
     metaphor
         test
         config
-        create
         execute
 """
-
-
-import argparse
-
-from .test import main as metaphor_test
-from .execute import main as metaphor_execute
-from .execute import default_config
 
 
 def main():
@@ -123,13 +123,8 @@ def main():
     )
 
     config = subparsers.add_parser(
-        "config", help="Shows the location of Metaphor installation and config values."
+        "config", help="Sets up Metaphor input data and settings file."
     )
-
-    create = subparsers.add_parser(
-        "create", help="Create input sample table or input config."
-    )
-
     args = parser.parse_args()
     args.func(args)
 
