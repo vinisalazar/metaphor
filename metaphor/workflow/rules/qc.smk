@@ -29,7 +29,7 @@ rule cutadapt_pipe:
         ext=r"fq|fq\.gz|fastq|fastq\.gz",
     threads: 1
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     shell:
         "cat {input} > {output} 2> {log}"
 
@@ -76,7 +76,7 @@ rule merge_fastqs:
     wildcard_constraints:
         read="single|R1|R2",
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     shell:
         "cat {input} > {output} 2> {log}"
 

@@ -103,7 +103,7 @@ rule download_COG_database:
     benchmark:
         "output/benchmarks/annotation/cog/download_COG_database.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     shell:
         """
         for file in {output}; do
@@ -123,7 +123,7 @@ rule generate_COG_taxonmap:
     benchmark:
         "output/benchmarks/annotation/generate_COG_taxonmap.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/create_cog_taxonmap.py"
 
@@ -157,7 +157,7 @@ rule download_taxonomy_database:
     log:
         "output/logs/annotation/cog/download_taxonomy_database.log",
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     shell:
         """
         mkdir -p {params.output_dir} 2>> {log}
@@ -224,7 +224,7 @@ rule cog_functional_parser:
             "benchmark", "annotation", "cog_functional_parser"
         )
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/cog_functional_parser.py"
 
@@ -239,7 +239,7 @@ rule taxonomy_parser:
     benchmark:
         get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_parser")
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/taxonomy_parser.py"
 
@@ -266,7 +266,7 @@ rule concatenate_cog_functional:
     benchmark:
         "output/benchmarks/annotation/concatenate_cog_{kind}.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/concatenate_cog_functional.py"
 
@@ -298,7 +298,7 @@ rule concatenate_taxonomies:
     benchmark:
         "output/benchmarks/annotation/concatenate_cog_{rank}.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/concatenate_taxonomies.py"
 
@@ -322,7 +322,7 @@ rule lineage_parser:
     benchmark:
         get_coassembly_benchmark_or_log("benchmark", "annotation", "lineage_parser")
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/lineage_parser.py"
 
@@ -343,7 +343,7 @@ rule plot_cog_functional:
     benchmark:
         "output/benchmarks/annotation/plot_cog_functional.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/plot_cog_functional.py"
 
@@ -363,6 +363,6 @@ rule plot_cog_taxonomy:
     benchmark:
         "output/benchmarks/annotation/plot_taxonomies_{rank}.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/plot_taxonomies.py"

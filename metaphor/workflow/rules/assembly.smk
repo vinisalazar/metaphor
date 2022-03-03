@@ -22,7 +22,7 @@ rule concatenate_merged_reads:
     benchmark:
         "output/benchmarks/assembly/concatenate_merged_reads.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     shell:
         """
         {{ cat {input.R1} > {output.R1_concat} ; }} > {log}
@@ -98,7 +98,7 @@ rule assembly_report:
     benchmark:
         "output/benchmarks/assembly/assembly_report.txt"
     conda:
-        "../envs/base.yaml"
+        "../envs/utils.yaml"
     script:
         "../scripts/assembly_report.py"
 
