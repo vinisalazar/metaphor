@@ -26,6 +26,8 @@ def write_yaml(yaml_dict, file_path):
     try:
         with open(file_path, "w") as f:
             yaml.dump(yaml_dict, f, default_flow_style=False)
+
+        print(f"Wrote YAML to '{file_path}'.")
     except:
         print(f"Something wrong when writing YAML to file '{file_path}'.")
         print("Please check the YAML dict or the file path.")
