@@ -13,11 +13,46 @@ Metaphor aims to be concise, portable, and sustainable. It only includes third-p
 
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
-<!-- 
-TO-DO:
 ### Installation
+Run the following commands to install Metaphor from source. We highly recommend that you use [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for installing. If mamba is not available, replace all `mamba` commands for `conda`.
+
+```bash
+
+# Install mamba (if you haven't already)
+$ conda install mamba -n base -c conda-forge
+
+# Copy the code to your machine
+$ git clone https://github.com/vinisalazar/metaphor && cd metaphor
+
+# Create the Metaphor environment
+$ mamba env create -n metaphor -f environment.yaml && conda activate metaphor
+
+# Install Metaphor with pip
+pip install .
+
+# Check that the installation works
+metaphor -h
+
+# Test Metaphor (follow the screen prompts)
+metaphor test
+```
+
+Testing may take a long time (a couple of hours), so please be patient.
 
 ### Usage
+To run Metaphor on your data, we recommend that you create a configuration profile specific to your needs, and then run Metaphor on your directory of FASTQ files:
 
+```bash
+# Run this and follow the screen prompts
+$ metaphor config settings
+
+# To execute with your config simply type 
+$ metaphor execute -i path/to/directory/of/fastq
+```
+
+If you receive any errors, feel free to open an issue describing your problem.
+
+<!-- 
+TO-DO:
 ### Documentation 
 -->
