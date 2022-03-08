@@ -33,8 +33,9 @@ def setting_prompt(message, key, subkey, transform=str, default=None):
         "\n".join(
             (
                 message,
-                f"Expected answer type: {suggestion}",
                 f"Default value: {default}",
+                f"Expected answer type: {suggestion}",
+                f"Type in your answer (press Enter for default): ",
             )
         )
     ).lower()
@@ -45,7 +46,6 @@ def setting_prompt(message, key, subkey, transform=str, default=None):
         print(f"Setting default option: {default}\n")
         answer = default
     elif answer not in suggestion:
-        breakpoint()
         print(f"Answer not valid. Please answer one of: {suggestion}.")
         answer = ""
 
