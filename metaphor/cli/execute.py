@@ -104,6 +104,8 @@ def main(args):
         print("\nCreating input table for test files.\n")
         create_input_table(create_input_table_args)
 
+    print(f"Your config file is '{config_file}'.\n")
+
     print("Starting Snakemake.")
     print(
         "This may require the installation of conda environments which should take a while.\n"
