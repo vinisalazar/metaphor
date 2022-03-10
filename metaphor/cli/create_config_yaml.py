@@ -100,6 +100,13 @@ def get_general_settings():
     )
 
 
+def get_qc_settings():
+    print("QC settings\n")
+    setting_prompt(
+        "Would you like to turn on MultiQC for reporting?", "multiqc", "activate", bool
+    )
+
+
 def get_assembly_settings():
     # Assembly
     print("Assembly settings\n")
@@ -212,6 +219,7 @@ def main(args):
     print("Press ENTER to input the default setting.")
     print(f"Settings will be written to '{args.outfile}'.\n")
     get_general_settings()
+    get_qc_settings()
     get_assembly_settings()
     get_annotation_settings()
     get_binning_settings()

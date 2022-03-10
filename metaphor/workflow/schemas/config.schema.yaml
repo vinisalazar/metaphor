@@ -49,6 +49,14 @@ properties:
     required:
       - activate
 
+multiqc:
+  type: object
+  properties:
+    activate:
+      type: boolean
+  required:
+    - activate
+
 ###############################################################
 # Assembly
 ###############################################################

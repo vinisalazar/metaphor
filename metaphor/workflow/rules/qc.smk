@@ -45,7 +45,7 @@ rule cutadapt_pe:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
-    threads: round(workflow.cores * 0.25)
+    threads: round(workflow.cores * 0.3)
     params:
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
@@ -93,7 +93,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
-    threads: 1
+    threads: round(workflow.cores * 0.3)
     wrapper:
         get_wrapper("fastqc")
 
@@ -110,7 +110,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
-    threads: 1
+    threads: round(workflow.cores * 0.3)
     wrapper:
         get_wrapper("fastqc")
 
@@ -127,14 +127,14 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         "output/logs/qc/fastqc_merged/{sample}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
-    threads: 1
+    threads: round(workflow.cores * 0.3)
     wrapper:
         get_wrapper("fastqc")
 
 
 rule multiqc:
     input:
-        get_multiqc_input,
+        get_multiqc_input(),
     output:
         report="output/qc/multiqc.html",
     log:
