@@ -129,7 +129,7 @@ def main():
     test.set_defaults(
         func=metaphor_test,
         directory="metaphor_test",
-        cores=2,
+        cores=3,
         mem_mb=4096,
         dry_run=False,
     )
