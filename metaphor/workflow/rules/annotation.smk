@@ -77,7 +77,7 @@ rule prokka:
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
-    threads: round(workflow.cores * 0.25)
+    threads: round(workflow.cores * 0.3)
     log:
         "output/logs/annotation/prokka/{sample}.log",
     benchmark:
@@ -140,7 +140,7 @@ rule diamond_makedb:
         extra=lambda w, input: f"--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
-    threads: round(workflow.cores * 0.25)
+    threads: round(workflow.cores * 0.3)
     wrapper:
         get_wrapper("diamond/makedb")
 
