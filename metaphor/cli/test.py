@@ -12,7 +12,6 @@ __doc__ = """
     """
 
 
-import sys
 from argparse import Namespace
 from pathlib import Path
 from hashlib import md5
@@ -24,7 +23,7 @@ from snakemake import snakemake
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
 from metaphor.config import test_config
-from metaphor.utils import get_successful_completion
+from metaphor.utils import confirm_message, get_successful_completion
 
 from .create_input_table import main as create_input_table
 
@@ -122,12 +121,7 @@ def main(args):
         "This may require the installation of conda environments which should take a while.\n"
     )
     if not confirm and not dry_run:
-        confirm = input(
-            f"Snakemake will start with {cores} cores and {mem_mb} MB RAM. Ok to continue? [y/N]\n"
-        )
-        if confirm.lower() != "y":
-            print("Metaphor test cancelled.")
-            sys.exit()
+        confirm_message(cores, mem_mb)
     sm_exit = snakemake(
         snakefile=snakefile,
         configfiles=[
@@ -136,9 +130,9 @@ def main(args):
         config={
             "samples": samples_file,
             "coassembly": coassembly,
+            "mb_per_thread": mem_mb,
         },
         cores=cores,
-        resources={"mem_mb": mem_mb},
         dryrun=dry_run,
         use_conda=True,
         conda_prefix=conda_prefix,

@@ -16,10 +16,9 @@ from snakemake import snakemake
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
 from metaphor.config import default_config
-from metaphor.utils import get_successful_completion, load_yaml
+from metaphor.utils import confirm_message, get_successful_completion, load_yaml
 
 from .create_input_table import main as create_input_table
-from .create_config_yaml import main as create_config_yaml
 
 
 def main(args):
@@ -29,6 +28,7 @@ def main(args):
     input_dir = args.input_dir
     join_units = args.join_units
     cores = int(args.cores)
+    mem_mb = args.mem_mb
     coassembly = args.coassembly
     confirm = args.confirm
     until = args.until
@@ -87,7 +87,8 @@ def main(args):
     config = load_yaml(config_file)
 
     samples_file = config["samples"]
-    mem_mb = config["resources"]["mb_per_thread"]
+    if mem_mb is None:
+        mem_mb = config["mb_per_thread"]
     if coassembly is None:
         coassembly = config["coassembly"]
     if not input_dir:
@@ -111,12 +112,7 @@ def main(args):
         "This may require the installation of conda environments which should take a while.\n"
     )
     if not confirm:
-        yn = input(
-            f"Snakemake will start with {cores} cores and {mem_mb} MB RAM PER THREAD. Ok to continue? [y/N]\n"
-        )
-        if yn.lower() != "y":
-            print("Metaphor execution cancelled.")
-            sys.exit()
+        confirm_message(cores, mem_mb)
     sm_exit = snakemake(
         snakefile=snakefile,
         configfiles=[
@@ -125,6 +121,7 @@ def main(args):
         config={
             "samples": samples_file,
             "coassembly": coassembly,
+            "mb_per_thread": mem_mb,
         },
         cores=cores,
         use_conda=True,

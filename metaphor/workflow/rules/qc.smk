@@ -141,5 +141,19 @@ rule multiqc:
         "output/logs/qc/multiqc.log",
     benchmark:
         "output/benchmarks/qc/multiqc.txt"
-    wrapper:
-        get_wrapper("multiqc")
+    # Temporary while the wrapper is broken
+    # wrapper:
+    #     get_wrapper("multiqc")
+    params:
+        input_dirs=lambda w, input: set(get_parent(fp) for fp in input),
+        output_dir=lambda w, output: get_parent(output.report),
+        output_name=lambda w, output: Path(output.report).name,
+    conda:
+        "../envs/multiqc.yaml"
+    shell:
+        """
+        multiqc --force                         \
+                -o $(dirname {output.report})   \
+                -n $(basename {output.report})  \
+                {input} &> {log}
+        """

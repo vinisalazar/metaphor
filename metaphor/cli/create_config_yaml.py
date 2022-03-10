@@ -45,7 +45,7 @@ def setting_prompt(message, key, subkey, transform=str, default=None):
     if not answer:
         print(f"Setting default option: {default}\n")
         answer = default
-    elif answer not in suggestion:
+    elif (transform == bool) and (answer not in suggestion):
         print(f"Answer not valid. Please answer one of: {suggestion}.")
         answer = ""
 
@@ -83,7 +83,6 @@ def get_general_settings():
     print("General settings\n")
     setting_prompt(
         "How many MB RAM per thread would you like to use?",
-        "resources",
         "mb_per_thread",
         int,
     )

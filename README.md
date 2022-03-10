@@ -14,8 +14,11 @@ Metaphor aims to be concise, portable, and sustainable. It only includes third-p
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
 ### Installation
-Run the following commands to install Metaphor from source. We highly recommend that you use [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for installing. If mamba is not available, replace all `mamba` commands for `conda`.
+The first thing that you need to install Metaphor is [conda](https://docs.conda.io/). To install it, please follow their [user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
+Once you have conda, we highly recommend that you use [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for installing Metaphor. If mamba is not available, replace all `mamba` commands for `conda`.
+
+Run the following commands to install Metaphor from source.
 ```bash
 
 # Install mamba (if you haven't already)
