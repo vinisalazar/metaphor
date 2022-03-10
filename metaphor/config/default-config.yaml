@@ -13,7 +13,7 @@ samples: metaphor/config/samples.csv
 
 
 resources:
-  mb_per_thread: 8192  # how many MBs per processor
+  mb_per_thread: 2048  # how many MBs per processor
 
 ###############################################################
 # QC
