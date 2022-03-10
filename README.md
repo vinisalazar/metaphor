@@ -25,22 +25,42 @@ Run the following commands to install Metaphor from source.
 $ conda install mamba -n base -c conda-forge
 
 # Copy the code to your machine
-$ git clone https://github.com/vinisalazar/metaphor && cd metaphor
+$ git clone git@github.com:vinisalazar/metaphor.git
+
+# If you don't want to set up GitHub authentication
+# You can download the latest version from this URL
+# https://github.com/vinisalazar/metaphor/archive/refs/tags/
+# Download a .zip or .tar.gz file and extract it
+
+# Go into the metaphor directory
+$ cd metaphor
 
 # Create the Metaphor environment
-$ mamba env create -n metaphor -f environment.yaml && conda activate metaphor
+$ mamba env create -n metaphor -f environment.yaml
+
+# Activate the environment
+# After this step, (metaphor) should show up next to your prompt.
+$ conda activate metaphor
 
 # Install Metaphor with pip
-pip install .
-
-# Check that the installation works
-metaphor -h
-
-# Test Metaphor (follow the screen prompts)
-metaphor test
+$ pip install .
 ```
 
-Testing may take a long time (a couple of hours), so please be patient.
+### Testing
+After installing, check if your Metaphor installation works:
+
+```bash
+# Check that the `metaphor` command works
+$ metaphor -h
+
+# You can see available options for testing Metaphor with:
+$ metaphor test -h
+
+# To test Metaphor (follow the screen prompts)
+$ metaphor test
+```
+
+Testing may take a long time (a couple of hours), so please be patient. After testing, you can run the workflow on the same directory, this way you won't have to install the conda dependencies all over again.
 
 ### Usage
 To run Metaphor on your data, we recommend that you create a configuration profile specific to your needs, and then run Metaphor on your directory of FASTQ files:
