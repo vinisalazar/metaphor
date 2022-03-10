@@ -13,7 +13,18 @@ from metaphor.utils import load_yaml, write_yaml
 config = load_yaml(default_config)
 
 
-def setting_prompt(message, key, subkey, transform=str, default=None):
+def setting_prompt(message, key, subkey=None, transform=str, default=None):
+    """
+    Prints a prompt message for the user to declare settings that will be used to generate a config file.
+
+    args:
+        message: str
+            Message that will be displayed on the prompt.
+        key: str
+            Key of the YAML file that will be set by the answer.
+        subkey: (str, None)
+            Subkey of key of the YAML file that will be set by the answer.
+    """
     # Get default from config
     if default is None:
         if subkey:
@@ -84,6 +95,7 @@ def get_general_settings():
     setting_prompt(
         "How many MB RAM per thread would you like to use?",
         "mb_per_thread",
+        None,
         int,
     )
 
