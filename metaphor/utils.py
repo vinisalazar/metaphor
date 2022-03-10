@@ -3,6 +3,15 @@ import yaml
 
 
 def get_successful_completion(bool, msg):
+    """
+    Prints a message if the workflow completed successfully.
+
+    args:
+        bool: bool
+            True if the workflow completed successfully, else False.
+        msg: str
+            Message to be printed if bool is True.
+    """
     if not bool:
         raise Exception(
             "The workflow did not complete successfully, "
@@ -13,6 +22,16 @@ def get_successful_completion(bool, msg):
 
 
 def load_yaml(file_path):
+    """
+    Loads a YAML file as a dictionary.
+
+    args:
+        file_path: str
+            String representing file path to be loaded
+
+    returns:
+        yaml_dict: dict
+    """
     with open(file_path) as f:
         try:
             yaml_dict = yaml.safe_load(f)
@@ -24,6 +43,15 @@ def load_yaml(file_path):
 
 
 def write_yaml(yaml_dict, file_path):
+    """
+    Writes a dictionary as a YAML file.
+
+    args:
+        yaml_dict: dict
+            Python dictionary containing values to be dumped.
+        file_path: str
+            Path of the output file.
+    """
     try:
         with open(file_path, "w") as f:
             yaml.dump(yaml_dict, f, default_flow_style=False)
@@ -36,6 +64,17 @@ def write_yaml(yaml_dict, file_path):
 
 
 def confirm_message(cores, mem_mb):
+    """
+    Prints a confirmation message requiring user input to continue.
+
+    Used in the metaphor executable commands to confirm number of cores and RAM.
+
+    args:
+        cores: int
+            Number of cores to be used in the workflow.
+        mem_mb: int
+            Number of MB RAM to be used per thread in the workflow.
+    """
     print(
         "You can suppress this confirmation message by running the Metaphor command with the `-y` flag.\n"
     )

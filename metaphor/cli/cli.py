@@ -13,16 +13,17 @@ from .create_config_yaml import __doc__ as create_config_yaml_doc
 
 __doc__ = f"""
 Metaphor v{__version__}  CLI - wraps commands for easier execution.
-
-Commands: 
-    metaphor
-        test
-        config
-        execute
 """
 
 
 def main():
+    """
+    Main function of the Metaphor CLI application.
+
+    This function defines the parsers and subparsers for each of the
+    subcommands in the metaphor executable, and calls functions
+    from the other scripts defined in this subpackage.
+    """
     parser = argparse.ArgumentParser(prog="metaphor", description=__doc__)
     subparsers = parser.add_subparsers(help="Command to be executed.")
 

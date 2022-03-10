@@ -4,6 +4,10 @@ __license__ = "MIT"
 __copyright__ = "2022, The University of Melbourne"
 __version__ = "1.1.0"
 
+__doc__ = """
+Metaphor init module. This defines the workflow version as a dunder variable, as well as other helper variables.
+"""
+
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
 wrapper_version = "v1.2.0"
