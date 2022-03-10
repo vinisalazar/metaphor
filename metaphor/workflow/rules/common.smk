@@ -194,7 +194,10 @@ def get_multiqc_input(wildcards):
 
 
 def get_qc_output():
-    return "output/qc/multiqc.html"
+    if is_activated("multiqc"):
+        return "output/qc/multiqc.html"
+    else:
+        return get_multiqc_input()
 
 
 ###############################################################
