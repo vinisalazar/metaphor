@@ -90,7 +90,7 @@ def get_wrapper(wrapper):
 
 
 def get_mem_mb(wildcards, threads):
-    return threads * config["resources"]["mb_per_thread"]
+    return threads * config["mb_per_thread"]
 
 
 def is_paired_end(sample):

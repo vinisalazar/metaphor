@@ -11,13 +11,8 @@ properties:
   units:
     type: string
 
-  resources:
-    type: object
-    properties:
-      mb_per_thread:
-        type: integer
-    required:
-      - mb_per_thread
+  mb_per_thread:
+    type: integer
 
 ###############################################################
 # QC
@@ -277,7 +272,7 @@ properties:
 required:
   - samples
   - coassembly
-  - resources
+  - mb_per_thread
   - trimming
   - merge_reads
   - concatenate_contigs

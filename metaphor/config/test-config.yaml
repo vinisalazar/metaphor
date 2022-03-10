@@ -13,8 +13,7 @@ samples: config/samples.csv
 
 coassembly: False
 
-resources:
-  mb_per_thread: 1024  # how many MBs per processor
+mb_per_thread: 1024  # how many MBs per processor
 
 ###############################################################
 # QC
