@@ -48,8 +48,14 @@ def main():
         action="store_true",
         help="Whether to join units (S001, S002) with the same preffix as the same file.",
     )
-    execute.add_argument("-p", "--cores", help="Number of processors to use in tests.")
+    execute.add_argument("-p", "--cores", help="Number of processors to be used.")
     execute.add_argument("-l", "--profile", help="Profile to be used to run Metaphor.")
+    execute.add_argument(
+        "-m",
+        "--mem_mb",
+        help="Amount of MB RAM to be used PER CORE. "
+        "i.e. if you set 1024 and 2 cores, it will use up to 2048 MB of RAM.",
+    )
     execute.add_argument(
         "-co",
         "--coassembly",
@@ -75,7 +81,8 @@ def main():
         input_dir=None,
         configfile="metaphor_settings.yaml",
         join_units=False,
-        cores=8,
+        cores=4,
+        mem_mb=None,
         profile=None,
         coassembly=None,
     )
@@ -157,7 +164,9 @@ def main():
         "i.e. they will be joined into a single file.",
         action="store_true",
     )
-    create_input_table_parser.add_argument("-o", "--output-file", help="Path to output file.")
+    create_input_table_parser.add_argument(
+        "-o", "--output-file", help="Path to output file."
+    )
     create_input_table_parser.set_defaults(func=create_input_table)
 
     # Config YAML

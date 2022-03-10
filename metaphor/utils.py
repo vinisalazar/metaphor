@@ -1,3 +1,4 @@
+import sys
 import yaml
 
 
@@ -32,3 +33,15 @@ def write_yaml(yaml_dict, file_path):
         print(f"Something wrong when writing YAML to file '{file_path}'.")
         print("Please check the YAML dict or the file path.")
         raise
+
+
+def confirm_message(cores, mem_mb):
+    print(
+        "You can suppress this confirmation message by running the Metaphor command with the `-y` flag.\n"
+    )
+    yn = input(
+        f"Snakemake will start with {cores} cores and {mem_mb} MB RAM PER THREAD. Ok to continue? [y/N]\n"
+    )
+    if yn.lower() != "y":
+        print("Metaphor execution cancelled.")
+        sys.exit()
