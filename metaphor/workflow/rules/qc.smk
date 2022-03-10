@@ -134,7 +134,7 @@ rule fastqc_merged:  # qc on trimmed, merged reads
 
 rule multiqc:
     input:
-        get_multiqc_input,
+        get_multiqc_input(),
     output:
         report="output/qc/multiqc.html",
     log:

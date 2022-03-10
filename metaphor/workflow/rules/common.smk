@@ -171,7 +171,7 @@ def get_fastqc_input_merged(wildcards):
     return "output/qc/merged/{sample}_{read}.fq.gz"
 
 
-def get_multiqc_input(wildcards):
+def get_multiqc_input():
     raw = expand(
         "output/qc/fastqc/{sample}-{unit}-{read}-raw_fastqc.zip",
         sample=sample_IDs,
