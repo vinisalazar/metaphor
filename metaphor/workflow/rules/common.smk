@@ -196,8 +196,10 @@ def get_multiqc_input():
 def get_qc_output():
     if is_activated("multiqc"):
         return "output/qc/multiqc.html"
-    else:
+    elif is_activated("fastqc"):
         return get_multiqc_input()
+    else:
+        return ()
 
 
 ###############################################################

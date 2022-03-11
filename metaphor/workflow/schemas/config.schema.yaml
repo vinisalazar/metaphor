@@ -49,13 +49,21 @@ properties:
     required:
       - activate
 
-multiqc:
-  type: object
-  properties:
-    activate:
-      type: boolean
-  required:
-    - activate
+  fastqc:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+  multiqc:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
 
 ###############################################################
 # Assembly
@@ -283,6 +291,8 @@ required:
   - mb_per_thread
   - trimming
   - merge_reads
+  - fastqc
+  - multiqc
   - concatenate_contigs
   - megahit
   - metaquast
