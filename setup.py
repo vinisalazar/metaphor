@@ -33,6 +33,7 @@ setup(
         "pyyaml",
         "requests",
         "snakemake",
+        "snakemake-wrapper-utils",
         "tqdm",
     ],
     keywords="metagenomics binning assembly snakemake workflow pipeline",
