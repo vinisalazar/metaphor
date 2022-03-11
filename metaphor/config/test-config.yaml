@@ -30,6 +30,9 @@ trimming:
 merge_reads:
   activate: True
 
+fastqc:
+  activate: False
+
 multiqc:
   activate: False
 
