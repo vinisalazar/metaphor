@@ -1,8 +1,8 @@
 __author__ = "Vini Salazar"
 __email__ = "17276653+vinisalazar@users.noreply.github.com"
 __license__ = "MIT"
-__copyright__ = "2022, The University of Melbourne"
-__version__ = "1.1.1"
+__copyright__ = "The University of Melbourne 2022"
+__version__ = "1.1.3"
 
 __doc__ = """
 Metaphor init module. This defines the workflow version as a dunder variable, as well as other helper variables.
@@ -22,5 +22,6 @@ ascii_art = f"""
 
 Metaphor v{__version__} - Metagenomic Pipeline for Short Reads
 
-© The University of Melbourne 2022
+© {__copyright__}
+{__license__} license
 """

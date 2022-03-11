@@ -9,5 +9,6 @@ dependencies:
   - pyyaml              # required for cli
   - requests
   - snakemake
+  - snakemake-wrapper-utils
   - snakefmt            # required for development
   - tqdm                # required for cli
