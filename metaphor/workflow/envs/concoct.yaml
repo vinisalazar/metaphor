@@ -6,3 +6,4 @@ dependencies:
   - pigz
   - python>=3
   - samtools>=1.9
+  - mkl
