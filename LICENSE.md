@@ -3,9 +3,9 @@ MIT License
 Copyright (c) 2022 The University of Melbourne
 
 ##### DISCLAIMER
-Metaphor is a derivative work of MetaGenePipe, originally released under the
-Apache 2.0 license, developed by Bobbie Shaban, Mar Quiroga, Robert Turnbull
-and Edoardo Tescari at Melbourne Data Analytics Platform (MDAP) at the
+Metaphor is a derivative work of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), originally released under the
+Apache 2.0 license, developed by [Bobbie Shaban](https://gitlab.unimelb.edu.au/bshaban), Mar Quiroga, Robert Turnbull
+and Edoardo Tescari at Melbourne Data Analytics Platform ([MDAP](https://mdap.unimelb.edu.au/)) at the
 University of Melbourne.
 [Link to MetaGenePipe.](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/)
 

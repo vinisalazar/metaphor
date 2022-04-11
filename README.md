@@ -9,8 +9,7 @@ Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads 
 - Annotation (with [Prodigal](https://github.com/hyattpd/Prodigal), [Diamond](https://github.com/bbuchfink/diamond), and the [NCBI COG database](https://www.ncbi.nlm.nih.gov/research/cog-project/))
 - Postprocessing (with custom scripts)
 
-Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable. Metaphor originally started as Snakemake port of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), developed by by Bobbie Shaban *et al* at the [Melbourne Data Analytics Platform](https://mdap.unimelb.edu.au/), but has since seen significant modifications (including the name change).
-
+Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable.
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
 ### Installation
@@ -79,3 +78,8 @@ If you receive any errors, feel free to open an issue describing your problem.
 TO-DO:
 ### Documentation 
 -->
+
+### Licensing
+
+Metaphor is released under a MIT license. Metaphor is derivative work of MetaGenePipe, a workflow developed by Bobbie Shaban and others. For more information, please see the [license file](./LICENSE.md).
+
