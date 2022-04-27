@@ -100,8 +100,8 @@ plot_taxonomies:
 ###############################################################
 
 vamb:
-  activate: False
-  minfasta: 200000
+  activate: True
+  minfasta: 10000
 
 metabat2:
   activate: True
@@ -109,10 +109,10 @@ metabat2:
   preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
 
 concoct:
-  activate: False
+  activate: True
 
 das_tool:
-  activate: False
+  activate: True
   score_threshold: 0.5
 
 ###############################################################
