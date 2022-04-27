@@ -27,7 +27,7 @@ def main(args):
     config_file = args.configfile
     input_dir = args.input_dir
     join_units = args.join_units
-    cores = int(args.cores)
+    cores = args.cores
     mem_mb = args.mem_mb
     coassembly = args.coassembly
     confirm = args.confirm

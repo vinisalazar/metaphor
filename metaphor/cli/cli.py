@@ -51,13 +51,16 @@ def main():
         action="store_true",
         help="Whether to join units (S001, S002) with the same preffix as the same file.",
     )
-    execute.add_argument("-c", "--cores", help="Number of processors to be used.")
+    execute.add_argument(
+        "-c", "--cores", help="Number of processors to be used.", type=int
+    )
     execute.add_argument("-l", "--profile", help="Profile to be used to run Metaphor.")
     execute.add_argument(
         "-m",
         "--mem_mb",
         help="Amount of MB RAM to be used PER CORE. "
         "i.e. if you set 1024 and 2 cores, it will use up to 2048 MB of RAM.",
+        type=int,
     )
     execute.add_argument(
         "-co",
@@ -101,8 +104,10 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     test.add_argument("-d", "--directory", help="Directory to run tests.")
-    test.add_argument("-c", "--cores", help="Number of processors to use in tests.")
-    test.add_argument("-m", "--mem_mb", help="Amount of RAM to use in tests.")
+    test.add_argument(
+        "-c", "--cores", help="Number of processors to use in tests.", type=int
+    )
+    test.add_argument("-m", "--mem_mb", help="Amount of RAM to use in tests.", type=int)
     test.add_argument(
         "-co",
         "--coassembly",
