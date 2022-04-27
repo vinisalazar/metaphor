@@ -35,7 +35,7 @@ $ git clone git@github.com:vinisalazar/metaphor.git
 $ cd metaphor
 
 # Create the Metaphor environment
-$ mamba env create -n metaphor -f environment.yaml
+$ mamba env create -f environment.yaml
 
 # Activate the environment
 # After this step, (metaphor) should show up next to your prompt.
@@ -79,7 +79,10 @@ TO-DO:
 ### Documentation 
 -->
 
-### Licensing
-
-Metaphor is released under a MIT license. Metaphor is derivative work of MetaGenePipe, a workflow developed by Bobbie Shaban and others. For more information, please see the [license file](./LICENSE.md).
+##### DISCLAIMER
+Metaphor is a derivative work of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), originally released under the
+Apache 2.0 license, developed by [Bobbie Shaban](https://gitlab.unimelb.edu.au/bshaban), Mar Quiroga, Robert Turnbull
+and Edoardo Tescari at Melbourne Data Analytics Platform ([MDAP](https://mdap.unimelb.edu.au/)) at the
+University of Melbourne.
+[Link to MetaGenePipe.](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/). For more information, please see the [license file](./LICENSE.md).
 
