@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - minimap2
-  - samtools
+  - samtools=1.15.1
