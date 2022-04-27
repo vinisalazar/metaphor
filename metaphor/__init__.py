@@ -10,7 +10,7 @@ Metaphor init module. This defines the workflow version as a dunder variable, as
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version = "v1.2.0"
+wrapper_version = "v1.3.2"
 wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/"
 
 ascii_art = f"""
