@@ -62,11 +62,11 @@ def parse_args():
     # 'Special cases aren't special enough to break the rules.'
     parser = argparse.ArgumentParser()
 
-    args = parser.parse_args()
     parser.add_argument("--files")
     parser.add_argument("--absolute-counts")
     parser.add_argument("--relative-counts")
     parser.add_argument("--rank")
+    args = parser.parse_args()
     return args
 
 

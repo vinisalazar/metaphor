@@ -10,6 +10,8 @@ from .create_input_table import main as create_input_table
 from .create_input_table import __doc__ as create_input_table_doc
 from .create_config_yaml import main as create_config_yaml
 from .create_config_yaml import __doc__ as create_config_yaml_doc
+from .config_show import main as config_show
+from .config_show import __doc__ as config_show_doc
 
 __doc__ = f"""
 Metaphor v{__version__}  CLI - wraps commands for easier execution.
@@ -25,7 +27,7 @@ def main():
     from the other scripts defined in this subpackage.
     """
     parser = argparse.ArgumentParser(prog="metaphor", description=__doc__)
-    subparsers = parser.add_subparsers(help="Command to be executed.")
+    subparsers = parser.add_subparsers(help="Command to be executed.", dest="subparser")
 
     ###############################################################
     # Execute
@@ -41,7 +43,7 @@ def main():
         "-i", "--input-dir", help="Input directory containing FASTQ files."
     )
     execute.add_argument(
-        "-c", "--configfile", help="Configuration file to run the workflow."
+        "-f", "--configfile", help="Configuration file to run the workflow."
     )
     execute.add_argument(
         "-j",
@@ -49,13 +51,16 @@ def main():
         action="store_true",
         help="Whether to join units (S001, S002) with the same preffix as the same file.",
     )
-    execute.add_argument("-p", "--cores", help="Number of processors to be used.")
+    execute.add_argument(
+        "-c", "--cores", help="Number of processors to be used.", type=int
+    )
     execute.add_argument("-l", "--profile", help="Profile to be used to run Metaphor.")
     execute.add_argument(
         "-m",
         "--mem_mb",
         help="Amount of MB RAM to be used PER CORE. "
         "i.e. if you set 1024 and 2 cores, it will use up to 2048 MB of RAM.",
+        type=int,
     )
     execute.add_argument(
         "-co",
@@ -99,8 +104,10 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     test.add_argument("-d", "--directory", help="Directory to run tests.")
-    test.add_argument("-p", "--cores", help="Number of processors to use in tests.")
-    test.add_argument("-m", "--mem_mb", help="Amount of RAM to use in tests.")
+    test.add_argument(
+        "-c", "--cores", help="Number of processors to use in tests.", type=int
+    )
+    test.add_argument("-m", "--mem_mb", help="Amount of RAM to use in tests.", type=int)
     test.add_argument(
         "-co",
         "--coassembly",
@@ -128,9 +135,9 @@ def main():
     )
     test.set_defaults(
         func=metaphor_test,
-        directory="metaphor_test",
+        directory="test_data_metaphor",
         cores=3,
-        mem_mb=4096,
+        mem_mb=1024,
         dry_run=False,
     )
 
@@ -184,11 +191,23 @@ def main():
         func=create_config_yaml, outfile="metaphor_settings.yaml"
     )
 
+    # Show filepaths
+    ###############################################################
+    show_config_paths = config_subparsers.add_parser(
+        "show",
+        help=config_show_doc,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    show_config_paths.set_defaults(func=config_show)
+
     ###############################################################
     # PARSE ALL ARGS
     ###############################################################
     args = parser.parse_args()
-    args.func(args)
+    try:
+        args.func(args)
+    except AttributeError:
+        eval(args.subparser).print_help()  # get subparser from command and print help
 
 
 if __name__ == "__main__":

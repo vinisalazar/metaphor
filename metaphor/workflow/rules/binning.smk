@@ -187,7 +187,7 @@ rule DAS_tool:
                  -o {params.outpreffix}                             \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
-                 --write_bins 1                                     \
+                 --write_bins                                       \
                  --threads {threads} &> {log}
 
         rm -rf {input.contigs}

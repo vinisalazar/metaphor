@@ -2,7 +2,7 @@ __author__ = "Vini Salazar"
 __email__ = "17276653+vinisalazar@users.noreply.github.com"
 __license__ = "MIT"
 __copyright__ = "The University of Melbourne 2022"
-__version__ = "1.1.3"
+__version__ = "1.2.0"
 
 __doc__ = """
 Metaphor init module. This defines the workflow version as a dunder variable, as well as other helper variables.
@@ -10,7 +10,7 @@ Metaphor init module. This defines the workflow version as a dunder variable, as
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version = "v1.2.0"
+wrapper_version = "v1.3.2"
 wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/"
 
 ascii_art = f"""
@@ -23,5 +23,5 @@ ascii_art = f"""
 Metaphor v{__version__} - Metagenomic Pipeline for Short Reads
 
 © {__copyright__}
-{__license__} license
+{__license__} licence
 """

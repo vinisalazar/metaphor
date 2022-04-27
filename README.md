@@ -9,8 +9,7 @@ Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads 
 - Annotation (with [Prodigal](https://github.com/hyattpd/Prodigal), [Diamond](https://github.com/bbuchfink/diamond), and the [NCBI COG database](https://www.ncbi.nlm.nih.gov/research/cog-project/))
 - Postprocessing (with custom scripts)
 
-Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable. Metaphor originally started as Snakemake port of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), developed by by Bobbie Shaban *et al* at the [Melbourne Data Analytics Platform](https://mdap.unimelb.edu.au/), but has since seen significant modifications (including the name change).
-
+Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable.
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
 ### Installation
@@ -36,7 +35,7 @@ $ git clone git@github.com:vinisalazar/metaphor.git
 $ cd metaphor
 
 # Create the Metaphor environment
-$ mamba env create -n metaphor -f environment.yaml
+$ mamba env create -f environment.yaml
 
 # Activate the environment
 # After this step, (metaphor) should show up next to your prompt.
@@ -79,3 +78,11 @@ If you receive any errors, feel free to open an issue describing your problem.
 TO-DO:
 ### Documentation 
 -->
+
+##### DISCLAIMER
+Metaphor is a derivative work of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), originally released under the
+Apache 2.0 license, developed by [Bobbie Shaban](https://gitlab.unimelb.edu.au/bshaban), Mar Quiroga, Robert Turnbull
+and Edoardo Tescari at Melbourne Data Analytics Platform ([MDAP](https://mdap.unimelb.edu.au/)) at the
+University of Melbourne.
+[Link to MetaGenePipe.](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/). For more information, please see the [license file](./LICENSE.md).
+

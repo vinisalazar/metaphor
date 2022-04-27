@@ -4,6 +4,7 @@ __doc__ = """
 Generate Metaphor settings YAML file.
 """
 import argparse
+from pathlib import Path
 
 
 from metaphor import ascii_art
@@ -13,7 +14,7 @@ from metaphor.utils import load_yaml, write_yaml
 config = load_yaml(default_config)
 
 
-def setting_prompt(message, key, subkey=None, transform=str, default=None):
+def setting_prompt(message, key, subkey=None, transform=str, default=None, file=False):
     """
     Prints a prompt message for the user to declare settings that will be used to generate a config file.
 
@@ -24,6 +25,10 @@ def setting_prompt(message, key, subkey=None, transform=str, default=None):
             Key of the YAML file that will be set by the answer.
         subkey: (str, None)
             Subkey of key of the YAML file that will be set by the answer.
+        default: (str, None)
+            Default value to be defined.
+        file: bool
+            Whether the passed value will be a file. If true, check if the file exists.
     """
     # Get default from config
     if default is None:
@@ -69,12 +74,18 @@ def setting_prompt(message, key, subkey=None, transform=str, default=None):
                 return transform(answer)
             except ValueError:
                 print(
-                    f"Could not transform {answer} to {transform}. Please check your input value."
+                    f"Could not transform '{answer}' to {transform}. Please check your input value.\n"
                 )
-                print(f"Setting to default value: {default}\n")
+                print(f"Setting to default value: '{default}'.\n")
                 return default
 
     answer = transform_func(answer)
+
+    if file:
+        if not Path(answer).exists():
+            print(
+                f"Warning: specified file '{answer}' was not found. Please make sure the file exists before running.\n"
+            )
 
     # Set new answer
     if subkey:
@@ -84,20 +95,24 @@ def setting_prompt(message, key, subkey=None, transform=str, default=None):
 
     if answer != default:
         if subkey:
-            print(f"Set config value config['{key}']['{subkey}'] to {answer}\n")
+            print(f"Set config value config['{key}']['{subkey}'] to '{answer}'.\n")
         else:
-            print(f"Set config value config['{key}'] to {answer}\n")
+            print(f"Set config value config['{key}'] to '{answer}'.\n")
         return answer
 
 
 def get_general_settings():
     print("General settings\n")
     setting_prompt(
+        "Would you like to set an input file for your samples?", "samples", None, str, file=True
+    )
+    setting_prompt(
         "How many MB RAM per thread would you like to use?",
         "mb_per_thread",
         None,
         int,
     )
+    print("\n")
 
 
 def get_qc_settings():
@@ -105,6 +120,7 @@ def get_qc_settings():
     setting_prompt(
         "Would you like to turn on MultiQC for reporting?", "multiqc", "activate", bool
     )
+    print("\n")
 
 
 def get_assembly_settings():
@@ -134,6 +150,7 @@ def get_assembly_settings():
             print(
                 "Don't forget to add a 'metaquast_reference' column to the input table to specify references for each sample."
             )
+    print("\n")
 
 
 def get_annotation_settings():
@@ -183,6 +200,7 @@ def get_annotation_settings():
         "activate",
         bool,
     )
+    print("\n")
 
 
 def get_binning_settings():
@@ -211,6 +229,7 @@ def get_binning_settings():
     setting_prompt(
         "Would you like to refine bins with DAS_Tool?", "das_tool", "activate", bool
     )
+    print("\n")
 
 
 def main(args):
