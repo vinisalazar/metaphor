@@ -100,7 +100,8 @@ def create_paired_files_dict(R1, R2, n_files, s_as_units):
                 r,
             )
 
-    n_samples = len(paired_samples_dict)
+    # If cannot build paired_samples_dict, do one file per sample instead.
+    n_samples = len(paired_samples_dict) if len(paired_samples_dict) > 0 else n_files
     files_per_sample = n_files / n_samples
     files_per_sample = (
         int(files_per_sample) if files_per_sample.is_integer() else files_per_sample
