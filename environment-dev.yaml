@@ -1,8 +1,9 @@
-name: metaphor
+name: metaphor-dev
 channels:
   - conda-forge
   - bioconda
 dependencies:
+  - ipython             # dev
   - jinja2              # required for reports
   - networkx            # required for reports
   - pandas
@@ -10,4 +11,6 @@ dependencies:
   - requests
   - snakemake
   - snakemake-wrapper-utils
+  - snakefmt            # dev
+  - sphinx              # dev
   - tqdm                # required for cli
