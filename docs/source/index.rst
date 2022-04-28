@@ -28,13 +28,13 @@ Please read through the `Introduction <usage/introduction.md>`_ for more detaile
 .. toctree::
    :maxdepth: 2
 
-   usage/introduction
-   usage/output
-   usage/advanced
-   usage/configuration
-   usage/troubleshooting
-   usage/contributing
-   usage/reference
+   main/introduction
+   main/output
+   main/advanced
+   main/configuration
+   main/troubleshooting
+   main/contributing
+   main/reference
 
 ..
    The following section is commented.
