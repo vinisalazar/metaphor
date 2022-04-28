@@ -10,19 +10,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../../metaphor"))
+
+from metaphor import __name__, __version__, workflow
 
 
 # -- Project information -----------------------------------------------------
 
-project = "Metaphor"
-copyright = "2022, The University of Melbourne"
+project = __name__.capitalize()
+copyright = " The University of Melbourne 2022"
 author = "Vini Salazar"
 
 # The full version, including alpha/beta/rc tags
-release = "0.3.4"
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,7 +33,7 @@ release = "0.3.4"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser"]
+extensions = ["myst_parser", "sphinx.ext.autodoc"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
