@@ -5,7 +5,10 @@ __copyright__ = "The University of Melbourne 2022"
 __version__ = "1.2.0"
 
 __doc__ = """
-Metaphor init module. This defines the workflow version as a dunder variable, as well as other helper variables.
+Metaphor top-level module. This is the entrypoint for the `cli`, `config`, and `workflow` packages.
+
+This module contains package-level dunder variables such as licence, copyright, and version,
+and also variables for the Snakemake wrapper versions to be used, and the package ASCII art.
 """
 
 # Snakemake wrapper version
