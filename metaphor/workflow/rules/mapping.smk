@@ -40,8 +40,7 @@ rule decompress_catalogue:
         catalogue_gz="output/mapping/catalogue.fna.gz",
     output:
         catalogue="output/mapping/catalogue.fna",
-    threads:
-        round(workflow.cores * 0.25)
+    threads: round(workflow.cores * 0.25)
     log:
         "output/logs/mapping/decompress_catalogue.log",
     benchmark:
@@ -52,7 +51,6 @@ rule decompress_catalogue:
         """
         pigz -d -f -p {threads} -k {input.catalogue} &> {log}
         """
-        
 
 
 rule concatenate_proteins:

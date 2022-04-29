@@ -23,7 +23,9 @@ from metaphor import wrapper_version
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype={"sample_name": str}, sep=None, engine="python")
+samples = pd.read_csv(
+    config["samples"], dtype={"sample_name": str}, sep=None, engine="python"
+)
 if "unit_name" not in samples.columns:
     samples["unit_name"] = "single"
 samples = samples.fillna("")
@@ -43,7 +45,7 @@ unit_names = samples["unit_name"].drop_duplicates().to_list()
 def get_final_output():
     """
     Requires the final output files to be generated at the end of the workflow.
-    
+
     Consumed by rule 'all'.
     """
     final_output = (
