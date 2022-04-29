@@ -108,7 +108,6 @@ def get_general_settings():
         "samples",
         None,
         str,
-        default="samples.csv",
         file=True,
     )
     setting_prompt(
