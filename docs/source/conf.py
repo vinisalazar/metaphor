@@ -56,6 +56,7 @@ html_theme_options = {
     "logo_name": "true",
     "github_user": "vinisalazar",
     "github_repo": "metaphor",
+    "github_button": "true",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
