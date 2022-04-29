@@ -3,7 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - concoct=1.1.0
-  - pigz
   - python>=3
   - samtools>=1.9
   - mkl

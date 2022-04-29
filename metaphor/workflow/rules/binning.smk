@@ -91,13 +91,12 @@ rule metabat2:
 
 rule concoct:
     input:
-        catalogue="output/mapping/catalogue.fna.gz",
+        catalogue="output/mapping/catalogue.fna",
         bams=expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
         bais=expand("output/mapping/bam/{sample}.sorted.bam.bai", sample=sample_IDs),
     output:
         outdir=directory("output/binning/concoct/"),
         scaffolds2bin="output/binning/DAS_tool/concoct_scaffolds2bin.tsv",
-        uncompressed_catalogue="output/mapping/catalogue.fna",
     params:
         contig_size=10000,
         bed=lambda w, output: str(Path(output.outdir).joinpath("contigs.bed")),
@@ -126,9 +125,7 @@ rule concoct:
         rm -rf {output.outdir}
         mkdir {output.outdir} 
 
-        {{ pigz -d -f -p {threads} -k {input.catalogue} ; }} 2>> {log}
-
-        {{ cut_up_fasta.py {output.uncompressed_catalogue}          \
+        {{ cut_up_fasta.py {input.catalogue}                        \
                            -c {params.contig_size}                  \
                            -o 0                                     \
                            -b {params.bed}                          \
