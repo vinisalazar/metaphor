@@ -49,7 +49,7 @@ rule decompress_catalogue:
         "../envs/utils.yaml"
     shell:
         """
-        pigz -d -f -p {threads} -k {input.catalogue} &> {log}
+        pigz -d -f -p {threads} -k {input.catalogue_gz} &> {log}
         """
 
 
