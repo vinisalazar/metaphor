@@ -21,6 +21,9 @@ rule cutadapt_pipe:
         get_cutadapt_pipe_input,
     output:
         pipe("pipe/qc/cutadapt/{sample}_{unit}_{fq}.{ext}"),
+    resources:
+        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"]        
     log:
         "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
     benchmark:
@@ -41,6 +44,9 @@ rule cutadapt_pe:
         fastq1="output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
         fastq2="output/qc/cutadapt/{sample}_{unit}_R2.fq.gz",
         qc="output/qc/cutadapt/{sample}_{unit}.paired.qc.txt",
+    resources:
+        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"]
     log:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
@@ -69,6 +75,9 @@ rule merge_fastqs:
     output:
         "output/qc/merged/{sample}_{read}.fq.gz",
     threads: 1
+    resources:
+        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"]
     log:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     benchmark:

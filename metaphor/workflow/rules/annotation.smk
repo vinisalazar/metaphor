@@ -118,6 +118,8 @@ rule generate_COG_taxonmap:
         org_csv=get_cog_db_file("cog-20.org.csv"),
     output:
         taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
+    resources:
+        mem_mb=round(workflow.cores * 0.5) * config["mb_per_thread"]
     log:
         "output/logs/annotation/generate_COG_taxonmap.log",
     benchmark:
