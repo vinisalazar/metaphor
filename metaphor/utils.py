@@ -54,7 +54,7 @@ def write_yaml(yaml_dict, file_path):
     """
     try:
         with open(file_path, "w") as f:
-            yaml.dump(yaml_dict, f, default_flow_style=False)
+            yaml.dump(yaml_dict, f, default_flow_style=False, sort_keys=False)
 
         print(f"Wrote YAML to '{file_path}'.")
     except:
