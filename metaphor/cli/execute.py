@@ -98,9 +98,7 @@ def main(args):
     else:
         create_input_table_args = Namespace()
         create_input_table_args.input_dir = input_dir
-        create_input_table_args.output_file = samples_file = str(
-            Path(input_dir).joinpath("samples.csv")
-        )
+        create_input_table_args.output_file = samples_file = "samples.csv"
         create_input_table_args.join_units = join_units
         print("\nCreating input table for test files.\n")
         create_input_table(create_input_table_args)
@@ -133,5 +131,6 @@ def main(args):
         cluster=vars(args).get("cluster", None),
         cluster_config=vars(args).get("cluster_config", None),
         cluster_sync=vars(args).get("cluster_sync", None),
+        printreason=True,
     )
     get_successful_completion(sm_exit, "Metaphor finished successfully.")

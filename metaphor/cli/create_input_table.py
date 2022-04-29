@@ -160,7 +160,7 @@ def main(args):
     final_df = process_final_df(dfs, input_dir)
 
     outfile = (
-        Path(input_dir).joinpath("samples.csv")
+        "samples.csv"
         if args.output_file is None
         else args.output_file
     )

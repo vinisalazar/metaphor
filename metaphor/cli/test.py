@@ -102,7 +102,7 @@ def main(args):
     coassembly = args.coassembly
     cores = args.cores
     mem_mb = args.mem_mb
-    samples_file = str(Path(directory).joinpath("samples.csv"))
+    samples_file = "samples.csv"
     create_input_table_args = Namespace()
     create_input_table_args.input_dir = directory
     create_input_table_args.output_file = samples_file
@@ -138,5 +138,6 @@ def main(args):
         conda_prefix=conda_prefix,
         printshellcmds=True,
         wrapper_prefix=wrapper_prefix,
+        printreason=True,
     )
     get_successful_completion(sm_exit, "Test complete.")

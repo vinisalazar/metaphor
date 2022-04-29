@@ -104,7 +104,12 @@ def setting_prompt(message, key, subkey=None, transform=str, default=None, file=
 def get_general_settings():
     print("General settings\n")
     setting_prompt(
-        "Would you like to set an input file for your samples?", "samples", None, str, file=True
+        "Would you like to set an input file for your samples?",
+        "samples",
+        None,
+        str,
+        default="samples.csv",
+        file=True,
     )
     setting_prompt(
         "How many MB RAM per thread would you like to use?",
