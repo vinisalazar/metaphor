@@ -1,7 +1,7 @@
 
-# Settings
+# Configuration
 
-This page explains each value of Metaphor's settings, that is, the values defined in the config YAML file.
+This page explains each value of Metaphor's config settings, that is, the values defined in the config YAML file.
 
 
 **TOP LEVEL**

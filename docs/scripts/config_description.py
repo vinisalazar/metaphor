@@ -1,18 +1,13 @@
 """
 Generate docs for the config module.
 """
-
-from bdb import Breakpoint
-from email.policy import default
-import yaml
-
-default_config = "metaphor/config/default-config.yaml"
+default_config = "metaphor/config/default_value-config.yaml"
 docs_page = "docs/source/main/settings.md"
 
 final_md = """
-# Settings
+# Configuration
 
-This page explains each value of Metaphor's settings, that is, the values defined in the config YAML file.
+This page explains each value of Metaphor's config settings, that is, the values defined in the config YAML file.
 \n
 """
 
@@ -66,13 +61,13 @@ for line in text:
     ]
     for item in config_properties:
         tab = False
-        for name, default, comment in item:
+        for name, default_value, comment in item:
             name_fmt = f"**`{name}:`**"
             if tab:
                 name_fmt = f"&nbsp;&nbsp;&nbsp;{name_fmt}"
             final_md += name_fmt
-            if default:
-                final_md += f" `{default}`  "
+            if default_value:
+                final_md += f" `{default_value}`  "
             else:
                 final_md += "  "
                 tab = True

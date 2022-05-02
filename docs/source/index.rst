@@ -41,7 +41,6 @@ Please read through the `Tutorial <usage/tutorial.md>`_ for an introduction on h
    main/troubleshooting
    main/contributing
    main/reference
-
 ..
    The following section is commented.
 
