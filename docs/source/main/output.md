@@ -35,7 +35,7 @@ output
 
 And so on.
 
-## QC module
+**QC**
 
 The QC module contains four directories and the `multiqc.html` report:
 
@@ -45,14 +45,14 @@ reads.
 * `merged`: merged reads after QC.
 * `multiqc_data`: data for the `multiqc.html` report.
 
-## Assembly module
+**Assembly**
 
 The assembly module contains two directories:
 
 * `assembly_report`: report with assembly metrics for all samples, along with plots.
 * `megahit`: results of the MegaHIT assembly. Contains subdirectories for each sample.
 
-## Annotation module
+**Annotation**
 
 This module contains three directories:
 
@@ -70,7 +70,7 @@ contains 3-4 files:
     * `{sample}_proteins.faa`: predicted coding sequences as amino acids
     * `{sample}_scores.cds` (optional):  is the tabular format with the scores for all possible genes.
 
-## Mapping
+**Mapping**
 
 This module contains the files that map the original reads back to the contigs. These files are required for the
 binning process:
@@ -79,7 +79,8 @@ binning process:
 * `catalogue.mmi`: index file of the concatenated contigs.
 * `bam_contig_depths.txt`: coverage of each contig calculated from BAM files.
 
-## Binning
+**Binning**
+
 This module contains one directory for each of the binners:
 * `metabat2`: bins are inside this directory as `.fa` files.
 * `vamb`: contains a `bins` directory.
@@ -87,7 +88,7 @@ This module contains one directory for each of the binners:
 * `DAS_tool`: contains the refined bins inside the `DASTool_bins` directory, and the table with quality score for each
 bin is named as `DASTool_summary.tsv`
 
-## Postprocessing
+**Postprocessing**
 The postprocessing module contains four different plots:
 * `memory_barplot_errorbar.png`
 * `memory_barplot_sum.png`
