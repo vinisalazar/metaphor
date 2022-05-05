@@ -6,7 +6,10 @@ This was taken from the seq2science repository, under an MIT licence.
 Link to repository: https://github.com/vanheeringen-lab/seq2science
 """
 license = """
-**Licence for rule_description.py script.**
+This page was genearted with a script adapted from the 
+[seq2science repository](https://github.com/vanheeringen-lab/seq2science). Please find the license attached.\n
+
+**Licence for rule_description.py script:**
 
 MIT License
 
@@ -27,23 +30,22 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THEles
 SOFTWARE.
 
 """
 
 import re
 
-final_md = """\
+final_md = """
 # Reference
 
-This is an automatically generated list of all supported rules, their docstrings, and command. At the start of each \
-workflow run a list is printed of which rules will be run. And while the workflow is running it prints which rules are \
-being started and finished. This page is here to give an explanation to the user about what each rule does, and for \
-developers to find what is, and isn't yet supported.\n
-
-Adapted from the [seq2science repository](https://github.com/vanheeringen-lab/seq2science). Please scroll down to the 
-end of the page for the licence.\n
+This is an automatically generated list of all supported rules, their docstrings, and command. At the start of each 
+workflow run a list is printed of which rules will be run. And while the workflow is running it prints which rules are
+being started and finished. This page is here to give an explanation to the user about what each rule does, and for
+developers to find what is, and isn't yet supported. Not all Metaphor rules are listed here, only the ones with a
+`shell` directive. Rules with `script` or `wrapper` directives are not included. To see all rules in Metaphor, 
+please refer to the [workflow source code](https://github.com/vinisalazar/metaphor/tree/main/workflow).
 """
 
 path = "metaphor/workflow/rules/"
@@ -79,13 +81,13 @@ def cleanup_docstring(dirty):
 
 def get_dirty_shell(string):
     splitter = re.compile(
-        r"(rule|checkpoint) (.*):[\s\S]*?shell:[\s\S]*?\"\"\"\\?([\s\S]*?)\"\"\"",
+        r"(rule|checkpoint) (.*):[\s\S]*?(shell|script|wrapper):[\s\S]*?\"\"\"\\?([\s\S]*?)\"\"\"",
         re.MULTILINE,
     )
     shell_cmds = {}
     for substring in string.split("\n\n\n"):
         for match in splitter.finditer(substring):
-            shell_cmds[match.group(2)] = match.group(3)
+            shell_cmds[match.group(2)] = match.group(4)
     return shell_cmds
 
 
@@ -132,9 +134,10 @@ for rules_file in rule_orders.keys():
     all_rules_doc.update(docstrings)
     rule_orders[rules_file] = list(docstrings.keys())
 
-    final_md += f"**{rules_file}.smk**\n"
+    final_md += f"## {rules_file}.smk\n"
 
     for rule in rule_orders[rules_file]:
+        print(f"Writing docs for rule '{rule}'.")
         docstring = all_rules_doc[rule]
         final_md += f"**{rule}**\n\n"
         if "{" not in docstring:
