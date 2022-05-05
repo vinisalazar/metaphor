@@ -1,25 +1,34 @@
+
 # Reference
 
-This is an automatically generated list of all supported rules, their docstrings, and command. At the start of each workflow run a list is printed of which rules will be run. And while the workflow is running it prints which rules are being started and finished. This page is here to give an explanation to the user about what each rule does, and for developers to find what is, and isn't yet supported.
-
-
-Adapted from the [seq2science repository](https://github.com/vanheeringen-lab/seq2science). Please scroll down to the 
-end of the page for the licence.
-
-**qc.smk**
+This is an automatically generated list of all supported rules, their docstrings, and command. At the start of each 
+workflow run a list is printed of which rules will be run. And while the workflow is running it prints which rules are
+being started and finished. This page is here to give an explanation to the user about what each rule does, and for
+developers to find what is, and isn't yet supported. Not all Metaphor rules are listed here, only the ones with a
+`shell` directive. Rules with `script` or `wrapper` directives are not included. To see all rules in Metaphor, 
+please refer to the [workflow source code](https://github.com/vinisalazar/metaphor/tree/main/workflow).
+## qc.smk
 **cutadapt_pipe**
+
+Pipe reads into cutadapt.
 
 ```
 cat {input} > {output} 2> {log}
 ```
+
+**cutadapt_pe**
+
+Trim paired end reads with cutadapt.
 
 **merge_fastqs**
 
+Concatenate paired-end reads from different units.
+
 ```
 cat {input} > {output} 2> {log}
 ```
 
-**assembly.smk**
+## assembly.smk
 **concatenate_merged_reads**
 
 ```
@@ -59,7 +68,7 @@ metaquast.py -t {threads}               \
              {input.contigs} &> {log}
 ```
 
-**annotation.smk**
+## annotation.smk
 **prodigal**
 
 ```
@@ -106,7 +115,7 @@ echo {params.output_format} | sed -e 's/ /\t/g' > {output.fname}
            >> {output.fname} ; }} &> {log}
 ```
 
-**mapping.smk**
+## mapping.smk
 **concatenate_contigs**
 
 ```
@@ -148,7 +157,7 @@ minimap2 -d {output} {input} &> {log}
             {threads} > {output.bam} ; }} &> {log}
 ```
 
-**binning.smk**
+## binning.smk
 **vamb**
 
 ```
@@ -236,7 +245,11 @@ rm -rf {input.contigs}
 ```
 
 
-**Licence for rule_description.py script.**
+This page was genearted with a script adapted from the 
+[seq2science repository](https://github.com/vanheeringen-lab/seq2science). Please find the license attached.
+
+
+**Licence for rule_description.py script:**
 
 MIT License
 
@@ -257,6 +270,6 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THEles
 SOFTWARE.
 
