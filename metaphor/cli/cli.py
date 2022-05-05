@@ -210,13 +210,18 @@ def main():
         "--snakefile", help="Show path of the Metaphor Snakefile.", action="store_true"
     )
     show_config_paths_exc_group.add_argument(
-        "--test_config",
+        "--test-config",
         help="Show path of the Metaphor test configuration file.",
         action="store_true",
     )
     show_config_paths_exc_group.add_argument(
-        "--default_config",
+        "--default-config",
         help="Show path of the Metaphor default configuration file.",
+        action="store_true",
+    )
+    show_config_paths_exc_group.add_argument(
+        "--example-input",
+        help="Show path of the Metaphor example input file.",
         action="store_true",
     )
     show_config_paths_exc_group.set_defaults(func=config_show)
