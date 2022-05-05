@@ -82,11 +82,11 @@ The first column, `sample_name`, must contain a short, unique identifier for eac
 columns will contain, respectively, the **full path** to your forward and reverse paired-end reads. If you only have
 single-end reads, you don't need to provide the `R1` column. This is what your file could look like:
 
-| sample_name | R1                | R2                |
-|-------------|-------------------|-------------------|
-| sample_1    | /path/to/sample_1_R1.fq.gz | /path/to/sample_1_R2.fq.gz |
-| sample_2    | /path/to/sample_2_R1.fq.gz | /path/to/sample_2_R2.fq.gz |
-| sample_3    | /path/to/sample_3_R1.fq.gz | /path/to/sample_3_R2.fq.gz |
+| `sample_name` | `R1`                         | `R2`                         |
+|---------------|------------------------------|------------------------------|
+| `sample_1`    | `/path/to/sample_1_R1.fq.gz` | `/path/to/sample_1_R2.fq.gz` |
+| `sample_2`    | `/path/to/sample_2_R1.fq.gz` | `/path/to/sample_2_R2.fq.gz` |
+| `sample_3`    | `/path/to/sample_3_R1.fq.gz` | `/path/to/sample_3_R2.fq.gz` |
 
 It doesn't matter if you use CSV or TSV, as long as you have a `sample_name` and an `R1` column.
 
