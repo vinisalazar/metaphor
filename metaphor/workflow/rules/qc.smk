@@ -17,6 +17,7 @@ from pathlib import Path
 
 
 rule cutadapt_pipe:
+    """Pipe reads into cutadapt."""
     input:
         get_cutadapt_pipe_input,
     output:
@@ -34,10 +35,13 @@ rule cutadapt_pipe:
     conda:
         "../envs/utils.yaml"
     shell:
-        "cat {input} > {output} 2> {log}"
+        """cat {input} > {output} 2> {log}"""
 
 
 rule cutadapt_pe:
+    """
+    Trim paired end reads with cutadapt.
+    """
     input:
         get_cutadapt_input,
     output:
@@ -70,6 +74,9 @@ rule cutadapt_pe:
 
 
 rule merge_fastqs:
+    """
+    Concatenate paired-end reads from different units.
+    """
     input:
         get_fastqs,
     output:
@@ -87,7 +94,7 @@ rule merge_fastqs:
     conda:
         "../envs/utils.yaml"
     shell:
-        "cat {input} > {output} 2> {log}"
+        """cat {input} > {output} 2> {log}"""
 
 
 rule fastqc_raw:  # qc on raw, unmerged reads
@@ -150,19 +157,5 @@ rule multiqc:
         "output/logs/qc/multiqc.log",
     benchmark:
         "output/benchmarks/qc/multiqc.txt"
-    # In case wrapper breaks
-    # params:
-    #     input_dirs=lambda w, input: set(get_parent(fp) for fp in input),
-    #     output_dir=lambda w, output: get_parent(output.report),
-    #     output_name=lambda w, output: Path(output.report).name,
-    # conda:
-    #     "../envs/multiqc.yaml"
-    # shell:
-    #     """
-    #     multiqc --force                         \
-    #             -o $(dirname {output.report})   \
-    #             -n $(basename {output.report})  \
-    #             {input} &> {log}
-    #     """
     wrapper:
         get_wrapper("multiqc")

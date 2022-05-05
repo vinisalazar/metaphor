@@ -155,6 +155,9 @@ rule concoct:
 
 
 rule DAS_tool:
+    """
+    Refine bins assembled with one or more binners.
+    """
     input:
         contigs="output/mapping/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),

@@ -51,6 +51,9 @@ rule megahit:
         ),
         sample=lambda w: w.sample if getattr(w, "sample", None) else "coassembly",
     threads: round(workflow.cores * 0.75)
+    resources:
+        mem_mb=get_mem_mb,
+        disk_mb=get_mem_mb,
     log:
         get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
     benchmark:
@@ -75,6 +78,9 @@ rule megahit:
 
 
 rule assembly_report:
+    """
+    Get metrics for each assembly.
+    """
     input:
         contigs=get_contigs_input(expand_=True),
     params:
