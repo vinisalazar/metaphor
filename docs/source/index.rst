@@ -29,6 +29,14 @@ Any and all feedback is appreciated!
 
 Please read through the `Tutorial <usage/tutorial.md>`_ for an introduction on how to use Metaphor.
 
+.. image:: _static/workflow.png
+  :width: 400
+  :alt: Graphical summary of Metaphor. Blue rectangles are each module (corresponding to an .smk file), and yellow ovals are data produced at each step.
+  :align: center
+
+This figure shows a graphical summary of how Metaphor works, where blue rectangles are each module (corresponding to an
+.smk file), and yellow ovals are data produced at each step.\
+
 **Table of Contents**
 
 .. toctree::
