@@ -36,6 +36,7 @@ setup(
         "snakemake-wrapper-utils",
         "tqdm",
     ],
+    extras_require={"docs": "myst_parser"},
     keywords="metagenomics binning assembly snakemake workflow pipeline",
     python_requires=">=3.6",
     classifiers=[
