@@ -5,6 +5,7 @@ channels:
 dependencies:
   - ipython             # dev
   - jinja2              # required for reports
+  - myst-parser         # dev
   - networkx            # required for reports
   - pandas
   - pyyaml              # required for cli

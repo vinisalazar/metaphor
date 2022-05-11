@@ -35,6 +35,24 @@ rule concatenate_contigs:
         """
 
 
+rule decompress_catalogue:
+    input:
+        catalogue_gz="output/mapping/catalogue.fna.gz",
+    output:
+        catalogue="output/mapping/catalogue.fna",
+    threads: round(workflow.cores * 0.25)
+    log:
+        "output/logs/mapping/decompress_catalogue.log",
+    benchmark:
+        "output/benchmarks/mapping/decompress_catalogue.txt"
+    conda:
+        "../envs/utils.yaml"
+    shell:
+        """
+        pigz -d -f -p {threads} -k {input.catalogue_gz} &> {log}
+        """
+
+
 rule concatenate_proteins:
     """
     Used by DAS_Tool (skips the Prodigal run).

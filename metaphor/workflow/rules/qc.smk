@@ -17,10 +17,14 @@ from pathlib import Path
 
 
 rule cutadapt_pipe:
+    """Pipe reads into cutadapt."""
     input:
         get_cutadapt_pipe_input,
     output:
         pipe("pipe/qc/cutadapt/{sample}_{unit}_{fq}.{ext}"),
+    resources:
+        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
     log:
         "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
     benchmark:
@@ -31,16 +35,22 @@ rule cutadapt_pipe:
     conda:
         "../envs/utils.yaml"
     shell:
-        "cat {input} > {output} 2> {log}"
+        """cat {input} > {output} 2> {log}"""
 
 
 rule cutadapt_pe:
+    """
+    Trim paired end reads with cutadapt.
+    """
     input:
         get_cutadapt_input,
     output:
         fastq1="output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
         fastq2="output/qc/cutadapt/{sample}_{unit}_R2.fq.gz",
         qc="output/qc/cutadapt/{sample}_{unit}.paired.qc.txt",
+    resources:
+        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
     log:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
@@ -64,11 +74,17 @@ rule cutadapt_pe:
 
 
 rule merge_fastqs:
+    """
+    Concatenate paired-end reads from different units.
+    """
     input:
         get_fastqs,
     output:
         "output/qc/merged/{sample}_{read}.fq.gz",
     threads: 1
+    resources:
+        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
     log:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     benchmark:
@@ -78,7 +94,7 @@ rule merge_fastqs:
     conda:
         "../envs/utils.yaml"
     shell:
-        "cat {input} > {output} 2> {log}"
+        """cat {input} > {output} 2> {log}"""
 
 
 rule fastqc_raw:  # qc on raw, unmerged reads
@@ -141,19 +157,5 @@ rule multiqc:
         "output/logs/qc/multiqc.log",
     benchmark:
         "output/benchmarks/qc/multiqc.txt"
-    # In case wrapper breaks
-    # params:
-    #     input_dirs=lambda w, input: set(get_parent(fp) for fp in input),
-    #     output_dir=lambda w, output: get_parent(output.report),
-    #     output_name=lambda w, output: Path(output.report).name,
-    # conda:
-    #     "../envs/multiqc.yaml"
-    # shell:
-    #     """
-    #     multiqc --force                         \
-    #             -o $(dirname {output.report})   \
-    #             -n $(basename {output.report})  \
-    #             {input} &> {log}
-    #     """
     wrapper:
         get_wrapper("multiqc")

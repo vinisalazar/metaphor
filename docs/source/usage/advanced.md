@@ -1,3 +1,0 @@
-# Advanced
-
-Advanced usage.

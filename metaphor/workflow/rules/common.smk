@@ -23,7 +23,11 @@ from metaphor import wrapper_version
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_csv(config["samples"], dtype={"sample_name": str, "unit_name": str})
+samples = pd.read_csv(
+    config["samples"], dtype={"sample_name": str}, sep=None, engine="python"
+)
+if "unit_name" not in samples.columns:
+    samples["unit_name"] = "single"
 samples = samples.fillna("")
 samples = samples.set_index(["sample_name", "unit_name"], drop=False).sort_index()
 
@@ -39,6 +43,11 @@ unit_names = samples["unit_name"].drop_duplicates().to_list()
 
 
 def get_final_output():
+    """
+    Requires the final output files to be generated at the end of the workflow.
+
+    Consumed by rule 'all'.
+    """
     final_output = (
         get_qc_output(),
         get_all_assembly_outputs(),
@@ -49,14 +58,27 @@ def get_final_output():
     return final_output
 
 
-def is_activated(xpath):
+def is_activated(config_object):
+    """
+    Checks if an object in the config file is activated or not.
+    Used to switch functions/rules on and off.
+
+    config_object: a key in the config YAML file.
+    """
     c = config
-    for entry in xpath.split("/"):
+    for entry in config_object.split("/"):
         c = c.get(entry, {})
     return bool(c.get("activate", False))
 
 
 def cleanup_rule(config_object, path):
+    """
+    Checks if a config_object object has the `cleanup` property set as True.
+    If it does, deletes the selected `path`.
+
+    config_object: a key in the config YAML file.
+    path: the path to be deleted if cleanup is True.
+    """
     if config[config_object].get("cleanup", False):
         return f"rm -rf {Path(path)}"
     else:
@@ -85,15 +107,27 @@ def get_wrapper(wrapper):
     """
     Builds the string for the 'wrapper' directive
     based on 'wrapper_version' key in the config.
+
+    wrapper: a wrapper from the Snakemake-wrappers repository, e.g. 'cutadapt-pe'
     """
     return str(Path(wrapper_version).joinpath(f"bio/{wrapper}"))
 
 
 def get_mem_mb(wildcards, threads):
+    """
+    Calculates the amount of memory to be used based on the number of threads
+    and the config 'mb_per_thread' object.
+
+    wildcards: Snakemake wildcards (passed on automatically)
+    threads: number of threads passed to the workflow
+    """
     return threads * config["mb_per_thread"]
 
 
 def is_paired_end(sample):
+    """
+    Checks if a sample is paired-end or not.
+    """
     sample_units = samples.loc[sample]
     fq2_null = sample_units["R2"].isnull()
     paired = ~fq2_null

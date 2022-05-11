@@ -193,12 +193,38 @@ def main():
 
     # Show filepaths
     ###############################################################
-    show_config_paths = config_subparsers.add_parser(
+    show_config_paths_parser = config_subparsers.add_parser(
         "show",
         help=config_show_doc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    show_config_paths.set_defaults(func=config_show)
+    show_config_paths_exc_group = (
+        show_config_paths_parser.add_mutually_exclusive_group()
+    )
+    show_config_paths_exc_group.add_argument(
+        "--metaphor-path",
+        help="Show path of the Metaphor package installation.",
+        action="store_true",
+    )
+    show_config_paths_exc_group.add_argument(
+        "--snakefile", help="Show path of the Metaphor Snakefile.", action="store_true"
+    )
+    show_config_paths_exc_group.add_argument(
+        "--test-config",
+        help="Show path of the Metaphor test configuration file.",
+        action="store_true",
+    )
+    show_config_paths_exc_group.add_argument(
+        "--default-config",
+        help="Show path of the Metaphor default configuration file.",
+        action="store_true",
+    )
+    show_config_paths_exc_group.add_argument(
+        "--example-input",
+        help="Show path of the Metaphor example input file.",
+        action="store_true",
+    )
+    show_config_paths_exc_group.set_defaults(func=config_show)
 
     ###############################################################
     # PARSE ALL ARGS

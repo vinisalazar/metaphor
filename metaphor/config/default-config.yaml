@@ -1,6 +1,9 @@
 # Based on the Snakemake RNASeq workflow:
 #   https://github.com/snakemake-workflows/rna-seq-star-deseq2/
 
+# Make sure that the module separators have the same amount
+# of '#' characters as they are parsed by scripts from the documentation.
+
 ###############################################################
 # TOP LEVEL
 # These settings are valid for all steps in the workflow.
@@ -9,15 +12,16 @@
 # Path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-samples: metaphor/config/samples.csv
 
-mb_per_thread: 2048  # how many MBs per processor
+samples: samples.csv
+
+mb_per_thread: 2048  # How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.
 
 ###############################################################
 # QC
 ###############################################################
 
-trimming:
+trimming:   # Settings for the Cutadapt trimming tool.
   activate: True
   phred: 33
   minimum_length: 50
@@ -35,10 +39,9 @@ multiqc:
   activate: True
 
 ###############################################################
-# Assembly
+# ASSEMBLY
 ###############################################################
-coassembly: False  # Whether to perform coassembly (also known as pooled assembly)
-                   # If this is true, all samples are merged together and assembled into a single file of contigs
+coassembly: False  # Whether to perform coassembly (also known as pooled assembly). If this is true, all samples are merged together and assembled into a single file of contigs.
 
 # Parameters should be named after the corresponding rule
 concatenate_contigs:
@@ -50,10 +53,10 @@ megahit:
 
 metaquast:
   activate: False
-  coassembly_reference: ""  # only required if 'coassembly' is True
+  coassembly_reference: ""  # Reference FASTA file for Metaquast to use as reference. Only required if `coassembly` is True.
 
 ###############################################################
-# Annotation
+# ANNOTATION
 ###############################################################
 
 prodigal:
@@ -69,7 +72,7 @@ prokka:
   kingdom: "Bacteria"
 
 diamond:
-  db: "data/COG2020/cog-20.dmnd"      # will try to create from db_source if it doesn't exist
+  db: "data/COG2020/cog-20.dmnd"      # Will try to create from db_source if it doesn't exist.
   db_source: "data/COG2020/cog-20.fa.gz"
   output_type: 6
   output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
@@ -82,9 +85,9 @@ lineage_parser:
   activate: True
   taxonmap: "data/COG2020/cog-20.taxonmap.tsv"
   rankedlineage: "data/taxonomy/rankedlineage.dmp"
-  names: "data/taxonomy/names.dmp"
-  nodes: "data/taxonomy/nodes.dmp"
-  download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
+  names: "data/taxonomy/names.dmp"  # Path of names file of NCBI Taxonomy 
+  nodes: "data/taxonomy/nodes.dmp"  # Path of nodes file of NCBI Taxonomy
+  download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"  # URL to download NCBI Taxonomy database
 
 plot_cog_functional:
   activate: True
@@ -96,7 +99,7 @@ plot_taxonomies:
   tax_cutoff: 0.000001  # 1e-6
 
 ###############################################################
-# Binning
+# BINNING
 ###############################################################
 
 vamb:
@@ -106,7 +109,7 @@ vamb:
 metabat2:
   activate: True
   seed: 0
-  preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
+  preffix: "bin"  # Preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc.
 
 concoct:
   activate: True
@@ -116,7 +119,7 @@ das_tool:
   score_threshold: 0.5
 
 ###############################################################
-# Postprocessing
+# POSTPROCESSING
 ###############################################################
 
 postprocessing:
