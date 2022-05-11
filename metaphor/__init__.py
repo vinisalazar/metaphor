@@ -13,7 +13,7 @@ and also variables for the Snakemake wrapper versions to be used, and the packag
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version = "v1.3.2"
+wrapper_version = "v1.4.0"
 wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/"
 
 ascii_art = f"""
