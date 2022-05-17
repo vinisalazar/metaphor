@@ -8,6 +8,9 @@ properties:
   unit_name:
     type: string
     description: unit id
+  group:
+    type: string
+    description: group to perform coassembly/cobinning
   R1:
     type: string
     description: path to FASTQ file

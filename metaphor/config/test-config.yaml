@@ -99,6 +99,9 @@ plot_taxonomies:
 # Binning
 ###############################################################
 
+cobinning: # Whether to perform cobinning. When this is true, only one binning group will be used. If False, samples will be binned according to their 'group' column.
+  activate: False
+
 vamb:
   activate: True
   minfasta: 1000

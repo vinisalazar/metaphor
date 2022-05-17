@@ -214,6 +214,15 @@ properties:
 # Binning
 ###############################################################
 
+  cobinning:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+
   vamb:
     type: object
     properties:
@@ -303,6 +312,7 @@ required:
   - lineage_parser
   - plot_cog_functional
   - plot_taxonomies
+  - cobinning
   - vamb
   - metabat2
   - concoct

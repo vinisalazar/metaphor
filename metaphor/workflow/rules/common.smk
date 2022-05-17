@@ -27,9 +27,15 @@ samples = pd.read_csv(
     config["samples"], dtype={"sample_name": str}, sep=None, engine="python"
 )
 if "unit_name" not in samples.columns:
-    samples["unit_name"] = "single"
+    samples["unit_name"] = "unit_0"
+if "group" not in samples.columns:
+    if config["cobinning"]["activate"]:
+        samples["group"] = "group_0"
+    else:
+        samples["group"] = samples["sample_name"]
 samples = samples.fillna("")
-samples = samples.set_index(["sample_name", "unit_name"], drop=False).sort_index()
+samples = samples.set_index(["group", "sample_name", "unit_name"], drop=False).sort_index()
+# breakpoint()
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 sample_IDs = samples["sample_name"].drop_duplicates().to_list()
