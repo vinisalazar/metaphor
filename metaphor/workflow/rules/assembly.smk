@@ -45,7 +45,7 @@ rule megahit:
         cleanup=lambda w, output: cleanup_rule(
             "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
         ),
-        sample=lambda w: w.sample if getattr(w, "sample", None) else "{group}",
+        sample=lambda w: w.group,
     threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,

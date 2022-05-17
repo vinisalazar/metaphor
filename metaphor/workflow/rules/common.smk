@@ -30,6 +30,7 @@ if "unit_name" not in samples.columns:
     samples["unit_name"] = "unit_0"
 if "group" not in samples.columns:
     samples["group"] = "coassembly" if config["coassembly"] else samples["sample_name"]
+samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
 samples = samples.fillna("")
 samples = samples.set_index(["group", "sample_name", "unit_name"], drop=False).sort_index()
 
@@ -37,6 +38,7 @@ validate(samples, schema="../schemas/samples.schema.yaml")
 group_names = samples["group"].drop_duplicates().to_list()
 sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
+binning_group_names = samples["binning_group"].drop_duplicates().to_list()
 
 
 ###############################################################
@@ -249,16 +251,15 @@ def get_qc_output():
 
 def get_contigs_input(expand_=False):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
-    if config["coassembly"]:
-        contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
+
+    if expand_:
+        contigs = expand(
+           "output/assembly/megahit/{group}/{group}.contigs.fa",
+            group=group_names if config["coassembly"] else sample_IDs,
+        )
     else:
-        if expand_:
-            contigs = expand(
-                "output/assembly/megahit/{sample}/{sample}.contigs.fa",
-                sample=sample_IDs,
-            )
-        else:
-            contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
+        contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
+    # breakpoint()
     return contigs
 
 
