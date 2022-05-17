@@ -31,12 +31,12 @@ rule prodigal:
     input:
         contigs=get_contigs_input(),
     output:
-        proteins=get_coassembly_or_sample_file("annotation", "prodigal", "proteins.faa"),
-        genbank=get_coassembly_or_sample_file("annotation", "prodigal", "genbank.gbk"),
-        genes=(get_coassembly_or_sample_file("annotation", "prodigal", "genes.fna")),
+        proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa"),
+        genbank=get_group_or_sample_file("annotation", "prodigal", "genbank.gbk"),
+        genes=(get_group_or_sample_file("annotation", "prodigal", "genes.fna")),
         # if config["prodigal"]["genes"]
         # else (),
-        scores=(get_coassembly_or_sample_file("annotation", "prodigal", "scores.cds"))
+        scores=(get_group_or_sample_file("annotation", "prodigal", "scores.cds"))
         if config["prodigal"]["scores"]
         else [],
     params:
@@ -49,9 +49,9 @@ rule prodigal:
         else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     log:
-        get_coassembly_benchmark_or_log("log", "annotation", "prodigal"),
+        get_group_benchmark_or_log("log", "annotation", "prodigal"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "annotation", "prodigal")
+        get_group_benchmark_or_log("benchmark", "annotation", "prodigal")
     conda:
         "../envs/prodigal.yaml"
     shell:
@@ -177,7 +177,7 @@ rule download_taxonomy_database:
 
 rule diamond:
     input:
-        fname_fasta=get_coassembly_or_sample_file(
+        fname_fasta=get_group_or_sample_file(
             "annotation", "prodigal", "proteins.faa"
         ),
         fname_db=config["diamond"]["db"],
@@ -189,9 +189,9 @@ rule diamond:
         extra="--iterate --top 0",
     threads: round(workflow.cores * 0.75)
     log:
-        get_coassembly_benchmark_or_log("log", "annotation", "diamond"),
+        get_group_benchmark_or_log("log", "annotation", "diamond"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "annotation", "diamond")
+        get_group_benchmark_or_log("benchmark", "annotation", "diamond")
     conda:
         "../envs/diamond.yaml"
     shell:
@@ -214,15 +214,15 @@ rule cog_functional_parser:
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
     output:
-        categories_out=get_coassembly_or_sample_file(
+        categories_out=get_group_or_sample_file(
             "annotation", "cog", "categories.tsv"
         ),
-        codes_out=get_coassembly_or_sample_file("annotation", "cog", "codes.tsv"),
-        pathways_out=get_coassembly_or_sample_file("annotation", "cog", "pathways.tsv"),
+        codes_out=get_group_or_sample_file("annotation", "cog", "codes.tsv"),
+        pathways_out=get_group_or_sample_file("annotation", "cog", "pathways.tsv"),
     log:
-        get_coassembly_benchmark_or_log("log", "annotation", "cog_functional_parser"),
+        get_group_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
-        get_coassembly_benchmark_or_log(
+        get_group_benchmark_or_log(
             "benchmark", "annotation", "cog_functional_parser"
         )
     conda:
@@ -235,11 +235,11 @@ rule taxonomy_parser:
     input:
         dmnd_out=get_diamond_output(),
     output:
-        tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
+        tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
     log:
-        get_coassembly_benchmark_or_log("log", "annotation", "cog_parser"),
+        get_group_benchmark_or_log("log", "annotation", "cog_parser"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "annotation", "cog_parser")
+        get_group_benchmark_or_log("benchmark", "annotation", "cog_parser")
     conda:
         "../envs/utils.yaml"
     script:
@@ -249,13 +249,8 @@ rule taxonomy_parser:
 rule concatenate_cog_functional:
     input:
         functional_counts=expand(
-            "output/annotation/cog/{sample}/{sample}_{kind}.tsv",
-            sample=sample_IDs,
-            kind=functional_kinds,
-        )
-        if not config["coassembly"]
-        else expand(
-            get_coassembly_or_sample_file("annotation", "cog", "{kind}.tsv"),
+            "output/annotation/cog/{group}/{group}_{kind}.tsv",
+            group=group_names,
             kind=functional_kinds,
         ),
     output:
@@ -276,14 +271,9 @@ rule concatenate_cog_functional:
 rule concatenate_taxonomies:
     input:
         files=lambda wildcards: expand(
-            "output/annotation/cog/{sample}/{sample}_{rank}.tsv",
-            sample=sample_IDs,
+            "output/annotation/cog/{group}/{group}_{rank}.tsv",
+            group=group_names,
             rank=wildcards.rank,
-        )
-        if not config["coassembly"]
-        else expand(
-            get_coassembly_or_sample_file("annotation", "cog", "{rank}.tsv"),
-            rank=ranks,
         ),
     output:
         absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
@@ -307,22 +297,22 @@ rule concatenate_taxonomies:
 
 rule lineage_parser:
     input:
-        tax_out=get_coassembly_or_sample_file("annotation", "cog", "tax.tsv"),
+        tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species=get_coassembly_or_sample_file("annotation", "cog", "species.tsv"),
-        genus=get_coassembly_or_sample_file("annotation", "cog", "genus.tsv"),
-        family=get_coassembly_or_sample_file("annotation", "cog", "family.tsv"),
-        order=get_coassembly_or_sample_file("annotation", "cog", "order.tsv"),
-        klass=get_coassembly_or_sample_file("annotation", "cog", "class.tsv"),
-        phylum=get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
-        kingdom=get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
-        domain=get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
+        species=get_group_or_sample_file("annotation", "cog", "species.tsv"),
+        genus=get_group_or_sample_file("annotation", "cog", "genus.tsv"),
+        family=get_group_or_sample_file("annotation", "cog", "family.tsv"),
+        order=get_group_or_sample_file("annotation", "cog", "order.tsv"),
+        klass=get_group_or_sample_file("annotation", "cog", "class.tsv"),
+        phylum=get_group_or_sample_file("annotation", "cog", "phylum.tsv"),
+        kingdom=get_group_or_sample_file("annotation", "cog", "kingdom.tsv"),
+        domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
     log:
-        get_coassembly_benchmark_or_log("log", "annotation", "lineage_parser"),
+        get_group_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "annotation", "lineage_parser")
+        get_group_benchmark_or_log("benchmark", "annotation", "lineage_parser")
     conda:
         "../envs/utils.yaml"
     script:

@@ -29,15 +29,12 @@ samples = pd.read_csv(
 if "unit_name" not in samples.columns:
     samples["unit_name"] = "unit_0"
 if "group" not in samples.columns:
-    if config["cobinning"]["activate"]:
-        samples["group"] = "group_0"
-    else:
-        samples["group"] = samples["sample_name"]
+    samples["group"] = "coassembly" if config["coassembly"] else samples["sample_name"]
 samples = samples.fillna("")
 samples = samples.set_index(["group", "sample_name", "unit_name"], drop=False).sort_index()
-# breakpoint()
 
 validate(samples, schema="../schemas/samples.schema.yaml")
+group_names = samples["group"].drop_duplicates().to_list()
 sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
 
@@ -134,7 +131,10 @@ def is_paired_end(sample):
     """
     Checks if a sample is paired-end or not.
     """
-    sample_units = samples.loc[sample]
+    try:
+        sample_units = samples.xs(sample, level=1).squeeze()
+    except KeyError:
+        breakpoint()
     fq2_null = sample_units["R2"].isnull()
     paired = ~fq2_null
     all_paired = paired.all()
@@ -156,25 +156,25 @@ def get_fastqs(wildcards):
     if config["trimming"]["activate"]:
         return expand(
             "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz",
-            unit=samples.loc[wildcards.sample, "unit_name"],
+            unit=samples.xs(wildcards.sample, level=1)["unit_name"].squeeze(),
             sample=wildcards.sample,
             read=wildcards.read,
         )
-    unit = samples.loc[wildcards.sample]
+    unit = samples.xs(wildcards.sample, level=1).squeeze()
     fq = "R{}".format(wildcards.read[-1])
-    return samples.loc[wildcards.sample, fq].tolist()
+    return samples.xs(wildcards.sample, level=1)[fq].tolist().squeeze()
 
 
 def get_cutadapt_pipe_input(wildcards):
     files = list(
-        sorted(glob(samples.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
+        sorted(glob(samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1)[wildcards.fq].squeeze()))
     )
     assert len(files) > 0, "No files were found!"
     return files
 
 
 def get_cutadapt_input(wildcards):
-    unit = samples.loc[wildcards.sample].loc[wildcards.unit]
+    unit = samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1).squeeze()
 
     if unit["R1"].endswith("gz"):
         ending = ".gz"
@@ -197,7 +197,7 @@ def get_cutadapt_input(wildcards):
 
 
 def get_fastqc_input_raw(wildcards):
-    unit = samples.loc[wildcards.sample].loc[wildcards.unit][wildcards.read]
+    unit = samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1)[wildcards.read].squeeze()
     return unit
 
 
@@ -250,7 +250,7 @@ def get_qc_output():
 def get_contigs_input(expand_=False):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
     if config["coassembly"]:
-        contigs = "output/assembly/megahit/coassembly/coassembly.contigs.fa"
+        contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
     else:
         if expand_:
             contigs = expand(
@@ -258,17 +258,15 @@ def get_contigs_input(expand_=False):
                 sample=sample_IDs,
             )
         else:
-            contigs = "output/assembly/megahit/{sample}/{sample}.contigs.fa"
+            contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
     return contigs
 
 
 def get_metaquast_reference(wildcards):
     sample = wildcards.sample
+    groups = wildcards.group
     try:
-        if config["coassembly"]:
-            reference = config["metaquast"]["coassembly_reference"]
-        else:
-            reference = samples.loc[sample, "metaquast_reference"].unique()[0]
+        reference = samples.loc[group, sample, "metaquast_reference"].unique()[0]
         assert Path(reference).is_file()
         return reference
     except (KeyError, IndexError):
@@ -287,7 +285,7 @@ def get_metaquast_reference(wildcards):
             raise
 
 
-def get_coassembly_benchmark_or_log(kind, subworkflow, rule):
+def get_group_benchmark_or_log(kind, subworkflow, rule):
     """
     This function was created to prevent formatting errors with snakefmt.
 
@@ -297,25 +295,22 @@ def get_coassembly_benchmark_or_log(kind, subworkflow, rule):
         kind = f"{kind}s"
     base_path = Path(f"output/{kind}/{subworkflow}/{rule}/")
     ext = {"logs": ".log", "benchmarks": ".txt"}
-    if config["coassembly"]:
-        return str(base_path.joinpath("coassembly").with_suffix(ext[kind]))
-    else:
-        return str(base_path.joinpath("{sample}").with_suffix(ext[kind]))
+    return str(base_path.joinpath("{group}").with_suffix(ext[kind]))
 
 
-def get_coassembly_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffix=True):
+def get_group_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffix=True):
     """
-    Similarly to get_coassembly_benchmark_or_log, this function is
+    Similarly to get_group_benchmark_or_log, this function is
     used to differentiate files generated by coassembly or individual assembly.
     """
     base_path = Path(f"output/{subworkflow}/{rule}/")
 
     if config["coassembly"]:
-        return str(base_path.joinpath(f"coassembly/coassembly_{suffix}"))
+        return str(base_path.joinpath(f"{{group}}/{{group}}_{suffix}"))
     else:
         if add_sample_to_suffix:
-            suffix = f"{{sample}}_{suffix}"
-        return str(base_path.joinpath(f"{{sample}}/{suffix}"))
+            suffix = f"{{group}}_{suffix}"
+        return str(base_path.joinpath(f"{{group}}/{suffix}"))
 
 
 def get_metaquast_output():
@@ -377,15 +372,14 @@ def get_database_outputs():
 
 
 def get_diamond_output():
-    return (
-        "output/annotation/diamond/{sample}_dmnd.out"
-        if not config["coassembly"]
-        else "output/annotation/diamond/coassembly_dmnd.out"
-    )
+    return "output/annotation/diamond/{group}_dmnd.out"
 
 
 def get_all_diamond_outputs():
-    return expand(get_diamond_output(), sample=sample_IDs)
+    if config["coassembly"]:
+        return expand(get_diamond_output(), group=sample_IDs)
+    else:
+        return expand(get_diamond_output(), group=group_names)
 
 
 def get_concatenate_taxonomies_outputs():
@@ -412,13 +406,16 @@ def get_concatenate_cog_functional_outputs():
 
 def get_lineage_parser_outputs():
     return (
-        get_coassembly_or_sample_file("annotation", "cog", f"{rank}.tsv")
+        get_group_or_sample_file("annotation", "cog", f"{rank}.tsv")
         for rank in ranks
     )
 
 
 def get_all_lineage_parser_outputs():
-    return expand(get_lineage_parser_outputs(), sample=sample_IDs)
+    if config["coassembly"]:
+        return expand(get_lineage_parser_outputs(), group=group_names)
+    else:
+        return expand(get_lineage_parser_outputs(), group=sample_IDs)
 
 
 def get_prokka_output():
@@ -480,15 +477,15 @@ def get_map_reads_input_R1(wildcards):
         if config["trimming"]["activate"]:
             return expand(
                 "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
-                unit=samples.loc[wildcards.sample, "unit_name"],
+                unit=samples.xs(wildcards.sample, level=1)["unit_name"].squeeze(),
                 sample=wildcards.sample,
             )
-        unit = samples.loc[wildcards.sample]
+        unit = samples.xs(wildcards.sample, level=1).squeeze()
         if all(pd.isna(unit["R1"])):
             # SRA sample (always paired-end for now)
             accession = unit["sra"]
             return expand("sra/{accession}_R1.fq", accession=accession)
-        sample_units = samples.loc[wildcards.sample]
+        sample_units = samples.xs(wildcards.sample, level=1).squeeze()
         return sample_units["R1"]
     if is_paired_end(wildcards.sample):
         return "output/qc/merged/{sample}_R1.fq.gz"
@@ -501,15 +498,15 @@ def get_map_reads_input_R2(wildcards):
             if config["trimming"]["activate"]:
                 return expand(
                     "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
-                    unit=samples.loc[wildcards.sample, "unit_name"],
+                    unit=samples.xs(wildcards.sample, level=1)["unit_name"].squeeze(),
                     sample=wildcards.sample,
                 )
-            unit = samples.loc[wildcards.sample]
+            unit = samples.xs(wildcards.sample, level=1).squeeze()
             if all(pd.isna(unit["R1"])):
                 # SRA sample (always paired-end for now)
                 accession = unit["sra"]
                 return expand("sra/{accession}_R2.fq", accession=accession)
-            sample_units = samples.loc[wildcards.sample]
+            sample_units = samples.xs(wildcards.sample, level=1).squeeze()
             return sample_units["R2"]
         return ("output/qc/merged/{sample}_R2.fq.gz",)
     return ""
@@ -517,7 +514,8 @@ def get_map_reads_input_R2(wildcards):
 
 def get_mapping_output():
     return expand(
-        "output/mapping/bam/{sample}.{kind}",
+        "output/mapping/bam/{group}/{sample}.{kind}",
+        group=group_names,
         sample=sample_IDs,
         kind=("map.bam", "sorted.bam", "flagstat.txt"),
     )
@@ -531,15 +529,15 @@ binners = [b for b in ("concoct", "metabat2", "vamb") if is_activated(b)]
 
 
 def get_DAS_tool_input():
-    scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{binner}_scaffolds2bin.tsv"
+    scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{{group}}/{binner}_scaffolds2bin.tsv"
     return sorted(scaffolds2bin(b) for b in binners)
 
 
 def get_fasta_bins():
     binners = {
-        "metabat2": "output/binning/metabat2/*.fa",
-        "concoct": "output/binning/concoct/fasta_bins/*.fa",
-        "vamb": "output/binning/vamb/bins/*.fna",
+        "metabat2": "output/binning/metabat2/*/*.fa",
+        "concoct": "output/binning/concoct/*/fasta_bins/*.fa",
+        "vamb": "output/binning/vamb/*/bins/*.fna",
     }
 
     bins = sorted(glob(v) for k, v in binners.items() if is_activated(k))
@@ -547,17 +545,20 @@ def get_fasta_bins():
 
 
 def get_vamb_output():
-    return ("output/binning/vamb/clusters.tsv", "output/binning/vamb/log.txt")
+    return "output/binning/vamb/{group}/clusters.tsv"
+
+def get_all_vamb_output():
+    return tuple(expand("output/binning/vamb/{group}/clusters.tsv", group=group_names))
 
 
 def get_binning_output():
     binners = {
-        "vamb": get_vamb_output()[0],
-        "metabat2": "output/binning/metabat2/",
-        "concoct": "output/binning/concoct/",
-        "das_tool": "output/binning/DAS_tool/DAS_tool_proteins.faa",
+        "vamb": get_all_vamb_output(),
+        "metabat2": expand("output/binning/metabat2/{group}", group=group_names),
+        "concoct": expand("output/binning/concoct/{group}", group=group_names),
+        "das_tool": expand("output/binning/DAS_tool/{group}/DAS_tool_proteins.faa", group=group_names)
     }
-    return sorted(v for k, v in binners.items() if is_activated(k))
+    return (v for k, v in binners.items() if is_activated(k))
 
 
 ###############################################################

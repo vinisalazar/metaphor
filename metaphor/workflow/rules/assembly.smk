@@ -32,12 +32,8 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1="output/qc/merged/{sample}_R1.fq.gz"
-        if not config["coassembly"]
-        else "output/qc/merged/all_samples_R1.fq.gz",
-        fastq2="output/qc/merged/{sample}_R2.fq.gz"
-        if not config["coassembly"]
-        else "output/qc/merged/all_samples_R2.fq.gz",
+        fastq1="output/qc/merged/{group}_R1.fq.gz",
+        fastq2="output/qc/merged/{group}_R2.fq.gz",
     output:
         contigs=get_contigs_input(),
     params:
@@ -49,15 +45,15 @@ rule megahit:
         cleanup=lambda w, output: cleanup_rule(
             "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
         ),
-        sample=lambda w: w.sample if getattr(w, "sample", None) else "coassembly",
+        sample=lambda w: w.sample if getattr(w, "sample", None) else "{group}",
     threads: round(workflow.cores * 0.75)
     resources:
         mem_mb=get_mem_mb,
         disk_mb=get_mem_mb,
     log:
-        get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
+        get_group_benchmark_or_log("log", "assembly", "megahit"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "assembly", "megahit")
+        get_group_benchmark_or_log("benchmark", "assembly", "megahit")
     conda:
         "../envs/megahit.yaml"
     shell:
@@ -114,7 +110,7 @@ rule metaquast:
         contigs=get_contigs_input(),
         reference=get_metaquast_reference,
     output:
-        outfile=get_coassembly_or_sample_file(
+        outfile=get_group_or_sample_file(
             "assembly", "metaquast", suffix="report.html", add_sample_to_suffix=False
         ),
     params:
@@ -125,9 +121,9 @@ rule metaquast:
     resources:
         mem_mb=get_mem_mb,
     log:
-        get_coassembly_benchmark_or_log("log", "assembly", "metaquast"),
+        get_group_benchmark_or_log("log", "assembly", "metaquast"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "assembly", "metaquast")
+        get_group_benchmark_or_log("benchmark", "assembly", "metaquast")
     conda:
         "../envs/quast.yaml"
     shell:
