@@ -215,13 +215,7 @@ properties:
 ###############################################################
 
   cobinning:
-    type: object
-    properties:
-      activate:
-        type: boolean
-    required:
-      - activate
-
+    type: boolean
 
   vamb:
     type: object
