@@ -5,8 +5,24 @@ This was taken from the seq2science repository, under an MIT licence.
 
 Link to repository: https://github.com/vanheeringen-lab/seq2science
 """
+short_license = """
+---
+
+**Disclaimer**
+
+This page was generated with a script adapted from the 
+[seq2science repository](https://github.com/vanheeringen-lab/seq2science).
+
+MIT License
+
+Copyright (c) 2019 Maarten-vd-Sande (vanheeringen-lab)
+
+For the full license, please see the
+[script source code](https://github.com/vinisalazar/metaphor/blob/main/docs/scripts/rule_description.py).
+"""
+
 license = """
-This page was genearted with a script adapted from the 
+This page was generated with a script adapted from the 
 [seq2science repository](https://github.com/vanheeringen-lab/seq2science). Please find the license attached.\n
 
 **Licence for rule_description.py script:**
@@ -147,7 +163,7 @@ for rules_file in rule_orders.keys():
             final_md += f"{all_rules_shell[rule]}\n"
             final_md += "```\n\n"
 
-final_md += license
+final_md += short_license
 
 with open(docs_page, "w") as text_file:
     text_file.write(final_md)
