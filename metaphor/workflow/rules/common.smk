@@ -133,7 +133,6 @@ def get_max_mb(margin=0.2):
     return round(mb)
 
 
-
 def is_paired_end(sample):
     """
     Checks if a sample is paired-end or not.
