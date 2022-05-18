@@ -48,6 +48,9 @@ rule prodigal:
         if config["prodigal"]["scores"]
         else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "prodigal"),
     benchmark:
