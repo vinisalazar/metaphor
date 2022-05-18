@@ -55,7 +55,7 @@ rule cutadapt_pe:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
-    threads: round(workflow.cores * config["cores_per_medium_task"])
+    threads: round(workflow.cores * config["cores_per_small_task"])
     params:
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
@@ -109,7 +109,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
-    threads: get_max_mb(0.5)
+    threads: round(workflow.cores * config["cores_per_medium_task"])
     wrapper:
         get_wrapper("fastqc")
 
@@ -126,7 +126,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
-    threads: get_max_mb(0.5)
+    threads: round(workflow.cores * config["cores_per_medium_task"])
     wrapper:
         get_wrapper("fastqc")
 
@@ -143,7 +143,7 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         "output/logs/qc/fastqc_merged/{sample}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
-    threads: get_max_mb(0.5)
+    threads: round(workflow.cores * config["cores_per_medium_task"])
     wrapper:
         get_wrapper("fastqc")
 
