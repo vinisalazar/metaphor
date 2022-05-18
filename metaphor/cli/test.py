@@ -131,7 +131,7 @@ def main(args):
         config={
             "samples": samples_file,
             "coassembly": coassembly,
-            "mb_per_thread": mem_mb,
+            "mb_per_core": mem_mb,
         },
         cores=cores,
         dryrun=dry_run,

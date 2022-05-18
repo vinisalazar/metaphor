@@ -77,7 +77,7 @@ rule prokka:
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
-    threads: round(workflow.cores * 0.3)
+    threads: round(workflow.cores * config["cores_per_small_task"])
     log:
         "output/logs/annotation/prokka/{sample}.log",
     benchmark:
@@ -119,7 +119,8 @@ rule generate_COG_taxonmap:
     output:
         taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
     resources:
-        mem_mb=round(workflow.cores * 0.5) * config["mb_per_thread"],
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         "output/logs/annotation/generate_COG_taxonmap.log",
     benchmark:
@@ -142,7 +143,10 @@ rule diamond_makedb:
         extra=lambda w, input: f"--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
-    threads: round(workflow.cores * 0.3)
+    threads: round(workflow.cores * config["cores_per_small_task"])
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     wrapper:
         get_wrapper("diamond/makedb")
 
@@ -187,7 +191,10 @@ rule diamond:
         output_type=config["diamond"]["output_type"],
         output_format=config["diamond"]["output_format"],
         extra="--iterate --top 0",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * config["cores_per_big_task"])
+    resources:
+        disk_mb=get_mb_per_cores,
+        mem_mb=get_mb_per_cores,
     log:
         get_group_benchmark_or_log("log", "annotation", "diamond"),
     benchmark:

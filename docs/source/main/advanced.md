@@ -5,6 +5,8 @@ can customise your workflow and a more detailed explanation of modules.
 
 ## How Snakemake works
 
+% TODO: the `.snakemake` directory
+
 The best thing you can do to get the hang of Metaphor is to learn more about Snakemake. Snakemake is a scientific
 workflow management system which serves as the engine for Metaphor. There are many resources to learn Snakemake, such
 as:
@@ -149,10 +151,10 @@ In addition to these, an important "resource" is the number of cores passed on t
 way of defining resources, where there is an **interaction between number of cores and amount of RAM** that will be
 requested.
 
-Basically, Metaphor has a **`mb_per_thread`** option (defined in the configuration) which is used to determine the
-amount of memory to be used. So, if `mb_per_thread` is `2048` and Metaphor is executed with 8 cores, up to 16GB of
-RAM may be used. The rule-of-thumb is that the `mb_per_thread * cores` should be under the total RAM of your machine.
-So, if your machine has 12 cores and 64 GB RAM, you can set your `mb_per_thread` to `4096` as that may use up to 48 GB
+Basically, Metaphor has a **`mb_per_core`** option (defined in the configuration) which is used to determine the
+amount of memory to be used. So, if `mb_per_core` is `2048` and Metaphor is executed with 8 cores, up to 16GB of
+RAM may be used. The rule-of-thumb is that the `mb_per_core * cores` should be under the total RAM of your machine.
+So, if your machine has 12 cores and 64 GB RAM, you can set your `mb_per_core` to `4096` as that may use up to 48 GB
 RAM, and so on.
 
 % TODO: **Overriding**

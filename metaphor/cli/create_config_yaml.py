@@ -112,7 +112,7 @@ def get_general_settings():
     )
     setting_prompt(
         "How many MB RAM per thread would you like to use?",
-        "mb_per_thread",
+        "mb_per_core",
         None,
         int,
     )
