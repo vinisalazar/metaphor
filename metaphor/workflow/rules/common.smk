@@ -32,7 +32,9 @@ if "group" not in samples.columns:
     samples["group"] = "coassembly" if config["coassembly"] else samples["sample_name"]
 samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
 samples = samples.fillna("")
-samples = samples.set_index(["group", "sample_name", "unit_name"], drop=False).sort_index()
+samples = samples.set_index(
+    ["group", "sample_name", "unit_name"], drop=False
+).sort_index()
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 group_names = samples["group"].drop_duplicates().to_list()
@@ -142,10 +144,7 @@ def is_paired_end(sample):
     """
     Checks if a sample is paired-end or not.
     """
-    try:
-        sample_units = samples.xs(sample, level=1).squeeze()
-    except KeyError:
-        breakpoint()
+    sample_units = samples.xs(sample, level=1)
     fq2_null = sample_units["R2"].isnull()
     paired = ~fq2_null
     all_paired = paired.all()
@@ -167,7 +166,7 @@ def get_fastqs(wildcards):
     if config["cutadapt"]["activate"]:
         return expand(
             "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz",
-            unit=samples.xs(wildcards.sample, level=1)["unit_name"].squeeze(),
+            unit=samples.xs(wildcards.sample, level=1)["unit_name"],
             sample=wildcards.sample,
             read=wildcards.read,
         )
@@ -178,7 +177,13 @@ def get_fastqs(wildcards):
 
 def get_cutadapt_pipe_input(wildcards):
     files = list(
-        sorted(glob(samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1)[wildcards.fq].squeeze()))
+        sorted(
+            glob(
+                samples.xs(wildcards.sample, level=1)
+                .xs(wildcards.unit, level=1)[wildcards.fq]
+                .squeeze()
+            )
+        )
     )
     assert len(files) > 0, "No files were found!"
     return files
@@ -208,7 +213,11 @@ def get_cutadapt_input(wildcards):
 
 
 def get_fastqc_input_raw(wildcards):
-    unit = samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1)[wildcards.read].squeeze()
+    unit = (
+        samples.xs(wildcards.sample, level=1)
+        .xs(wildcards.unit, level=1)[wildcards.read]
+        .squeeze()
+    )
     return unit
 
 
@@ -220,6 +229,28 @@ def get_fastqc_input_trimmed(wildcards):
 def get_fastqc_input_merged(wildcards):
     sample, read = wildcards.sample, wildcards.read
     return "output/qc/merged/{sample}_{read}.fq.gz"
+
+
+def get_fastq_groups_R1(group, kind="merged"):
+    if not is_activated("merge_reads"):
+        kind = "cutadapt"
+    return sorted(
+        [
+            f"output/qc/{kind}/{sample_name}_R1.fq.gz"
+            for sample_name in samples.loc[group, "sample_name"].to_list()
+        ]
+    )
+
+
+def get_fastq_groups_R2(group, kind="merged"):
+    if not is_activated("merge_reads"):
+        kind = "cutadapt"
+    return sorted(
+        [
+            f"output/qc/{kind}/{sample_name}_R2.fq.gz"
+            for sample_name in samples.loc[group, "sample_name"].to_list()
+        ]
+    )
 
 
 def get_multiqc_input():
@@ -258,17 +289,24 @@ def get_qc_output():
 ###############################################################
 
 
+def get_assembler_input_R1(wildcards):
+    return get_fastq_groups_R1(wildcards.group)
+
+
+def get_assembler_input_R2(wildcards):
+    return get_fastq_groups_R2(wildcards.group)
+
+
 def get_contigs_input(expand_=False):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
 
     if expand_:
         contigs = expand(
-           "output/assembly/megahit/{group}/{group}.contigs.fa",
+            "output/assembly/megahit/{group}/{group}.contigs.fa",
             group=group_names if config["coassembly"] else sample_IDs,
         )
     else:
         contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
-    # breakpoint()
     return contigs
 
 
@@ -387,9 +425,9 @@ def get_diamond_output():
 
 def get_all_diamond_outputs():
     if config["coassembly"]:
-        return expand(get_diamond_output(), group=sample_IDs)
-    else:
         return expand(get_diamond_output(), group=group_names)
+    else:
+        return expand(get_diamond_output(), group=sample_IDs)
 
 
 def get_concatenate_taxonomies_outputs():
@@ -416,8 +454,7 @@ def get_concatenate_cog_functional_outputs():
 
 def get_lineage_parser_outputs():
     return (
-        get_group_or_sample_file("annotation", "cog", f"{rank}.tsv")
-        for rank in ranks
+        get_group_or_sample_file("annotation", "cog", f"{rank}.tsv") for rank in ranks
     )
 
 
@@ -539,7 +576,9 @@ binners = [b for b in ("concoct", "metabat2", "vamb") if is_activated(b)]
 
 
 def get_DAS_tool_input():
-    scaffolds2bin = lambda binner: f"output/binning/DAS_tool/{{group}}/{binner}_scaffolds2bin.tsv"
+    scaffolds2bin = (
+        lambda binner: f"output/binning/DAS_tool/{{group}}/{binner}_scaffolds2bin.tsv"
+    )
     return sorted(scaffolds2bin(b) for b in binners)
 
 
@@ -557,6 +596,7 @@ def get_fasta_bins():
 def get_vamb_output():
     return "output/binning/vamb/{group}/clusters.tsv"
 
+
 def get_all_vamb_output():
     return tuple(expand("output/binning/vamb/{group}/clusters.tsv", group=group_names))
 
@@ -566,7 +606,9 @@ def get_binning_output():
         "vamb": get_all_vamb_output(),
         "metabat2": expand("output/binning/metabat2/{group}", group=group_names),
         "concoct": expand("output/binning/concoct/{group}", group=group_names),
-        "das_tool": expand("output/binning/DAS_tool/{group}/DAS_tool_proteins.faa", group=group_names)
+        "das_tool": expand(
+            "output/binning/DAS_tool/{group}/DAS_tool_proteins.faa", group=group_names
+        ),
     }
     return (v for k, v in binners.items() if is_activated(k))
 

@@ -25,7 +25,6 @@ rule concatenate_contigs:
         sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/{group}/concatenate_contigs.log",
     benchmark:
@@ -46,7 +45,6 @@ rule decompress_catalogue:
     threads: round(workflow.cores * config["cores_per_small_task"])
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/{group}/decompress_catalogue.log",
     benchmark:
@@ -72,7 +70,6 @@ rule concatenate_proteins:
         prot_catalogue="output/mapping/proteins_catalogue.faa",
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/concatenate_proteins.log",
     benchmark:
@@ -90,7 +87,6 @@ rule create_index:
         catalogue_idx="output/mapping/{group}/catalogue.mmi",
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/{group}/create_index.log",
     benchmark:
@@ -117,7 +113,6 @@ rule map_reads:
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/map_reads/{group}/{sample}.log",
     benchmark:
@@ -147,7 +142,6 @@ rule sort_reads:
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/sort_reads/{group}/{sample}.log",
     benchmark:
@@ -166,7 +160,6 @@ rule index_reads:
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/index_reads/{group}/{sample}.log",
     benchmark:
@@ -185,7 +178,6 @@ rule flagstat:
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/flagstat/{group}/{sample}.log",
     benchmark:
@@ -198,7 +190,11 @@ rule flagstat:
 
 rule jgi_summarize_bam_contig_depths:
     input:
-        lambda wildcards: expand("output/mapping/bam/{group}/{sample}.sorted.bam", sample=sample_IDs, group=wildcards.group),
+        lambda wildcards: expand(
+            "output/mapping/bam/{group}/{sample}.sorted.bam",
+            sample=sample_IDs,
+            group=wildcards.group,
+        ),
     output:
         contig_depths="output/mapping/{group}/bam_contig_depths.txt",
     log:

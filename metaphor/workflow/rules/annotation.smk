@@ -48,9 +48,10 @@ rule prodigal:
         if config["prodigal"]["scores"]
         else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
+    wildcard_constraints:
+        group="|".join(group_names),
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         get_group_benchmark_or_log("log", "annotation", "prodigal"),
     benchmark:
@@ -123,7 +124,6 @@ rule generate_COG_taxonmap:
         taxonmap=get_cog_db_file("cog-20.taxonmap.tsv"),
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         "output/logs/annotation/generate_COG_taxonmap.log",
     benchmark:
@@ -149,7 +149,6 @@ rule diamond_makedb:
     threads: round(workflow.cores * config["cores_per_small_task"])
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     wrapper:
         get_wrapper("diamond/makedb")
 
@@ -184,9 +183,7 @@ rule download_taxonomy_database:
 
 rule diamond:
     input:
-        fname_fasta=get_group_or_sample_file(
-            "annotation", "prodigal", "proteins.faa"
-        ),
+        fname_fasta=get_group_or_sample_file("annotation", "prodigal", "proteins.faa"),
         fname_db=config["diamond"]["db"],
     output:
         fname=get_diamond_output(),
@@ -194,9 +191,10 @@ rule diamond:
         output_type=config["diamond"]["output_type"],
         output_format=config["diamond"]["output_format"],
         extra="--iterate --top 0",
+    wildcard_constraints:
+        group="|".join(group_names),
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
-        disk_mb=get_mb_per_cores,
         mem_mb=get_mb_per_cores,
     log:
         get_group_benchmark_or_log("log", "annotation", "diamond"),
@@ -224,17 +222,13 @@ rule cog_functional_parser:
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
     output:
-        categories_out=get_group_or_sample_file(
-            "annotation", "cog", "categories.tsv"
-        ),
+        categories_out=get_group_or_sample_file("annotation", "cog", "categories.tsv"),
         codes_out=get_group_or_sample_file("annotation", "cog", "codes.tsv"),
         pathways_out=get_group_or_sample_file("annotation", "cog", "pathways.tsv"),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
-        get_group_benchmark_or_log(
-            "benchmark", "annotation", "cog_functional_parser"
-        )
+        get_group_benchmark_or_log("benchmark", "annotation", "cog_functional_parser")
     conda:
         "../envs/utils.yaml"
     script:
@@ -321,7 +315,6 @@ rule lineage_parser:
         domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
-        disk_mb=get_max_mb(0.5),
     log:
         get_group_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
