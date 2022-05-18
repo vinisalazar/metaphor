@@ -11,12 +11,12 @@ These settings are valid for all steps in the workflow.
 **`samples:`** `samples.csv`    
 
 
-**`mb_per_thread:`** `2048`   How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.  
+**`mb_per_core:`** `2048`   How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.  
 
 
 **QC**
 
-**`trimming:`**   Settings for the Cutadapt trimming tool.  
+**`cutadapt:`**   Settings for the Cutadapt cutadapt tool.  
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
 &nbsp;&nbsp;&nbsp;**`phred:`** `33`    
 &nbsp;&nbsp;&nbsp;**`minimum_length:`** `50`    
