@@ -11,14 +11,23 @@ properties:
   units:
     type: string
 
-  mb_per_thread:
+  cores_per_big_task:
+    type: number
+  cores_per_medium_task:
+    type: number
+  cores_per_small_task:
+    type: number
+
+  max_mb:
+    type: integer
+  mb_per_core:
     type: integer
 
 ###############################################################
 # QC
 ###############################################################
 
-  trimming:
+  cutadapt:
     type: object
     properties:
       activate:
@@ -288,8 +297,8 @@ properties:
 required:
   - samples
   - coassembly
-  - mb_per_thread
-  - trimming
+  - mb_per_core
+  - cutadapt
   - merge_reads
   - fastqc
   - multiqc
