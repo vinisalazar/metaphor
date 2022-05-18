@@ -8,6 +8,6 @@ dependencies:
   - pandas
   - pyyaml              # required for cli
   - requests
-  - snakemake
+  - snakemake>=7
   - snakemake-wrapper-utils
   - tqdm                # required for cli

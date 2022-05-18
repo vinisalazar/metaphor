@@ -23,6 +23,9 @@ rule concatenate_contigs:
         catalogue="output/mapping/catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/concatenate_contigs.log",
     benchmark:
@@ -40,7 +43,10 @@ rule decompress_catalogue:
         catalogue_gz="output/mapping/catalogue.fna.gz",
     output:
         catalogue="output/mapping/catalogue.fna",
-    threads: round(workflow.cores * 0.25)
+    threads: round(workflow.cores * config["cores_per_small_task"])
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/decompress_catalogue.log",
     benchmark:
@@ -64,6 +70,9 @@ rule concatenate_proteins:
         ),
     output:
         prot_catalogue="output/mapping/proteins_catalogue.faa",
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/concatenate_proteins.log",
     benchmark:
@@ -79,6 +88,9 @@ rule create_index:
         catalogue_fna="output/mapping/catalogue.fna.gz",
     output:
         catalogue_idx="output/mapping/catalogue.mmi",
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/create_index.log",
     benchmark:
@@ -102,7 +114,10 @@ rule map_reads:
         N=50,
         preset="sr",
         flags=3584,
-    threads: workflow.cores
+    threads: round(workflow.cores * config["cores_per_big_task"])
+    resources:
+        mem_mb=get_mb_per_cores,
+        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/map_reads/{sample}.log",
     benchmark:
@@ -129,7 +144,10 @@ rule sort_reads:
         bam="output/mapping/bam/{sample}.map.bam",
     output:
         sort="output/mapping/bam/{sample}.sorted.bam",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * config["cores_per_big_task"])
+    resources:
+        mem_mb=get_mb_per_cores,
+        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/sort_reads/{sample}.log",
     benchmark:
@@ -145,7 +163,10 @@ rule index_reads:
         sort="output/mapping/bam/{sample}.sorted.bam",
     output:
         index="output/mapping/bam/{sample}.sorted.bam.bai",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * config["cores_per_big_task"])
+    resources:
+        mem_mb=get_mb_per_cores,
+        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/index_reads/{sample}.log",
     benchmark:
@@ -161,7 +182,10 @@ rule flagstat:
         sort="output/mapping/bam/{sample}.sorted.bam",
     output:
         flagstat="output/mapping/bam/{sample}.flagstat.txt",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * config["cores_per_big_task"])
+    resources:
+        mem_mb=get_mb_per_cores,
+        disk_mb=get_mb_per_cores,
     log:
         "output/logs/mapping/flagstat/{sample}.log",
     benchmark:
@@ -177,6 +201,9 @@ rule jgi_summarize_bam_contig_depths:
         expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
     output:
         contig_depths="output/mapping/bam_contig_depths.txt",
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/jgi_summarize_bam_contig_depths.log",
     benchmark:
