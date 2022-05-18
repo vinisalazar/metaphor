@@ -326,6 +326,9 @@ rule lineage_parser:
         phylum=get_coassembly_or_sample_file("annotation", "cog", "phylum.tsv"),
         kingdom=get_coassembly_or_sample_file("annotation", "cog", "kingdom.tsv"),
         domain=get_coassembly_or_sample_file("annotation", "cog", "domain.tsv"),
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         get_coassembly_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
