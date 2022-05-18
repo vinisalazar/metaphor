@@ -92,8 +92,12 @@ rule metabat2:
 rule concoct:
     input:
         catalogue="output/mapping/{group}/catalogue.fna",
-        bams=expand("output/mapping/bam/{{group}}/{sample}.sorted.bam", sample=sample_IDs),
-        bais=expand("output/mapping/bam/{{group}}/{sample}.sorted.bam.bai", sample=sample_IDs),
+        bams=expand(
+            "output/mapping/bam/{{group}}/{sample}.sorted.bam", sample=sample_IDs
+        ),
+        bais=expand(
+            "output/mapping/bam/{{group}}/{sample}.sorted.bam.bai", sample=sample_IDs
+        ),
     output:
         outdir=directory("output/binning/concoct/{group}/"),
         scaffolds2bin="output/binning/DAS_tool/{group}/concoct_scaffolds2bin.tsv",
