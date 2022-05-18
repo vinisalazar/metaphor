@@ -50,10 +50,10 @@ rule megahit:
             "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
         ),
         sample=lambda w: w.sample if getattr(w, "sample", None) else "coassembly",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
-        mem_mb=get_mem_mb,
-        disk_mb=get_mem_mb,
+        mem_mb=get_mb_per_cores,
+        disk_mb=get_mb_per_cores,
     log:
         get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
     benchmark:
@@ -121,9 +121,9 @@ rule metaquast:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         extra_params="--fragmented --unique-mapping --no-icarus --no-plots --no-gc --no-sv",
-    threads: round(workflow.cores * 0.75)
+    threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
-        mem_mb=get_mem_mb,
+        mem_mb=get_mb_per_cores,
     log:
         get_coassembly_benchmark_or_log("log", "assembly", "metaquast"),
     benchmark:

@@ -23,8 +23,8 @@ rule cutadapt_pipe:
     output:
         pipe("pipe/qc/cutadapt/{sample}_{unit}_{fq}.{ext}"),
     resources:
-        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
-        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        mem_mb=get_max_mb(0.5),
+        disk_mb=get_max_mb(0.5),
     log:
         "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
     benchmark:
@@ -49,25 +49,25 @@ rule cutadapt_pe:
         fastq2="output/qc/cutadapt/{sample}_{unit}_R2.fq.gz",
         qc="output/qc/cutadapt/{sample}_{unit}.paired.qc.txt",
     resources:
-        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
-        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        mem_mb=get_max_mb(0.5),
+        disk_mb=get_max_mb(0.5),
     log:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
-    threads: round(workflow.cores * 0.3)
+    threads: get_max_mb(0.5)
     params:
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
         extra=(
-            f"--minimum-length {config['trimming']['minimum_length']} "
-            + f"--quality-cutoff {config['trimming']['quality_cutoff']} "
-            + f"--quality-base {config['trimming']['phred']} "
-            + f"-u {config['trimming']['clip_r5']} "
-            + f"-u -{config['trimming']['clip_r3']} "
-            + f"-U {config['trimming']['clip_r5']} "
-            + f"-U -{config['trimming']['clip_r3']} "
+            f"--minimum-length {config['cutadapt']['minimum_length']} "
+            + f"--quality-cutoff {config['cutadapt']['quality_cutoff']} "
+            + f"--quality-base {config['cutadapt']['phred']} "
+            + f"-u {config['cutadapt']['clip_r5']} "
+            + f"-u -{config['cutadapt']['clip_r3']} "
+            + f"-U {config['cutadapt']['clip_r5']} "
+            + f"-U -{config['cutadapt']['clip_r3']} "
         ),
     wrapper:
         get_wrapper("cutadapt/pe")
@@ -83,8 +83,8 @@ rule merge_fastqs:
         "output/qc/merged/{sample}_{read}.fq.gz",
     threads: 1
     resources:
-        mem_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
-        disk_mb=round(workflow.cores * 0.3) * config["mb_per_thread"],
+        mem_mb=get_max_mb(0.5),
+        disk_mb=get_max_mb(0.5),
     log:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     benchmark:
@@ -109,7 +109,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
-    threads: round(workflow.cores * 0.3)
+    threads: get_max_mb(0.5)
     wrapper:
         get_wrapper("fastqc")
 
@@ -126,7 +126,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
-    threads: round(workflow.cores * 0.3)
+    threads: get_max_mb(0.5)
     wrapper:
         get_wrapper("fastqc")
 
@@ -143,7 +143,7 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         "output/logs/qc/fastqc_merged/{sample}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
-    threads: round(workflow.cores * 0.3)
+    threads: get_max_mb(0.5)
     wrapper:
         get_wrapper("fastqc")
 

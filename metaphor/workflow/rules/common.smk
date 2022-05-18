@@ -113,15 +113,24 @@ def get_wrapper(wrapper):
     return str(Path(wrapper_version).joinpath(f"bio/{wrapper}"))
 
 
-def get_mem_mb(wildcards, threads):
+def get_mb_per_cores(wildcards, threads):
     """
     Calculates the amount of memory to be used based on the number of threads
-    and the config 'mb_per_thread' object.
+    and the config 'mb_per_core' object.
 
     wildcards: Snakemake wildcards (passed on automatically)
     threads: number of threads passed to the workflow
     """
-    return threads * config["mb_per_thread"]
+    return threads * config["mb_per_core"]
+
+
+def get_max_mb(margin=0.2):
+    """
+    Gets the config max_mb and subtracts a margin from itself.
+    """
+    assert 0 < margin < 1, f"Margin '{margin}' must be between 0 and 1."
+    return config["max_mb"] - (config["max_mb"] * margin)
+
 
 
 def is_paired_end(sample):
@@ -147,7 +156,7 @@ def is_paired_end(sample):
 
 
 def get_fastqs(wildcards):
-    if config["trimming"]["activate"]:
+    if config["cutadapt"]["activate"]:
         return expand(
             "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz",
             unit=samples.loc[wildcards.sample, "unit_name"],
@@ -471,7 +480,7 @@ def get_annotation_output():
 ###############################################################
 def get_map_reads_input_R1(wildcards):
     if not is_activated("merge_reads"):
-        if config["trimming"]["activate"]:
+        if config["cutadapt"]["activate"]:
             return expand(
                 "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
                 unit=samples.loc[wildcards.sample, "unit_name"],
@@ -492,7 +501,7 @@ def get_map_reads_input_R1(wildcards):
 def get_map_reads_input_R2(wildcards):
     if is_paired_end(wildcards.sample):
         if not is_activated("merge_reads"):
-            if config["trimming"]["activate"]:
+            if config["cutadapt"]["activate"]:
                 return expand(
                     "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
                     unit=samples.loc[wildcards.sample, "unit_name"],
