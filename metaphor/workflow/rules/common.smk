@@ -134,8 +134,8 @@ def get_max_mb(margin=0.2):
     Gets the config max_mb and subtracts a margin from itself.
     """
     assert 0 < margin < 1, f"Margin '{margin}' must be between 0 and 1."
-    return config["max_mb"] - (config["max_mb"] * margin)
-
+    mb = config["max_mb"] - (config["max_mb"] * margin)
+    return round(mb)
 
 
 def is_paired_end(sample):

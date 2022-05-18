@@ -111,7 +111,13 @@ def get_general_settings():
         file=True,
     )
     setting_prompt(
-        "How many MB RAM per thread would you like to use?",
+        "What's the maximum MB RAM you would like to use?",
+        "max_mb",
+        None,
+        int, 
+    )
+    setting_prompt(
+        "For parallel tasks, how many MB RAM per thread would you like to use?\nMust be under 'max_mb' limit, defined in the previous setting.",
         "mb_per_core",
         None,
         int,

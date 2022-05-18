@@ -48,6 +48,9 @@ rule prodigal:
         if config["prodigal"]["scores"]
         else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
+    resources:
+        mem_mb=get_max_mb(),
+        disk_mb=get_max_mb(),
     log:
         get_group_benchmark_or_log("log", "annotation", "prodigal"),
     benchmark:
@@ -316,6 +319,9 @@ rule lineage_parser:
         phylum=get_group_or_sample_file("annotation", "cog", "phylum.tsv"),
         kingdom=get_group_or_sample_file("annotation", "cog", "kingdom.tsv"),
         domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
+    resources:
+        mem_mb=get_max_mb(0.5),
+        disk_mb=get_max_mb(0.5),
     log:
         get_group_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
