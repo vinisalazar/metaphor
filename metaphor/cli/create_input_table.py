@@ -32,7 +32,7 @@ def is_valid_ext(filepath):
 def get_sample_unit(s):
     unit_split = re.split("S[0-9][0-9][0-9]", s)
     if len(unit_split) == 1:
-        return "single"
+        return "unit0"
     else:
         return re.search(unit_expr, s).group()
 
@@ -68,7 +68,7 @@ def create_paired_files_dict(R1, R2, n_files, s_as_units):
         match = difflib.SequenceMatcher(None, f, r)
         size = match.find_longest_match().size
         sample_name = f[:size].replace("_R", "")
-        unit = get_sample_unit(sample_name) if s_as_units else "single"
+        unit = get_sample_unit(sample_name) if s_as_units else "unit0"
         sample_name = (
             sample_name.replace(unit, "").replace("__", "")
             if s_as_units
@@ -159,11 +159,7 @@ def main(args):
     ]
     final_df = process_final_df(dfs, input_dir)
 
-    outfile = (
-        "samples.csv"
-        if args.output_file is None
-        else args.output_file
-    )
+    outfile = "samples.csv" if args.output_file is None else args.output_file
     final_df.to_csv(outfile)
     print()
     print(f"Generated input table '{outfile}'.\n")
