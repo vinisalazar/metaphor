@@ -122,6 +122,14 @@ def main():
         help="Don't ask for confirmation when running tests.",
     )
     test.add_argument(
+        "-j",
+        "--join-units",
+        help="If this option is on, files with the same preffix but with "
+        "S001, S002, S00N distinctions in the filenames will be treated as different units of the same sample, "
+        "i.e. they will be joined into a single file.",
+        action="store_true",
+    )
+    test.add_argument(
         "--remove-conda",
         help="If this option is selected, conda environments will be created in the test "
         "directory instead of the current directory (and therefore are deleted when tests finish).",

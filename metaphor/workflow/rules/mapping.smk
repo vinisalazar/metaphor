@@ -20,16 +20,15 @@ rule concatenate_contigs:
     input:
         contigs=get_contigs_input(expand_=True),
     output:
-        catalogue="output/mapping/catalogue.fna.gz",
+        catalogue="output/mapping/{group}/catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
-        "output/logs/mapping/concatenate_contigs.log",
+        "output/logs/mapping/{group}/concatenate_contigs.log",
     benchmark:
-        "output/benchmarks/mapping/concatenate_contigs.txt"
+        "output/benchmarks/mapping/{group}/concatenate_contigs.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -40,17 +39,16 @@ rule concatenate_contigs:
 
 rule decompress_catalogue:
     input:
-        catalogue_gz="output/mapping/catalogue.fna.gz",
+        catalogue_gz="output/mapping/{group}/catalogue.fna.gz",
     output:
-        catalogue="output/mapping/catalogue.fna",
+        catalogue="output/mapping/{group}/catalogue.fna",
     threads: round(workflow.cores * config["cores_per_small_task"])
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
-        "output/logs/mapping/decompress_catalogue.log",
+        "output/logs/mapping/{group}/decompress_catalogue.log",
     benchmark:
-        "output/benchmarks/mapping/decompress_catalogue.txt"
+        "output/benchmarks/mapping/{group}/decompress_catalogue.txt"
     conda:
         "../envs/utils.yaml"
     shell:
@@ -72,7 +70,6 @@ rule concatenate_proteins:
         prot_catalogue="output/mapping/proteins_catalogue.faa",
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
         "output/logs/mapping/concatenate_proteins.log",
     benchmark:
@@ -85,16 +82,15 @@ rule concatenate_proteins:
 
 rule create_index:
     input:
-        catalogue_fna="output/mapping/catalogue.fna.gz",
+        catalogue_fna="output/mapping/{group}/catalogue.fna.gz",
     output:
-        catalogue_idx="output/mapping/catalogue.mmi",
+        catalogue_idx="output/mapping/{group}/catalogue.mmi",
     resources:
         mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
     log:
-        "output/logs/mapping/create_index.log",
+        "output/logs/mapping/{group}/create_index.log",
     benchmark:
-        "output/benchmarks/mapping/create_index.txt"
+        "output/benchmarks/mapping/{group}/create_index.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -105,11 +101,11 @@ rule create_index:
 
 rule map_reads:
     input:
-        catalogue_idx="output/mapping/catalogue.mmi",
+        catalogue_idx="output/mapping/{group}/catalogue.mmi",
         fastq1=get_map_reads_input_R1,
         fastq2=get_map_reads_input_R2,
     output:
-        bam="output/mapping/bam/{sample}.map.bam",
+        bam="output/mapping/bam/{group}/{sample}.map.bam",
     params:
         N=50,
         preset="sr",
@@ -117,11 +113,10 @@ rule map_reads:
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
-        "output/logs/mapping/map_reads/{sample}.log",
+        "output/logs/mapping/map_reads/{group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/map_reads/{sample}.txt"
+        "output/benchmarks/mapping/map_reads/{group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -141,17 +136,16 @@ rule map_reads:
 
 rule sort_reads:
     input:
-        bam="output/mapping/bam/{sample}.map.bam",
+        bam="output/mapping/bam/{group}/{sample}.map.bam",
     output:
-        sort="output/mapping/bam/{sample}.sorted.bam",
+        sort="output/mapping/bam/{group}/{sample}.sorted.bam",
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
-        "output/logs/mapping/sort_reads/{sample}.log",
+        "output/logs/mapping/sort_reads/{group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/sort_reads/{sample}.txt"
+        "output/benchmarks/mapping/sort_reads/{group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
@@ -160,17 +154,16 @@ rule sort_reads:
 
 rule index_reads:
     input:
-        sort="output/mapping/bam/{sample}.sorted.bam",
+        sort="output/mapping/bam/{group}/{sample}.sorted.bam",
     output:
-        index="output/mapping/bam/{sample}.sorted.bam.bai",
+        index="output/mapping/bam/{group}/{sample}.sorted.bam.bai",
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
-        "output/logs/mapping/index_reads/{sample}.log",
+        "output/logs/mapping/index_reads/{group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/index_reads/{sample}.txt"
+        "output/benchmarks/mapping/index_reads/{group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -179,17 +172,16 @@ rule index_reads:
 
 rule flagstat:
     input:
-        sort="output/mapping/bam/{sample}.sorted.bam",
+        sort="output/mapping/bam/{group}/{sample}.sorted.bam",
     output:
-        flagstat="output/mapping/bam/{sample}.flagstat.txt",
+        flagstat="output/mapping/bam/{group}/{sample}.flagstat.txt",
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
-        "output/logs/mapping/flagstat/{sample}.log",
+        "output/logs/mapping/flagstat/{group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/flagstat/{sample}.txt"
+        "output/benchmarks/mapping/flagstat/{group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -198,16 +190,17 @@ rule flagstat:
 
 rule jgi_summarize_bam_contig_depths:
     input:
-        expand("output/mapping/bam/{sample}.sorted.bam", sample=sample_IDs),
+        lambda wildcards: expand(
+            "output/mapping/bam/{group}/{sample}.sorted.bam",
+            sample=sample_IDs,
+            group=wildcards.group,
+        ),
     output:
-        contig_depths="output/mapping/bam_contig_depths.txt",
-    resources:
-        mem_mb=get_max_mb(),
-        disk_mb=get_max_mb(),
+        contig_depths="output/mapping/{group}/bam_contig_depths.txt",
     log:
-        "output/logs/mapping/jgi_summarize_bam_contig_depths.log",
+        "output/logs/mapping/{group}/jgi_summarize_bam_contig_depths.log",
     benchmark:
-        "output/benchmarks/mapping/jgi_summarize_bam_contig_depths.txt"
+        "output/benchmarks/mapping/{group}/jgi_summarize_bam_contig_depths.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:

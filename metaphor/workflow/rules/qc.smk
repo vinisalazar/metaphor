@@ -24,12 +24,13 @@ rule cutadapt_pipe:
         pipe("pipe/qc/cutadapt/{sample}_{unit}_{fq}.{ext}"),
     resources:
         mem_mb=get_max_mb(0.5),
-        disk_mb=get_max_mb(0.5),
     log:
         "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.txt"
     wildcard_constraints:
+        sample="|".join(sample_IDs),
+        unit="|".join(unit_names),
         ext=r"fq|fq\.gz|fastq|fastq\.gz",
     threads: 1
     conda:
@@ -50,7 +51,6 @@ rule cutadapt_pe:
         qc="output/qc/cutadapt/{sample}_{unit}.paired.qc.txt",
     resources:
         mem_mb=get_max_mb(0.5),
-        disk_mb=get_max_mb(0.5),
     log:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
@@ -69,6 +69,8 @@ rule cutadapt_pe:
             + f"-U {config['cutadapt']['clip_r5']} "
             + f"-U -{config['cutadapt']['clip_r3']} "
         ),
+    wildcard_constraints:
+        sample="|".join(sample_IDs),
     wrapper:
         get_wrapper("cutadapt/pe")
 
@@ -84,12 +86,12 @@ rule merge_fastqs:
     threads: 1
     resources:
         mem_mb=get_max_mb(0.5),
-        disk_mb=get_max_mb(0.5),
     log:
         "output/logs/qc/merge_fastqs/{sample}.{read}.log",
     benchmark:
         "output/benchmarks/qc/merge_fastqs/{sample}.{read}.txt"
     wildcard_constraints:
+        sample="|".join(sample_IDs),
         read="single|R1|R2",
     conda:
         "../envs/utils.yaml"

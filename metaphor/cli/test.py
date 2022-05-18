@@ -102,11 +102,12 @@ def main(args):
     coassembly = args.coassembly
     cores = args.cores
     mem_mb = args.mem_mb
+    join = args.join_units
     samples_file = "samples.csv"
     create_input_table_args = Namespace()
     create_input_table_args.input_dir = directory
     create_input_table_args.output_file = samples_file
-    create_input_table_args.join_units = False
+    create_input_table_args.join_units = join
     conda_prefix = directory if args.remove_conda else None
     confirm = args.confirm
     dry_run = args.dry_run

@@ -32,32 +32,33 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1="output/qc/merged/{sample}_R1.fq.gz"
-        if not config["coassembly"]
-        else "output/qc/merged/all_samples_R1.fq.gz",
-        fastq2="output/qc/merged/{sample}_R2.fq.gz"
-        if not config["coassembly"]
-        else "output/qc/merged/all_samples_R2.fq.gz",
+        # fastq1="output/qc/merged/{group}_R1.fq.gz,
+        # fastq2="output/qc/merged/{group}_R2.fq.gz",
+        fastq1=get_assembler_input_R1,
+        fastq2=get_assembler_input_R2,
     output:
         contigs=get_contigs_input(),
     params:
         # Turn 'remove_intermediates' on/off in config['megahit']
-        out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
+        fastq1=lambda w, input: ",".join(input.fastq1),
+        fastq2=lambda w, input: ",".join(input.fastq2),
+        out_dir=lambda w, output: get_parent(output.contigs),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
         cleanup=lambda w, output: cleanup_rule(
             "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
         ),
-        sample=lambda w: w.sample if getattr(w, "sample", None) else "coassembly",
+        sample=lambda w: w.group,
     threads: round(workflow.cores * config["cores_per_big_task"])
+    wildcard_constraints:
+        group="|".join(group_names),
     resources:
         mem_mb=get_mb_per_cores,
-        disk_mb=get_mb_per_cores,
     log:
-        get_coassembly_benchmark_or_log("log", "assembly", "megahit"),
+        get_group_benchmark_or_log("log", "assembly", "megahit"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "assembly", "megahit")
+        get_group_benchmark_or_log("benchmark", "assembly", "megahit")
     conda:
         "../envs/megahit.yaml"
     shell:
@@ -65,7 +66,7 @@ rule megahit:
         # MegaHit has no --force flag, so we must remove the created directory prior to running
         rm -rf {params.out_dir}/{params.sample}
 
-        megahit -1 {input.fastq1} -2 {input.fastq2}         \
+        megahit -1 {params.fastq1} -2 {params.fastq2}         \
                 -o {params.out_dir}/{params.sample}         \
                 --presets {params.preset}                   \
                 --out-prefix {params.sample}                \
@@ -114,7 +115,7 @@ rule metaquast:
         contigs=get_contigs_input(),
         reference=get_metaquast_reference,
     output:
-        outfile=get_coassembly_or_sample_file(
+        outfile=get_group_or_sample_file(
             "assembly", "metaquast", suffix="report.html", add_sample_to_suffix=False
         ),
     params:
@@ -125,9 +126,9 @@ rule metaquast:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        get_coassembly_benchmark_or_log("log", "assembly", "metaquast"),
+        get_group_benchmark_or_log("log", "assembly", "metaquast"),
     benchmark:
-        get_coassembly_benchmark_or_log("benchmark", "assembly", "metaquast")
+        get_group_benchmark_or_log("benchmark", "assembly", "metaquast")
     conda:
         "../envs/quast.yaml"
     shell:
