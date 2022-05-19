@@ -230,7 +230,7 @@ rule jgi_summarize_bam_contig_depths:
         lambda wildcards: expand(
             "output/mapping/bam/{binning_group}/{sample}.sorted.bam",
             binning_group=wildcards.binning_group,
-            sample=samples.loc[wildcards.binning_group, 'sample_name'].to_list(),
+            sample=samples.query(f"binning_group == '{wildcards.binning_group}'")['sample_name'].unique(),
         ),
     output:
         contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",

@@ -41,9 +41,8 @@ group_names = samples["group"].drop_duplicates().to_list()
 sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
 binning_group_names = samples["binning_group"].drop_duplicates().to_list()
-# breakpoint()
 
-# breakpoint()
+breakpoint()
 
 ###############################################################
 # TOP LEVEL
