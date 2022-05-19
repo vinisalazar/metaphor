@@ -42,6 +42,7 @@ sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
 binning_group_names = samples["binning_group"].drop_duplicates().to_list()
 
+# breakpoint()
 
 ###############################################################
 # TOP LEVEL
@@ -561,9 +562,9 @@ def get_map_reads_input_R2(wildcards):
 
 def get_mapping_output():
     return expand(
-        "output/mapping/bam/{group}/{sample}.{kind}",
+        "output/mapping/bam/{binning_group}/{group}.{kind}",
+        binning_group=binning_group_names,
         group=group_names,
-        sample=sample_IDs,
         kind=("map.bam", "sorted.bam", "flagstat.txt"),
     )
 
@@ -577,7 +578,7 @@ binners = [b for b in ("concoct", "metabat2", "vamb") if is_activated(b)]
 
 def get_DAS_tool_input():
     scaffolds2bin = (
-        lambda binner: f"output/binning/DAS_tool/{{group}}/{binner}_scaffolds2bin.tsv"
+        lambda binner: f"output/binning/DAS_tool/{{binning_group}}/{binner}_scaffolds2bin.tsv"
     )
     return sorted(scaffolds2bin(b) for b in binners)
 
@@ -594,20 +595,20 @@ def get_fasta_bins():
 
 
 def get_vamb_output():
-    return "output/binning/vamb/{group}/clusters.tsv"
+    return "output/binning/vamb/{binning_group}/clusters.tsv"
 
 
 def get_all_vamb_output():
-    return tuple(expand("output/binning/vamb/{group}/clusters.tsv", group=group_names))
+    return tuple(expand("output/binning/vamb/{binning_group}/clusters.tsv", binning_group=binning_group_names))
 
 
 def get_binning_output():
     binners = {
         "vamb": get_all_vamb_output(),
-        "metabat2": expand("output/binning/metabat2/{group}", group=group_names),
-        "concoct": expand("output/binning/concoct/{group}", group=group_names),
+        "metabat2": expand("output/binning/metabat2/{binning_group}", binning_group=binning_group_names),
+        "concoct": expand("output/binning/concoct/{binning_group}", binning_group=binning_group_names),
         "das_tool": expand(
-            "output/binning/DAS_tool/{group}/DAS_tool_proteins.faa", group=group_names
+            "output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa", binning_group=binning_group_names
         ),
     }
     return (v for k, v in binners.items() if is_activated(k))

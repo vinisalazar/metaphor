@@ -32,8 +32,6 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        # fastq1="output/qc/merged/{group}_R1.fq.gz,
-        # fastq2="output/qc/merged/{group}_R2.fq.gz",
         fastq1=get_assembler_input_R1,
         fastq2=get_assembler_input_R2,
     output:
@@ -42,7 +40,7 @@ rule megahit:
         # Turn 'remove_intermediates' on/off in config['megahit']
         fastq1=lambda w, input: ",".join(input.fastq1),
         fastq2=lambda w, input: ",".join(input.fastq2),
-        out_dir=lambda w, output: get_parent(output.contigs),  # this is equivalent to "{output}/megahit"
+        out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
         min_contig_len=200,
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
