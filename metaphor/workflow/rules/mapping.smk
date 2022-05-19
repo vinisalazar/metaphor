@@ -20,15 +20,19 @@ rule concatenate_contigs:
     input:
         contigs=get_contigs_input(expand_=True),
     output:
-        catalogue="output/mapping/{group}/catalogue.fna.gz",
+        catalogue="output/mapping/{binning_group}/catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
     resources:
         mem_mb=get_max_mb(),
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{group}/concatenate_contigs.log",
+        "output/logs/mapping/{binning_group}/concatenate_contigs.log",
     benchmark:
-        "output/benchmarks/mapping/{group}/concatenate_contigs.txt"
+        "output/benchmarks/mapping/{binning_group}/concatenate_contigs.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -39,16 +43,20 @@ rule concatenate_contigs:
 
 rule decompress_catalogue:
     input:
-        catalogue_gz="output/mapping/{group}/catalogue.fna.gz",
+        catalogue_gz="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
-        catalogue="output/mapping/{group}/catalogue.fna",
+        catalogue="output/mapping/{binning_group}/catalogue.fna",
     threads: round(workflow.cores * config["cores_per_small_task"])
     resources:
         mem_mb=get_max_mb(),
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{group}/decompress_catalogue.log",
+        "output/logs/mapping/{binning_group}/decompress_catalogue.log",
     benchmark:
-        "output/benchmarks/mapping/{group}/decompress_catalogue.txt"
+        "output/benchmarks/mapping/{binning_group}/decompress_catalogue.txt"
     conda:
         "../envs/utils.yaml"
     shell:
@@ -63,17 +71,21 @@ rule concatenate_proteins:
     """
     input:
         proteins=expand(
-            "output/annotation/prodigal/{sample}/{sample}_proteins.faa",
-            sample=sample_IDs,
+            "output/annotation/prodigal/{group}/{group}_proteins.faa",
+            group=group_names,
         ),
     output:
-        prot_catalogue="output/mapping/proteins_catalogue.faa",
+        prot_catalogue="output/mapping/{binning_group}_proteins_catalogue.faa",
     resources:
         mem_mb=get_max_mb(),
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/concatenate_proteins.log",
+        "output/logs/mapping/{binning_group}_concatenate_proteins.log",
     benchmark:
-        "output/benchmarks/mapping/concatenate_proteins.txt"
+        "output/benchmarks/mapping/{binning_group}_concatenate_proteins.txt"
     conda:
         "../envs/utils.yaml"
     shell:
@@ -82,15 +94,19 @@ rule concatenate_proteins:
 
 rule create_index:
     input:
-        catalogue_fna="output/mapping/{group}/catalogue.fna.gz",
+        catalogue_fna="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
-        catalogue_idx="output/mapping/{group}/catalogue.mmi",
+        catalogue_idx="output/mapping/{binning_group}/catalogue.mmi",
     resources:
         mem_mb=get_max_mb(),
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{group}/create_index.log",
+        "output/logs/mapping/{binning_group}/create_index.log",
     benchmark:
-        "output/benchmarks/mapping/{group}/create_index.txt"
+        "output/benchmarks/mapping/{binning_group}/create_index.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -101,11 +117,12 @@ rule create_index:
 
 rule map_reads:
     input:
-        catalogue_idx="output/mapping/{group}/catalogue.mmi",
+        catalogue_idx="output/mapping/{binning_group}/catalogue.mmi",
         fastq1=get_map_reads_input_R1,
         fastq2=get_map_reads_input_R2,
     output:
-        bam="output/mapping/bam/{group}/{sample}.map.bam",
+        # This one needs wildcard named 'sample' because of the input functions.
+        bam="output/mapping/bam/{binning_group}/{sample}.map.bam",
     params:
         N=50,
         preset="sr",
@@ -113,10 +130,15 @@ rule map_reads:
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/map_reads/{group}/{sample}.log",
+        "output/logs/mapping/map_reads/{binning_group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/map_reads/{group}/{sample}.txt"
+        "output/benchmarks/mapping/map_reads/{binning_group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -136,16 +158,21 @@ rule map_reads:
 
 rule sort_reads:
     input:
-        bam="output/mapping/bam/{group}/{sample}.map.bam",
+        bam="output/mapping/bam/{binning_group}/{sample}.map.bam",
     output:
-        sort="output/mapping/bam/{group}/{sample}.sorted.bam",
+        sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/sort_reads/{group}/{sample}.log",
+        "output/logs/mapping/sort_reads/{binning_group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/sort_reads/{group}/{sample}.txt"
+        "output/benchmarks/mapping/sort_reads/{binning_group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
@@ -154,16 +181,21 @@ rule sort_reads:
 
 rule index_reads:
     input:
-        sort="output/mapping/bam/{group}/{sample}.sorted.bam",
+        sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     output:
-        index="output/mapping/bam/{group}/{sample}.sorted.bam.bai",
+        index="output/mapping/bam/{binning_group}/{sample}.sorted.bam.bai",
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/index_reads/{group}/{sample}.log",
+        "output/logs/mapping/index_reads/{binning_group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/index_reads/{group}/{sample}.txt"
+        "output/benchmarks/mapping/index_reads/{binning_group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -172,16 +204,21 @@ rule index_reads:
 
 rule flagstat:
     input:
-        sort="output/mapping/bam/{group}/{sample}.sorted.bam",
+        sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     output:
-        flagstat="output/mapping/bam/{group}/{sample}.flagstat.txt",
+        flagstat="output/mapping/bam/{binning_group}/{sample}.flagstat.txt",
     threads: round(workflow.cores * config["cores_per_big_task"])
     resources:
         mem_mb=get_mb_per_cores,
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/flagstat/{group}/{sample}.log",
+        "output/logs/mapping/flagstat/{binning_group}/{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/flagstat/{group}/{sample}.txt"
+        "output/benchmarks/mapping/flagstat/{binning_group}/{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -191,16 +228,22 @@ rule flagstat:
 rule jgi_summarize_bam_contig_depths:
     input:
         lambda wildcards: expand(
-            "output/mapping/bam/{group}/{sample}.sorted.bam",
-            sample=sample_IDs,
-            group=wildcards.group,
+            "output/mapping/bam/{binning_group}/{sample}.sorted.bam",
+        binning_group=wildcards.binning_group,
+        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        "sample_name"
+            ].unique(),
         ),
     output:
-        contig_depths="output/mapping/{group}/bam_contig_depths.txt",
+        contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{group}/jgi_summarize_bam_contig_depths.log",
+        "output/logs/mapping/{binning_group}/jgi_summarize_bam_contig_depths.log",
     benchmark:
-        "output/benchmarks/mapping/{group}/jgi_summarize_bam_contig_depths.txt"
+        "output/benchmarks/mapping/{binning_group}/jgi_summarize_bam_contig_depths.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:

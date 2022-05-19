@@ -14,11 +14,11 @@ from pathlib import Path
 
 rule vamb:
     input:
-        bam_contig_depths="output/mapping/{group}/bam_contig_depths.txt",
-        catalogue="output/mapping/{group}/catalogue.fna.gz",
+        bam_contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",
+        catalogue="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
         clusters=get_vamb_output(),
-        scaffolds2bin="output/binning/DAS_tool/{group}/vamb_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/DAS_tool/{binning_group}/vamb_scaffolds2bin.tsv",
     params:  # defaults in vamb's README
         outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
@@ -28,9 +28,9 @@ rule vamb:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{group}/vamb.log",
+        "output/logs/binning/{binning_group}/vamb.log",
     benchmark:
-        "output/benchmarks/binning/{group}/vamb.txt"
+        "output/benchmarks/binning/{binning_group}/vamb.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -53,11 +53,11 @@ rule vamb:
 
 rule metabat2:
     input:
-        contigs="output/mapping/{group}/catalogue.fna.gz",
-        depths="output/mapping/{group}/bam_contig_depths.txt",
+        contigs="output/mapping/{binning_group}/catalogue.fna.gz",
+        depths="output/mapping/{binning_group}/bam_contig_depths.txt",
     output:
-        outdir=directory("output/binning/metabat2/{group}/"),
-        scaffolds2bin="output/binning/DAS_tool/{group}/metabat2_scaffolds2bin.tsv",
+        outdir=directory("output/binning/metabat2/{binning_group}/"),
+        scaffolds2bin="output/binning/DAS_tool/{binning_group}/metabat2_scaffolds2bin.tsv",
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
@@ -68,9 +68,9 @@ rule metabat2:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{group}/metabat2.log",
+        "output/logs/binning/{binning_group}/metabat2.log",
     benchmark:
-        "output/benchmarks/binning/{group}/metabat2.txt"
+        "output/benchmarks/binning/{binning_group}/metabat2.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:
@@ -91,16 +91,26 @@ rule metabat2:
 
 rule concoct:
     input:
-        catalogue="output/mapping/{group}/catalogue.fna",
-        bams=expand(
-            "output/mapping/bam/{{group}}/{sample}.sorted.bam", sample=sample_IDs
+        catalogue="output/mapping/{binning_group}/catalogue.fna",
+        bams=lambda wildcards: expand(
+            "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
+        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        "sample_name"
+            ]
+            .unique()
+            .to_list(),
         ),
-        bais=expand(
-            "output/mapping/bam/{{group}}/{sample}.sorted.bam.bai", sample=sample_IDs
+        bais=lambda wildcards: expand(
+            "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam.bai",
+        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        "sample_name"
+            ]
+            .unique()
+            .to_list(),
         ),
     output:
-        outdir=directory("output/binning/concoct/{group}/"),
-        scaffolds2bin="output/binning/DAS_tool/{group}/concoct_scaffolds2bin.tsv",
+        outdir=directory("output/binning/concoct/{binning_group}/"),
+        scaffolds2bin="output/binning/DAS_tool/{binning_group}/concoct_scaffolds2bin.tsv",
     params:
         contig_size=10000,
         bed=lambda w, output: str(Path(output.outdir).joinpath("contigs.bed")),
@@ -119,9 +129,9 @@ rule concoct:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{group}/concoct.log",
+        "output/logs/binning/{binning_group}/concoct.log",
     benchmark:
-        "output/benchmarks/binning/{group}/concoct.txt"
+        "output/benchmarks/binning/{binning_group}/concoct.txt"
     conda:
         "../envs/concoct.yaml"
     shell:
@@ -163,10 +173,10 @@ rule DAS_tool:
     Refine bins assembled with one or more binners.
     """
     input:
-        contigs="output/mapping/{group}/catalogue.fna",
+        contigs="output/mapping/{binning_group}/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
     output:
-        proteins="output/binning/DAS_tool/{group}/DAS_tool_proteins.faa",
+        proteins="output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa",
     params:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
         binners=",".join(binners),
@@ -178,9 +188,9 @@ rule DAS_tool:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{group}/DAS_tool.log",
+        "output/logs/binning/{binning_group}/DAS_tool.log",
     benchmark:
-        "output/benchmarks/binning/{group}/DAS_tool.txt"
+        "output/benchmarks/binning/{binning_group}/DAS_tool.txt"
     conda:
         "../envs/das_tool.yaml"
     shell:
