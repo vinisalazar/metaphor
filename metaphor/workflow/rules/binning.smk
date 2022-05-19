@@ -92,13 +92,13 @@ rule metabat2:
 rule concoct:
     input:
         catalogue="output/mapping/{binning_group}/catalogue.fna",
-        bams=expand(
+        bams=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
-            sample=lambda w: samples.loc[w.binning_group, 'sample_name'].to_list(),
+            sample=samples.loc[wildcards.binning_group, 'sample_name'].to_list(),
         ),
-        bais=expand(
+        bais=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam.bai",
-            sample=lambda w: samples.loc[w.binning_group, 'sample_name'].to_list(),
+            sample=samples.loc[wildcards.binning_group, 'sample_name'].to_list(),
         ),
     output:
         outdir=directory("output/binning/concoct/{binning_group}/"),
