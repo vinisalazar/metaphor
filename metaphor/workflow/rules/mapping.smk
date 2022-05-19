@@ -134,7 +134,7 @@ rule map_reads:
         binning_group="cobinning"
         if config["cobinning"]
         else "|".join(binning_group_names),
-        sample="|".join(group_names),
+        sample="|".join(sample_IDs),
     log:
         "output/logs/mapping/map_reads/{binning_group}/{sample}.log",
     benchmark:
