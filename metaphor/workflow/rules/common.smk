@@ -599,16 +599,26 @@ def get_vamb_output():
 
 
 def get_all_vamb_output():
-    return tuple(expand("output/binning/vamb/{binning_group}/clusters.tsv", binning_group=binning_group_names))
+    return tuple(
+        expand(
+            "output/binning/vamb/{binning_group}/clusters.tsv",
+            binning_group=binning_group_names,
+        )
+    )
 
 
 def get_binning_output():
     binners = {
         "vamb": get_all_vamb_output(),
-        "metabat2": expand("output/binning/metabat2/{binning_group}", binning_group=binning_group_names),
-        "concoct": expand("output/binning/concoct/{binning_group}", binning_group=binning_group_names),
+        "metabat2": expand(
+            "output/binning/metabat2/{binning_group}", binning_group=binning_group_names
+        ),
+        "concoct": expand(
+            "output/binning/concoct/{binning_group}", binning_group=binning_group_names
+        ),
         "das_tool": expand(
-            "output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa", binning_group=binning_group_names
+            "output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa",
+            binning_group=binning_group_names,
         ),
     }
     return (v for k, v in binners.items() if is_activated(k))

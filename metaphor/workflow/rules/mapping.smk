@@ -26,7 +26,9 @@ rule concatenate_contigs:
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
         "output/logs/mapping/{binning_group}/concatenate_contigs.log",
     benchmark:
@@ -48,7 +50,9 @@ rule decompress_catalogue:
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
         "output/logs/mapping/{binning_group}/decompress_catalogue.log",
     benchmark:
@@ -75,7 +79,9 @@ rule concatenate_proteins:
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
         "output/logs/mapping/{binning_group}_concatenate_proteins.log",
     benchmark:
@@ -94,7 +100,9 @@ rule create_index:
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
     log:
         "output/logs/mapping/{binning_group}/create_index.log",
     benchmark:
@@ -123,8 +131,10 @@ rule map_reads:
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
-        sample="|".join(group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        sample="|".join(group_names),
     log:
         "output/logs/mapping/map_reads/{binning_group}/{sample}.log",
     benchmark:
@@ -155,8 +165,10 @@ rule sort_reads:
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
-        group="|".join(group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        group="|".join(group_names),
     log:
         "output/logs/mapping/sort_reads/{binning_group}/{group}.log",
     benchmark:
@@ -176,8 +188,10 @@ rule index_reads:
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
-        group="|".join(group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        group="|".join(group_names),
     log:
         "output/logs/mapping/index_reads/{binning_group}/{group}.log",
     benchmark:
@@ -197,8 +211,10 @@ rule flagstat:
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
-        group="|".join(group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        group="|".join(group_names),
     log:
         "output/logs/mapping/flagstat/{binning_group}/{group}.log",
     benchmark:
@@ -219,8 +235,10 @@ rule jgi_summarize_bam_contig_depths:
     output:
         contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",
     wildcard_constraints:
-        binning_group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
-        group="|".join(group_names)
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+        group="|".join(group_names),
     log:
         "output/logs/mapping/{binning_group}/jgi_summarize_bam_contig_depths.log",
     benchmark:
