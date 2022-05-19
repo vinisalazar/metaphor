@@ -42,8 +42,6 @@ sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
 binning_group_names = samples["binning_group"].drop_duplicates().to_list()
 
-breakpoint()
-
 ###############################################################
 # TOP LEVEL
 # These are top level helpers for all modules
