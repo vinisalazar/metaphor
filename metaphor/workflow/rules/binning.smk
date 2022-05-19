@@ -94,11 +94,11 @@ rule concoct:
         catalogue="output/mapping/{binning_group}/catalogue.fna",
         bams=expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
-            sample=samples.loc['{binning_group}', 'sample_name'].to_list(),
+            sample=samples.loc['{{binning_group}}', 'sample_name'].to_list(),
         ),
         bais=expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam.bai",
-            sample=samples.loc['{binning_group}', 'sample_name'].to_list(),
+            sample=samples.loc['{{binning_group}}', 'sample_name'].to_list(),
         ),
     output:
         outdir=directory("output/binning/concoct/{binning_group}/"),
