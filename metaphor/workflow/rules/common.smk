@@ -143,7 +143,9 @@ def is_paired_end(sample):
     """
     Checks if a sample is paired-end or not.
     """
-    sample_units = samples.loc[sample] if sample in group_names else samples.xs(sample, level=1)
+    sample_units = (
+        samples.loc[sample] if sample in group_names else samples.xs(sample, level=1)
+    )
     fq2_null = sample_units["R2"].isnull()
     paired = ~fq2_null
     all_paired = paired.all()
