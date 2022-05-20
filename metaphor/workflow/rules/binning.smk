@@ -23,7 +23,7 @@ rule vamb:
         outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
         minfasta=config["vamb"]["minfasta"],
-        batchsize=256,
+        batchsize=config["vamb"]["batchsize"],
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,

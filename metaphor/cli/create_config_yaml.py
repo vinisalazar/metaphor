@@ -54,7 +54,10 @@ def setting_prompt(message, key, subkey=None, transform=str, default=None, file=
                 f"Type in your answer (press Enter for default): ",
             )
         )
-    ).lower()
+    )
+    # Transform 'Y' to 'y' and etc
+    if transform == bool:
+        answer = answer.lower()
 
     # Validate answer
     suggestion = suggestion.lower().split("/")
@@ -116,12 +119,6 @@ def get_general_settings():
         None,
         int, 
     )
-    setting_prompt(
-        "For parallel tasks, how many MB RAM per thread would you like to use?\nMust be under 'max_mb' limit, defined in the previous setting.",
-        "mb_per_core",
-        None,
-        int,
-    )
     print("\n")
 
 
@@ -130,6 +127,20 @@ def get_qc_settings():
     setting_prompt(
         "Would you like to turn on MultiQC for reporting?", "multiqc", "activate", bool
     )
+    setting_prompt(
+        "Would you like to perform a host removal step? Recommended for host-associated data.",
+        "host_removal",
+        "activate",
+        bool,
+    )
+    if config["host_removal"]["activate"]:
+        setting_prompt(
+            "Please specify the path to the reference genome or file to perform host removal.",
+            "host_removal",
+            "reference",
+            str,
+            file=True
+        )
     print("\n")
 
 

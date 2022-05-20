@@ -39,6 +39,10 @@ cutadapt:
 merge_reads:
   activate: True
 
+host_removal:
+  activate: False
+  reference: ""
+
 fastqc:
   activate: True
 
@@ -114,6 +118,7 @@ cobinning: True # Whether to perform cobinning. When this is true, only one binn
 vamb:
   activate: True
   minfasta: 10000
+  batchsize: 256
 
 metabat2:
   activate: True
