@@ -127,15 +127,25 @@ def get_wrapper(wrapper):
     return str(Path(wrapper_version).joinpath(f"bio/{wrapper}"))
 
 
-def get_mb_per_cores(wildcards, threads):
+def get_threads_per_task_size(size):
     """
-    Calculates the amount of memory to be used based on the number of threads
-    and the config 'mb_per_core' object.
+    Determines the number of cores to be used depending on the size of the task.
+
+    The percentage of cores each task uses is set in the config YAML file.
+    """
+    assert size in (choices := ("small", "medium", "big")), f"Size '{size}' must be one of: {choices}."
+    return round(workflow.cores * config[f"cores_per_{size}_task"])
+
+
+def get_mb_per_cores(wildcards, threads, task_type="big"):
+    """
+    Calculates the amount of memory to be used based on the number of total cores
+    and the config 'mb_max' object.
 
     wildcards: Snakemake wildcards (passed on automatically)
     threads: number of threads passed to the workflow
     """
-    return threads * config["mb_per_core"]
+    return threads * int(config["max_mb"] / workflow.cores)
 
 
 def get_max_mb(margin=0.2):
@@ -240,24 +250,34 @@ def get_fastqc_input_merged(wildcards):
     return "output/qc/merged/{sample}_{read}.fq.gz"
 
 
-def get_fastq_groups_R1(group, kind="merged"):
-    if not is_activated("merge_reads"):
-        kind = "cutadapt"
-    return sorted(
-        [
-            f"output/qc/{kind}/{sample_name}_R1.fq.gz"
-            for sample_name in samples.loc[group, "sample_name"].to_list()
-        ]
-    )
+def get_fastqc_input_filtered(wildcards):
+    sample, read = wildcards.sample, wildcards.read
+    return "output/qc/filtered/{sample}_filtered_{read}.fq.gz"
 
 
-def get_fastq_groups_R2(group, kind="merged"):
+def get_host_removal_input(wildcards):
     if not is_activated("merge_reads"):
+        return get_fastqc_input_trimmed
+    elif not is_activated("host_removal"):
+        return get_fastqc_input_merged
+    else:
+        return get_fastqc_input_filtered
+
+
+def get_fastq_groups(wildcards, sense, kind="filtered"):
+    if is_activated("host_removal"):
+        kind = "filtered"
+        add = kind
+    elif is_activated("merge_reads"):
+        kind = "merged"
+        add = ""
+    elif is_activated("trimming"):
         kind = "cutadapt"
+        add = getattr(wildcards, "unit", "")
     return sorted(
         [
-            f"output/qc/{kind}/{sample_name}_R2.fq.gz"
-            for sample_name in samples.loc[group, "sample_name"].to_list()
+            f"output/qc/{kind}/{sample_name}_{add}_{sense}.fq.gz"
+            for sample_name in samples.loc[wildcards.group, "sample_name"].to_list()
         ]
     )
 
@@ -296,16 +316,6 @@ def get_qc_output():
 ###############################################################
 # Assembly
 ###############################################################
-
-
-def get_assembler_input_R1(wildcards):
-    return get_fastq_groups_R1(wildcards.group)
-
-
-def get_assembler_input_R2(wildcards):
-    return get_fastq_groups_R2(wildcards.group)
-
-
 def get_contigs_input(expand_=False):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
 

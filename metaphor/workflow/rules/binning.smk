@@ -24,7 +24,7 @@ rule vamb:
         binsplit_sep="C",
         minfasta=config["vamb"]["minfasta"],
         batchsize=256,
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
@@ -64,7 +64,7 @@ rule metabat2:
         outfile=lambda w, output: str(
             Path(output.outdir).joinpath(config["metabat2"]["preffix"])
         ),
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
@@ -125,7 +125,7 @@ rule concoct:
         clustering_merged=lambda w, output: str(
             Path(output.outdir).joinpath("clustering_merged.csv")
         ),
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
@@ -184,7 +184,7 @@ rule DAS_tool:
             Path(output.proteins).parent.joinpath("DAS_tool")
         ),
         score_threshold=config["das_tool"]["score_threshold"],
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:

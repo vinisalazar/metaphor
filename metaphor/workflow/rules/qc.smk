@@ -55,7 +55,7 @@ rule cutadapt_pe:
         "output/logs/qc/cutadapt/{sample}-{unit}.log",
     benchmark:
         "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    threads: get_threads_per_task_size("small")
     params:
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
@@ -111,7 +111,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_raw/{sample}-{unit}-{read}.txt"
-    threads: round(workflow.cores * config["cores_per_medium_task"])
+    threads: get_threads_per_task_size("medium")
     wrapper:
         get_wrapper("fastqc")
 
@@ -128,7 +128,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_trimmed/{sample}-{unit}-{read}.txt"
-    threads: round(workflow.cores * config["cores_per_medium_task"])
+    threads: get_threads_per_task_size("medium")
     wrapper:
         get_wrapper("fastqc")
 
@@ -145,7 +145,7 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         "output/logs/qc/fastqc_merged/{sample}-{read}.log",
     benchmark:
         "output/benchmarks/qc/fastqc_merged/{sample}-{read}.txt"
-    threads: round(workflow.cores * config["cores_per_medium_task"])
+    threads: get_threads_per_task_size("medium")
     wrapper:
         get_wrapper("fastqc")
 
@@ -161,3 +161,23 @@ rule multiqc:
         "output/benchmarks/qc/multiqc.txt"
     wrapper:
         get_wrapper("multiqc")
+
+
+rule host_removal:
+    input:
+        get_fastqc_input_filtered,
+    output:
+        filtered_fq="output/qc/filtered/{sample}_filtered_{read}.fq.gz",
+    threads: get_threads_per_task_size("big")
+    resources:
+        mem_mb=get_mb_per_cores,
+    log:
+        "output/logs/qc/host_removal/{sample}-{read}.log"
+    benchmark:
+        "output/benchmarks/qc/host_removal/{sample}-{read}.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        """
+        minimap2 
+        """

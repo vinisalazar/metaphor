@@ -88,7 +88,7 @@ def main(args):
 
     samples_file = config["samples"]
     if mem_mb is None:
-        mem_mb = config["mb_per_core"]
+        mem_mb = config["max_mb"]
     if coassembly is None:
         coassembly = config["coassembly"]
     if not input_dir:

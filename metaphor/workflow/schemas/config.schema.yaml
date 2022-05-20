@@ -20,8 +20,6 @@ properties:
 
   max_mb:
     type: integer
-  mb_per_core:
-    type: integer
 
 ###############################################################
 # QC
@@ -300,7 +298,7 @@ properties:
 required:
   - samples
   - coassembly
-  - mb_per_core
+  - max_mb
   - cutadapt
   - merge_reads
   - fastqc

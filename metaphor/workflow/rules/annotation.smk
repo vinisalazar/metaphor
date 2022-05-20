@@ -81,7 +81,7 @@ rule prokka:
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    threads: get_threads_per_task_size("small")
     log:
         "output/logs/annotation/prokka/{sample}.log",
     benchmark:
@@ -146,7 +146,7 @@ rule diamond_makedb:
         extra=lambda w, input: f"--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
     wrapper:
@@ -193,7 +193,7 @@ rule diamond:
         extra="--iterate --top 0",
     wildcard_constraints:
         group="|".join(group_names),
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:

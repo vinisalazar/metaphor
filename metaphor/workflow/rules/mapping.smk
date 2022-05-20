@@ -46,7 +46,7 @@ rule decompress_catalogue:
         catalogue_gz="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
         catalogue="output/mapping/{binning_group}/catalogue.fna",
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -127,7 +127,7 @@ rule map_reads:
         N=50,
         preset="sr",
         flags=3584,
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -161,7 +161,7 @@ rule sort_reads:
         bam="output/mapping/bam/{binning_group}/{sample}.map.bam",
     output:
         sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -184,7 +184,7 @@ rule index_reads:
         sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     output:
         index="output/mapping/bam/{binning_group}/{sample}.sorted.bam.bai",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -207,7 +207,7 @@ rule flagstat:
         sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     output:
         flagstat="output/mapping/bam/{binning_group}/{sample}.flagstat.txt",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
