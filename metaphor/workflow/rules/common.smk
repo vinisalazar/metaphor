@@ -28,9 +28,17 @@ samples = pd.read_csv(
 )
 if "unit_name" not in samples.columns:
     samples["unit_name"] = "unit_0"
-if "group" not in samples.columns:
+
+# Coassembly/cobinning behaviour
+# The only difference is really the order of statements: if groups are provided,
+# they should be use as 'binning_groups' instead of sample names.
+if ("group" not in samples.columns) or (df["group"].empty):
     samples["group"] = "coassembly" if config["coassembly"] else samples["sample_name"]
-samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
+    samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
+else:
+    samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
+    samples["group"] = samples["group"] if config["coassembly"] else samples["sample_name"]
+
 samples = samples.fillna("")
 samples = samples.set_index(
     ["group", "sample_name", "unit_name"], drop=False
