@@ -143,16 +143,16 @@ rule map_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {threads}                \
-                    -N {params.N}               \
-                    -a -x {params.preset}       \
-                    {input.catalogue_idx}       \
-                    {input.fastq1}              \
-                    {input.fastq2} |
-          samtools view                         \
-                    -F {params.flags}           \
-                    -b --threads                \
-                    {threads} > {output.bam} ; }} &> {log}
+        {{ minimap2 -t {threads}                    \
+                    -N {params.N}                   \
+                    -ax {params.preset}             \
+                    {input.catalogue_idx}           \
+                    {input.fastq1}                  \
+                    {input.fastq2} ; }} 2>> {log}   |
+        {{ samtools view                            \
+                    -F {params.flags}               \
+                    -b --threads                    \
+                    {threads} > {output.bam} ; }} 2>> {log}
         """
 
 
@@ -247,4 +247,4 @@ rule jgi_summarize_bam_contig_depths:
     conda:
         "../envs/metabat2.yaml"
     shell:
-        "jgi_summarize_bam_contig_depths {input} --outputDepth {output}"
+        "jgi_summarize_bam_contig_depths {input} --outputDepth {output} 2> {log}"
