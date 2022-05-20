@@ -147,17 +147,22 @@ There are three main resources in Snakemake: **`mem_mb`**, **`disk_mb`**, and **
 [Snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#resources) have a detailed explanation
 on how they works. 
 
-In addition to these, an important "resource" is the number of cores passed on to the workflow. Metaphor has a specific
-way of defining resources, where there is an **interaction between number of cores and amount of RAM** that will be
-requested.
+In addition to these, an important resource is the number of cores passed on to the workflow. Metaphor has two memory
+settings:
+* `max_mb`; and
+* `mb_per_core`.
 
-Basically, Metaphor has a **`mb_per_core`** option (defined in the configuration) which is used to determine the
-amount of memory to be used. So, if `mb_per_core` is `2048` and Metaphor is executed with 8 cores, up to 16GB of
-RAM may be used. The rule-of-thumb is that the `mb_per_core * cores` should be under the total RAM of your machine.
-So, if your machine has 12 cores and 64 GB RAM, you can set your `mb_per_core` to `4096` as that may use up to 48 GB
-RAM, and so on.
+The former defines the maximum amount of memory to be requested, *i.e.* it should be under your machine's RAM limit.
+This setting is used by rules that are memory intensive but run on one or few cores, through the `get_max_mb` function
+defined in the [`common.smk`](https://github.com/vinisalazar/metaphor/blob/main/metaphor/workflow/rules/common.smk)
+module. This function has a `margin` argument which defines how much of the `max_mb` should the rule use. The default
+value for `margin` is `0.2`, which means the rule will use 80% of what's defined in `max_mb`.
 
-% TODO: **Overriding**
+The latter option, `mb_per_core`, is used by rules that require many cores, such as assembly or binning rules. This
+value is multiplied by the number of cores used by that rule to calculate the amount of memory to be requested. So, if
+`mb_per_core` is `2048` and Metaphor is executed with 8 cores, up to 16GB of RAM may be used; if your machine has 12
+cores and 64 GB RAM, you can set your `mb_per_core` to `4096` as that may use up to 48 GB RAM, and so on. To calculate
+the optimal value for this setting, simply divide `max_mb` by the number of cores that you will use for the workflow.
 
 ## Package structure
 
@@ -189,7 +194,7 @@ metaphor/workflow
 The workflow is structured in accordance with the
 [Snakemake recommended best practices](https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html).
 
-The Metaphor is Snakefile is very simple. Basically, it imports all of the Metaphor rules (defined in separate `.smk`
+Metaphor's Snakefile is very simple. Basically, it imports all of the Metaphor rules (defined in separate `.smk`
 files for each module) and requires a single `rule all` which will require the final output to be produced. More on that
 later.
 
