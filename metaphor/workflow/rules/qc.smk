@@ -167,7 +167,7 @@ rule host_removal_create_index:
     input:
         host_removal_reference=config["host_removal"]["reference"],
     output:
-        host_removal_index="output/qc/host_removal_reference_db.mmi"
+        host_removal_index="output/qc/host_removal_reference_db.mmi",
     resources:
         mem_mb=get_max_mb(),
     log:
@@ -185,7 +185,9 @@ rule host_removal_create_index:
 # Would be nice to have some sort of report after this one.
 rule host_removal:
     input:
-        fastqs=get_fastqc_input_merged if is_activated("merge_reads") else get_fastqc_input_trimmed,
+        fastqs=get_fastqc_input_merged
+        if is_activated("merge_reads")
+        else get_fastqc_input_trimmed,
         reference="output/qc/host_removal_reference_db.mmi",
     output:
         filtered_fq="output/qc/filtered/{sample}_filtered_{read}.fq.gz",
@@ -195,7 +197,7 @@ rule host_removal:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/qc/host_removal/{sample}-{read}.log"
+        "output/logs/qc/host_removal/{sample}-{read}.log",
     benchmark:
         "output/benchmarks/qc/host_removal/{sample}-{read}.txt"
     conda:

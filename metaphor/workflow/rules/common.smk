@@ -37,7 +37,9 @@ if ("group" not in samples.columns) or (df["group"].empty):
     samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
 else:
     samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
-    samples["group"] = samples["group"] if config["coassembly"] else samples["sample_name"]
+    samples["group"] = (
+        samples["group"] if config["coassembly"] else samples["sample_name"]
+    )
 
 samples = samples.fillna("")
 samples = samples.set_index(
@@ -51,13 +53,13 @@ unit_names = samples["unit_name"].drop_duplicates().to_list()
 binning_group_names = samples["binning_group"].drop_duplicates().to_list()
 
 if config["host_removal"]["activate"]:
-    assert (reference_path := Path(config["host_removal"]["reference"])).exists(), \
-    f"Host removal reference path '{reference_path}' wasn't found. Please ensure it exists or deactivate host_removal setting."
+    assert (
+        reference_path := Path(config["host_removal"]["reference"])
+    ).exists(), f"Host removal reference path '{reference_path}' wasn't found. Please ensure it exists or deactivate host_removal setting."
 
 
 if "ok":
-    assert "ok", \
-    "ok"
+    assert "ok", "ok"
 ###############################################################
 # TOP LEVEL
 # These are top level helpers for all modules
@@ -141,7 +143,9 @@ def get_threads_per_task_size(size):
 
     The percentage of cores each task uses is set in the config YAML file.
     """
-    assert size in (choices := ("small", "medium", "big")), f"Size '{size}' must be one of: {choices}."
+    assert size in (
+        choices := ("small", "medium", "big")
+    ), f"Size '{size}' must be one of: {choices}."
     return round(workflow.cores * config[f"cores_per_{size}_task"])
 
 
