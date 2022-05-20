@@ -163,11 +163,34 @@ rule multiqc:
         get_wrapper("multiqc")
 
 
+rule host_removal_create_index:
+    input:
+        host_removal_reference=config["host_removal"]["reference"],
+    output:
+        host_removal_index="output/qc/host_removal_reference_db.mmi"
+    resources:
+        mem_mb=get_max_mb(),
+    log:
+        "output/logs/qc/host_removal_create_index.log",
+    benchmark:
+        "output/benchmarks/qc/host_removal_create_index.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        """
+        minimap2 -d {output} {input} &> {log}
+        """
+
+
+# Would be nice to have some sort of report after this one.
 rule host_removal:
     input:
-        get_fastqc_input_filtered,
+        fastqs=get_fastqc_input_merged if is_activated("merge_reads") else get_fastqc_input_trimmed,
+        reference="output/qc/host_removal_reference_db.mmi",
     output:
         filtered_fq="output/qc/filtered/{sample}_filtered_{read}.fq.gz",
+    params:
+        preset="sr",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -179,5 +202,11 @@ rule host_removal:
         "../envs/samtools.yaml"
     shell:
         """
-        minimap2 
+        {{ minimap2 -t {threads}           \
+                 -ax {params.preset}       \
+                 {input.reference}         \
+                 {input.fastqs} ; }}        2>> {log}   | 
+        {{ samtools view -buSh -f 4 ; }}    2>> {log}   |
+        {{ samtools fastq - ; }}            2>> {log}   |
+        {{ gzip -c - > {output} ; }}        2>> {log}
         """

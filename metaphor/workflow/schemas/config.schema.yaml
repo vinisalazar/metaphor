@@ -56,6 +56,17 @@ properties:
     required:
       - activate
 
+  host_removal:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      reference:
+        type: string
+    required:
+      - activate
+      - reference
+
   fastqc:
     type: object
     properties:
@@ -231,9 +242,12 @@ properties:
         type: boolean
       minfasta:
         type: integer
+      batchsize:
+        type: integer
     required:
       - activate
       - minfasta
+      - batchsize
 
   metabat2:
     type: object
@@ -301,6 +315,7 @@ required:
   - max_mb
   - cutadapt
   - merge_reads
+  - host_removal
   - fastqc
   - multiqc
   - concatenate_contigs
