@@ -50,6 +50,14 @@ sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
 binning_group_names = samples["binning_group"].drop_duplicates().to_list()
 
+if config["host_removal"]["activate"]:
+    assert (reference_path := Path(config["host_removal"]["reference"])).exists(), \
+    f"Host removal reference path '{reference_path}' wasn't found. Please ensure it exists or deactivate host_removal setting."
+
+
+if "ok":
+    assert "ok", \
+    "ok"
 ###############################################################
 # TOP LEVEL
 # These are top level helpers for all modules
@@ -267,16 +275,16 @@ def get_host_removal_input(wildcards):
 def get_fastq_groups(wildcards, sense, kind="filtered"):
     if is_activated("host_removal"):
         kind = "filtered"
-        add = kind
+        add = f"_{kind}_"
     elif is_activated("merge_reads"):
         kind = "merged"
-        add = ""
+        add = "_"
     elif is_activated("trimming"):
         kind = "cutadapt"
-        add = getattr(wildcards, "unit", "")
+        add = getattr(wildcards, "unit", "_")
     return sorted(
         [
-            f"output/qc/{kind}/{sample_name}_{add}_{sense}.fq.gz"
+            f"output/qc/{kind}/{sample_name}{add}{sense}.fq.gz"
             for sample_name in samples.loc[wildcards.group, "sample_name"].to_list()
         ]
     )
