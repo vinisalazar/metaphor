@@ -164,6 +164,66 @@ value is multiplied by the number of cores used by that rule to calculate the am
 cores and 64 GB RAM, you can set your `mb_per_core` to `4096` as that may use up to 48 GB RAM, and so on. To calculate
 the optimal value for this setting, simply divide `max_mb` by the number of cores that you will use for the workflow.
 
+## Assembly and binning
+
+An advantage of Metaphor is its flexibility in terms of assembly and binning of samples. To put it simply, there are two
+different strategies to conduct this: **individual** and **pooled** (named **coassembly/cobinning** in the [Metaphor
+config YAML file](./configuration.md)). These mean the same thing for both assembly and binning (**"AB"** hereafter).
+In the first strategy, samples are assembled (or binned) individually, and don't use data from other samples to inform
+the AB process. In the second strategy, all samples (or samples from a specific group) are pooled together, that is,
+they use data from other samples to both assemble and bin the contigs together. That can be useful if the grouped
+metagenomes are sourced from the same (or very similar) environments.
+
+Metaphor's default strategy is to perform **individual assembly** and **cobinning**. Each sample is assembled
+individually, then contigs from all samples are concatenated into a contig catalogue. Samples are individually mapped to
+that contig catalogue and the mapping data is used for binning. However, you can also perform individual assembly and
+**individual binning**. In that case, the contig catalogue will only contain contigs from that one sample.
+
+An alternative is to perform **coassembly**. Coassembly can be done for all samples, or they can be divided into
+**"groups"**. In both cases, the reads of samples that will be coassembled are used as input to the assembler (rather
+than only a single sample). You can specify assembly groups for your samples by adding a `group` column to your
+input CSV (see previous section). If **coassembly** is activated and you don't specify any groups, all samples
+will be assembled together in a group called "coassembly". The same goes for binning.
+
+You can also use the `group` column to differentiate binning groups, even if you are assembling samples individually.
+Let's say you have some samples from environment **A** and **B** and you'd like to perform individual assembly, 
+but cobinning for both environments. You can simply set your `group` column with the **A** and **B** labels, and
+leave the `coassembly` setting off in the config.
+
+All of these differences can be confusing. Let's summarise how to put each of them in practice, in terms of how
+to set up the Metaphor config:
+
+**Individual assembly, individual binning**  
+You want to assemble and bin each sample individually:
+* `coassembly: False`
+* `cobinning: False`
+* Leave `group` column blank.
+
+**Individual assembly, cobinning (one group)**  
+You want to assemble each sample individually and bin all of them together into a single group:
+* `coassembly: False`
+* `cobinning: True` (default setting)
+* `group` column doesn't matter.
+
+**Individidual assembly, bin by groups**  
+You want to assemble each sample individually and bin them by groups:
+* `coassembly: False`
+* `cobinning: False`
+* `group` column with desired binning groups.
+
+**Coassembly, bin by groups**  
+You want to assemble the samples by groups, and also bin them as so:
+* `coassembly: True`
+* `cobinning: False`
+* `group` column with desired assembly groups, that will be also used for binning.
+
+**Coassembly, cobinning**  
+You want to assemble the samples by groups, but bin them into a single group:
+* `coassebly: True`
+* `cobinning: True`
+* `group` column with desired assembly groups, that will NOT be used for binning (rather a single binning group will
+be used).
+
 ## Package structure
 
 Although Metaphor is a Snakemake workflow, it is packaged as a Python application. There are three subpackages in
@@ -205,6 +265,11 @@ later.
 - How to build your input file
 - How to build your config file
 - How threads and memory interact in Metaphor
+MEETING
+- Talk to Ed Toscari
+- TODO: installing from source
+- TODO: installing in Windows
+- TODO: write exceptions for different errors
 - Structure of Metaphor
     - Common module
     - Quality Control module
