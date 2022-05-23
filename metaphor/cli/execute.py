@@ -123,6 +123,7 @@ def main(args):
         },
         cores=cores,
         use_conda=True,
+        conda_frontend="mamba",
         printshellcmds=True,
         wrapper_prefix=wrapper_prefix,
         until=[] if not until else until,

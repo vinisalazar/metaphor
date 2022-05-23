@@ -136,6 +136,7 @@ def main(args):
         cores=cores,
         dryrun=dry_run,
         use_conda=True,
+        conda_frontend="mamba",
         conda_prefix=conda_prefix,
         printshellcmds=True,
         wrapper_prefix=wrapper_prefix,
