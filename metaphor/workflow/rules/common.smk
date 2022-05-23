@@ -32,7 +32,7 @@ if "unit_name" not in samples.columns:
 # Coassembly/cobinning behaviour
 # The only difference is really the order of statements: if groups are provided,
 # they should be use as 'binning_groups' instead of sample names.
-if ("group" not in samples.columns) or (df["group"].empty):
+if ("group" not in samples.columns) or (samples["group"].empty):
     samples["group"] = "coassembly" if config["coassembly"] else samples["sample_name"]
     samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
 else:
@@ -146,7 +146,8 @@ def get_threads_per_task_size(size):
     assert size in (
         choices := ("small", "medium", "big")
     ), f"Size '{size}' must be one of: {choices}."
-    return round(workflow.cores * config[f"cores_per_{size}_task"])
+    threads_ = round(workflow.cores * config[f"cores_per_{size}_task"])
+    return 1 if threads_ < 1 else threads_
 
 
 def get_mb_per_cores(wildcards, threads, task_type="big"):
