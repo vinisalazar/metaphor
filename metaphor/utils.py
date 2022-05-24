@@ -73,13 +73,13 @@ def confirm_message(cores, mem_mb):
         cores: int
             Number of cores to be used in the workflow.
         mem_mb: int
-            Number of MB RAM to be used per thread in the workflow.
+            Number of MB RAM to be used in the workflow.
     """
     print(
         "You can suppress this confirmation message by running the Metaphor command with the `-y` flag.\n"
     )
     yn = input(
-        f"Snakemake will start with {cores} cores and {mem_mb} MB RAM PER THREAD. Ok to continue? [y/N]\n"
+        f"Snakemake will start with {cores} cores and {mem_mb} MB RAM. Ok to continue? [y/N]\n"
     )
     if yn.lower() != "y":
         print("Metaphor execution cancelled.")

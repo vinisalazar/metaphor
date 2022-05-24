@@ -88,7 +88,7 @@ def main(args):
 
     samples_file = config["samples"]
     if mem_mb is None:
-        mem_mb = config["mb_per_core"]
+        mem_mb = config["max_mb"]
     if coassembly is None:
         coassembly = config["coassembly"]
     if not input_dir:
@@ -119,10 +119,11 @@ def main(args):
         config={
             "samples": samples_file,
             "coassembly": coassembly,
-            "mb_per_core": mem_mb,
+            "max_mb": mem_mb,
         },
         cores=cores,
         use_conda=True,
+        conda_frontend="mamba",
         printshellcmds=True,
         wrapper_prefix=wrapper_prefix,
         until=[] if not until else until,

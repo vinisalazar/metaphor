@@ -70,22 +70,24 @@ rule prodigal:
         """
 
 
-# TODO: refactor for coassembly
 rule prokka:
     input:
-        contigs=get_contigs_input(),
+        genome_bin="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
     output:
-        outfile="output/annotation/prokka/{sample}/{sample}.faa",
+        outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
-        sample=lambda w: w.sample,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    wildcard_constraints:
+        binning_group="|".join(binning_group_names),
+    threads: get_threads_per_task_size("small")
+    resources:
+        mem_mb=get_max_mb(),
     log:
-        "output/logs/annotation/prokka/{sample}.log",
+        "output/logs/annotation/prokka/{binning_group}/{bin}.log",
     benchmark:
-        "output/benchmarks/annotation/prokka/{sample}.txt"
+        "output/benchmarks/annotation/prokka/{binning_group}/{bin}.txt"
     conda:
         "../envs/prokka.yaml"
     shell:
@@ -93,9 +95,9 @@ rule prokka:
         prokka --outdir {params.outdir}     \
                --kingdom {params.kingdom}   \
                --cpus {threads}             \
-               --prefix {params.sample}     \
+               --prefix {wildcards.bin}     \
                {params.args}                \
-               {input.contigs}          
+               {input.genome_bin}          
         """
 
 
@@ -146,7 +148,7 @@ rule diamond_makedb:
         extra=lambda w, input: f"--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
         "output/logs/annotation/diamond/diamond_makedb.log",
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
     wrapper:
@@ -193,7 +195,7 @@ rule diamond:
         extra="--iterate --top 0",
     wildcard_constraints:
         group="|".join(group_names),
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
@@ -252,10 +254,10 @@ rule taxonomy_parser:
 
 rule concatenate_cog_functional:
     input:
-        functional_counts=expand(
+        functional_counts=lambda wildcards: expand(
             "output/annotation/cog/{group}/{group}_{kind}.tsv",
             group=group_names,
-            kind=functional_kinds,
+            kind=wildcards.kind,
         ),
     output:
         functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
@@ -311,7 +313,6 @@ rule lineage_parser:
         order=get_group_or_sample_file("annotation", "cog", "order.tsv"),
         klass=get_group_or_sample_file("annotation", "cog", "class.tsv"),
         phylum=get_group_or_sample_file("annotation", "cog", "phylum.tsv"),
-        kingdom=get_group_or_sample_file("annotation", "cog", "kingdom.tsv"),
         domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
@@ -329,7 +330,7 @@ rule plot_cog_functional:
     input:
         categories_file="output/annotation/cog/tables/COG_categories_relative.tsv",
     output:
-        categories_plt=report(
+        categories_plot=report(
             get_cog_functional_plot_outputs(),
             category="Annotation",
         ),
@@ -356,6 +357,7 @@ rule plot_cog_taxonomy:
         ),
     params:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
+        colormap=config["plot_taxonomies"]["colormap"],
     log:
         "output/logs/annotation/plot_taxonomies_{rank}.log",
     benchmark:

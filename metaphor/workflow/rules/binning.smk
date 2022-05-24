@@ -18,19 +18,19 @@ rule vamb:
         catalogue="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
         clusters=get_vamb_output(),
-        scaffolds2bin="output/binning/DAS_tool/{binning_group}/vamb_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/vamb/{binning_group}/vamb_scaffolds2bin.tsv",
     params:  # defaults in vamb's README
         outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
         minfasta=config["vamb"]["minfasta"],
-        batchsize=256,
-    threads: round(workflow.cores * config["cores_per_big_task"])
+        batchsize=config["vamb"]["batchsize"],
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/vamb.log",
+        "output/logs/binning/vamb/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/vamb.txt"
+        "output/benchmarks/binning/vamb/{binning_group}.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -57,20 +57,20 @@ rule metabat2:
         depths="output/mapping/{binning_group}/bam_contig_depths.txt",
     output:
         outdir=directory("output/binning/metabat2/{binning_group}/"),
-        scaffolds2bin="output/binning/DAS_tool/{binning_group}/metabat2_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/metabat2/{binning_group}/metabat2_scaffolds2bin.tsv",
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
         outfile=lambda w, output: str(
             Path(output.outdir).joinpath(config["metabat2"]["preffix"])
         ),
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/metabat2.log",
+        "output/logs/binning/metabat2/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/metabat2.txt"
+        "output/benchmarks/binning/metabat2/{binning_group}.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:
@@ -94,23 +94,23 @@ rule concoct:
         catalogue="output/mapping/{binning_group}/catalogue.fna",
         bams=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
-        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        sample=list(
+            samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
-            ]
-            .unique()
-            .to_list(),
+                ].unique()
+            ),
         ),
         bais=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam.bai",
-        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        sample=list(
+            samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
-            ]
-            .unique()
-            .to_list(),
+                ].unique()
+            ),
         ),
     output:
         outdir=directory("output/binning/concoct/{binning_group}/"),
-        scaffolds2bin="output/binning/DAS_tool/{binning_group}/concoct_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/concoct/{binning_group}/concoct_scaffolds2bin.tsv",
     params:
         contig_size=10000,
         bed=lambda w, output: str(Path(output.outdir).joinpath("contigs.bed")),
@@ -125,13 +125,13 @@ rule concoct:
         clustering_merged=lambda w, output: str(
             Path(output.outdir).joinpath("clustering_merged.csv")
         ),
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/concoct.log",
+        "output/logs/binning/concoct/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/concoct.txt"
+        "output/benchmarks/binning/concoct/{binning_group}.txt"
     conda:
         "../envs/concoct.yaml"
     shell:
@@ -175,22 +175,28 @@ rule DAS_tool:
     input:
         contigs="output/mapping/{binning_group}/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
+        # Only use the proteins if the assembly groups are the same as the binning groups.
+        proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa")
+        if (group_names == binning_group_names)
+        or (config["coassembly"] and config["cobinning"])
+        else (),
     output:
-        proteins="output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa",
+        summary="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
     params:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
         binners=",".join(binners),
         outpreffix=lambda w, output: str(
-            Path(output.proteins).parent.joinpath("DAS_tool")
+            Path(output.summary).parent.joinpath("DAS_tool")
         ),
         score_threshold=config["das_tool"]["score_threshold"],
-    threads: round(workflow.cores * config["cores_per_big_task"])
+        proteins=lambda w, input: f"-p {input.proteins}" if input.proteins else "",
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/DAS_tool.log",
+        "output/logs/binning/DAS_tool/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/DAS_tool.txt"
+        "output/benchmarks/binning/DAS_tool/{binning_group}.txt"
     conda:
         "../envs/das_tool.yaml"
     shell:
@@ -199,6 +205,7 @@ rule DAS_tool:
                  -l {params.binners}                                \
                  -c {input.contigs}                                 \
                  -o {params.outpreffix}                             \
+                    {params.proteins}                               \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \

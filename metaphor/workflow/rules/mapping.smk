@@ -30,9 +30,9 @@ rule concatenate_contigs:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/concatenate_contigs.log",
+        "output/logs/mapping/concatenate_contigs/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/concatenate_contigs.txt"
+        "output/benchmarks/mapping/concatenate_contigs/{binning_group}.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -46,7 +46,7 @@ rule decompress_catalogue:
         catalogue_gz="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
         catalogue="output/mapping/{binning_group}/catalogue.fna",
-    threads: round(workflow.cores * config["cores_per_small_task"])
+    threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -54,9 +54,9 @@ rule decompress_catalogue:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/decompress_catalogue.log",
+        "output/logs/mapping/decompress_catalogue/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/decompress_catalogue.txt"
+        "output/benchmarks/mapping/decompress_catalogue/{binning_group}.txt"
     conda:
         "../envs/utils.yaml"
     shell:
@@ -104,9 +104,9 @@ rule create_index:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/create_index.log",
+        "output/logs/mapping/create_index/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/create_index.txt"
+        "output/benchmarks/mapping/create_index/{binning_group}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -127,7 +127,7 @@ rule map_reads:
         N=50,
         preset="sr",
         flags=3584,
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -136,23 +136,23 @@ rule map_reads:
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/map_reads/{binning_group}/{sample}.log",
+        "output/logs/mapping/map_reads/{binning_group}-{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/map_reads/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/map_reads/{binning_group}-{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {threads}                \
-                    -N {params.N}               \
-                    -a -x {params.preset}       \
-                    {input.catalogue_idx}       \
-                    {input.fastq1}              \
-                    {input.fastq2} |
-          samtools view                         \
-                    -F {params.flags}           \
-                    -b --threads                \
-                    {threads} > {output.bam} ; }} &> {log}
+        {{ minimap2 -t {threads}                    \
+                    -N {params.N}                   \
+                    -ax {params.preset}             \
+                    {input.catalogue_idx}           \
+                    {input.fastq1}                  \
+                    {input.fastq2} ; }} 2>> {log}   |
+        {{ samtools view                            \
+                    -F {params.flags}               \
+                    -b --threads                    \
+                    {threads} > {output.bam} ; }} 2>> {log}
         """
 
 
@@ -161,7 +161,7 @@ rule sort_reads:
         bam="output/mapping/bam/{binning_group}/{sample}.map.bam",
     output:
         sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -170,9 +170,9 @@ rule sort_reads:
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/sort_reads/{binning_group}/{sample}.log",
+        "output/logs/mapping/sort_reads/{binning_group}-{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/sort_reads/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/sort_reads/{binning_group}-{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
@@ -184,7 +184,7 @@ rule index_reads:
         sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     output:
         index="output/mapping/bam/{binning_group}/{sample}.sorted.bam.bai",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -193,9 +193,9 @@ rule index_reads:
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/index_reads/{binning_group}/{sample}.log",
+        "output/logs/mapping/index_reads/{binning_group}-{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/index_reads/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/index_reads/{binning_group}-{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -207,7 +207,7 @@ rule flagstat:
         sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
     output:
         flagstat="output/mapping/bam/{binning_group}/{sample}.flagstat.txt",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     wildcard_constraints:
@@ -241,10 +241,10 @@ rule jgi_summarize_bam_contig_depths:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/jgi_summarize_bam_contig_depths.log",
+        "output/logs/mapping/jgi_summarize_bam_contig_depths/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/jgi_summarize_bam_contig_depths.txt"
+        "output/benchmarks/mapping/jgi_summarize_bam_contig_depths/{binning_group}.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:
-        "jgi_summarize_bam_contig_depths {input} --outputDepth {output}"
+        "jgi_summarize_bam_contig_depths {input} --outputDepth {output} 2> {log}"

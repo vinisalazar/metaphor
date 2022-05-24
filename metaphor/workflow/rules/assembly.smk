@@ -32,8 +32,8 @@ rule concatenate_merged_reads:
 
 rule megahit:
     input:
-        fastq1=get_assembler_input_R1,
-        fastq2=get_assembler_input_R2,
+        fastq1=lambda w: get_fastq_groups(w, "R1"),
+        fastq2=lambda w: get_fastq_groups(w, "R2"),
     output:
         contigs=get_contigs_input(),
     params:
@@ -48,7 +48,7 @@ rule megahit:
             "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
         ),
         sample=lambda w: w.group,
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     wildcard_constraints:
         group="|".join(group_names),
     resources:
@@ -120,7 +120,7 @@ rule metaquast:
         mincontig=500,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         extra_params="--fragmented --unique-mapping --no-icarus --no-plots --no-gc --no-sv",
-    threads: round(workflow.cores * config["cores_per_big_task"])
+    threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
     log:

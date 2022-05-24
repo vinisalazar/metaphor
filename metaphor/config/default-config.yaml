@@ -17,13 +17,12 @@ samples: samples.csv
 
 # CPU settings
 # Total cores are passed from the command line
-cores_per_big_task: 1         # Total of workflow cores to use per big task
-cores_per_medium_task: 0.5    # Total of workflow cores to use per medium task
-cores_per_small_task: 0.25    # Total of workflow cores to use per small task
+cores_per_big_task: 1         # Percentage of workflow cores to use per big task
+cores_per_medium_task: 0.5    # Percentage of workflow cores to use per medium task
+cores_per_small_task: 0.25    # Percentage of workflow cores to use per small task
 
 # Memory settings
-max_mb: 65536         # Max MB memory to be used. This sould be over the number of 'cores * mb_per_core'. Must correspond to the maximum resources requested from the machine (e.g. in a cluster).
-mb_per_core: 2048     # How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.
+max_mb: 65536         # Max MB memory to be used.
 
 ###############################################################
 # QC
@@ -39,6 +38,10 @@ cutadapt:
 
 merge_reads:
   activate: True
+
+host_removal:
+  activate: False
+  reference: ""
 
 fastqc:
   activate: True
@@ -76,7 +79,7 @@ prodigal:
 
 prokka:
   activate: False
-  args: "--metagenome --quiet --force"
+  args: "--quiet --force"
   kingdom: "Bacteria"
 
 diamond:
@@ -104,7 +107,8 @@ plot_cog_functional:
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 0.000001  # 1e-6
+  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Leave as 0 for no filtering. Low abundance taxa will be grouped as 'Low abundance'.
+  colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
 # BINNING
@@ -115,6 +119,7 @@ cobinning: True # Whether to perform cobinning. When this is true, only one binn
 vamb:
   activate: True
   minfasta: 10000
+  batchsize: 256
 
 metabat2:
   activate: True

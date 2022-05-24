@@ -28,9 +28,19 @@ samples = pd.read_csv(
 )
 if "unit_name" not in samples.columns:
     samples["unit_name"] = "unit_0"
-if "group" not in samples.columns:
+
+# Coassembly/cobinning behaviour
+# The only difference is really the order of statements: if groups are provided,
+# they should be use as 'binning_groups' instead of sample names.
+if ("group" not in samples.columns) or (samples["group"].empty):
     samples["group"] = "coassembly" if config["coassembly"] else samples["sample_name"]
-samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
+    samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
+else:
+    samples["binning_group"] = "cobinning" if config["cobinning"] else samples["group"]
+    samples["group"] = (
+        samples["group"] if config["coassembly"] else samples["sample_name"]
+    )
+
 samples = samples.fillna("")
 samples = samples.set_index(
     ["group", "sample_name", "unit_name"], drop=False
@@ -42,6 +52,14 @@ sample_IDs = samples["sample_name"].drop_duplicates().to_list()
 unit_names = samples["unit_name"].drop_duplicates().to_list()
 binning_group_names = samples["binning_group"].drop_duplicates().to_list()
 
+if config["host_removal"]["activate"]:
+    assert (
+        reference_path := Path(config["host_removal"]["reference"])
+    ).exists(), f"Host removal reference path '{reference_path}' wasn't found. Please ensure it exists or deactivate host_removal setting."
+
+
+if "ok":
+    assert "ok", "ok"
 ###############################################################
 # TOP LEVEL
 # These are top level helpers for all modules
@@ -119,15 +137,28 @@ def get_wrapper(wrapper):
     return str(Path(wrapper_version).joinpath(f"bio/{wrapper}"))
 
 
-def get_mb_per_cores(wildcards, threads):
+def get_threads_per_task_size(size):
     """
-    Calculates the amount of memory to be used based on the number of threads
-    and the config 'mb_per_core' object.
+    Determines the number of cores to be used depending on the size of the task.
+
+    The percentage of cores each task uses is set in the config YAML file.
+    """
+    assert size in (
+        choices := ("small", "medium", "big")
+    ), f"Size '{size}' must be one of: {choices}."
+    threads_ = round(workflow.cores * config[f"cores_per_{size}_task"])
+    return 1 if threads_ < 1 else threads_
+
+
+def get_mb_per_cores(wildcards, threads, task_type="big"):
+    """
+    Calculates the amount of memory to be used based on the number of total cores
+    and the config 'mb_max' object.
 
     wildcards: Snakemake wildcards (passed on automatically)
     threads: number of threads passed to the workflow
     """
-    return threads * config["mb_per_core"]
+    return threads * int(config["max_mb"] / workflow.cores)
 
 
 def get_max_mb(margin=0.2):
@@ -232,24 +263,34 @@ def get_fastqc_input_merged(wildcards):
     return "output/qc/merged/{sample}_{read}.fq.gz"
 
 
-def get_fastq_groups_R1(group, kind="merged"):
-    if not is_activated("merge_reads"):
-        kind = "cutadapt"
-    return sorted(
-        [
-            f"output/qc/{kind}/{sample_name}_R1.fq.gz"
-            for sample_name in samples.loc[group, "sample_name"].to_list()
-        ]
-    )
+def get_fastqc_input_filtered(wildcards):
+    sample, read = wildcards.sample, wildcards.read
+    return "output/qc/filtered/{sample}_filtered_{read}.fq.gz"
 
 
-def get_fastq_groups_R2(group, kind="merged"):
+def get_host_removal_input(wildcards):
     if not is_activated("merge_reads"):
+        return get_fastqc_input_trimmed
+    elif not is_activated("host_removal"):
+        return get_fastqc_input_merged
+    else:
+        return get_fastqc_input_filtered
+
+
+def get_fastq_groups(wildcards, sense, kind="filtered"):
+    if is_activated("host_removal"):
+        kind = "filtered"
+        add = f"_{kind}_"
+    elif is_activated("merge_reads"):
+        kind = "merged"
+        add = "_"
+    elif is_activated("trimming"):
         kind = "cutadapt"
+        add = getattr(wildcards, "unit", "_")
     return sorted(
         [
-            f"output/qc/{kind}/{sample_name}_R2.fq.gz"
-            for sample_name in samples.loc[group, "sample_name"].to_list()
+            f"output/qc/{kind}/{sample_name}{add}{sense}.fq.gz"
+            for sample_name in samples.loc[wildcards.group, "sample_name"].to_list()
         ]
     )
 
@@ -288,16 +329,6 @@ def get_qc_output():
 ###############################################################
 # Assembly
 ###############################################################
-
-
-def get_assembler_input_R1(wildcards):
-    return get_fastq_groups_R1(wildcards.group)
-
-
-def get_assembler_input_R2(wildcards):
-    return get_fastq_groups_R2(wildcards.group)
-
-
 def get_contigs_input(expand_=False):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
 
@@ -401,7 +432,7 @@ def get_all_assembly_outputs():
 # Annotation
 ###############################################################
 
-ranks = "species genus family order class phylum kingdom domain".split()
+ranks = "species genus family order class phylum domain".split()
 
 
 def get_cog_db_file(filename):
@@ -467,7 +498,20 @@ def get_all_lineage_parser_outputs():
 
 
 def get_prokka_output():
-    return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)
+    bins_dict = {}
+    for group in binning_group_names:
+        bins_dict[group] = glob(
+            f"output/binning/DAS_tool/{group}/DAS_tool_DASTool_bins/*"
+        )
+
+    for group, list_of_bins in bins_dict.items():
+        list_of_bins = [Path(bin_).stem for bin_ in list_of_bins]
+        bins_dict[group] = [
+            f"output/annotation/prokka/{group}/{bin_}/{bin_}.fna"
+            for bin_ in list_of_bins
+        ]
+
+    return bins_dict.values()
 
 
 def get_taxa_plot_outputs():
@@ -475,7 +519,7 @@ def get_taxa_plot_outputs():
 
 
 def get_cog_functional_plot_outputs():
-    return "output/annotation/cog/tables/COG_categories_relative.tsv"
+    return "output/annotation/cog/plots/COG_categories_relative.png"
 
 
 def get_annotation_output():
@@ -578,7 +622,7 @@ binners = [b for b in ("concoct", "metabat2", "vamb") if is_activated(b)]
 
 def get_DAS_tool_input():
     scaffolds2bin = (
-        lambda binner: f"output/binning/DAS_tool/{{binning_group}}/{binner}_scaffolds2bin.tsv"
+        lambda binner: f"output/binning/{binner}/{{binning_group}}/{binner}_scaffolds2bin.tsv"
     )
     return sorted(scaffolds2bin(b) for b in binners)
 
@@ -617,7 +661,7 @@ def get_binning_output():
             "output/binning/concoct/{binning_group}", binning_group=binning_group_names
         ),
         "das_tool": expand(
-            "output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa",
+            "output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
             binning_group=binning_group_names,
         ),
     }

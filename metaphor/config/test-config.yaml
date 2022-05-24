@@ -18,9 +18,7 @@ cores_per_medium_task: 0.5    # Total of workflow cores to use per medium task
 cores_per_small_task: 0.25    # Total of workflow cores to use per small task
 
 # Memory settings
-max_mb: 8196          # Max MB memory to be used. This sould be over the number of 'cores * mb_per_core'. Must correspond to the maximum resources requested from the machine (e.g. in a cluster).
-mb_per_core: 2048     # How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.
-
+max_mb: 8196          # Max MB memory to be used.
 
 
 ###############################################################
@@ -37,6 +35,10 @@ cutadapt:
 
 merge_reads:
   activate: True
+
+host_removal:
+  activate: False
+  reference: ""
 
 fastqc:
   activate: False
@@ -73,8 +75,8 @@ prodigal:
   scores: False
 
 prokka:
-  activate: False
-  args: "--metagenome --quiet --force"
+  activate: True
+  args: "--quiet --force"
   kingdom: "Bacteria"
 
 diamond:
@@ -102,7 +104,8 @@ plot_cog_functional:
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 0.01
+  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
+  colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
 # Binning
@@ -113,6 +116,7 @@ cobinning: True # Whether to perform cobinning. When this is true, only one binn
 vamb:
   activate: True
   minfasta: 1000
+  batchsize: 128
 
 metabat2:
   activate: True
@@ -133,7 +137,7 @@ das_tool:
 postprocessing:
   activate: True
   runtime_unit: "m"
-  runtime_cutoff: 0
+  runtime_cutoff: 1
   memory_unit: "max_vms"
   memory_cutoff: 0
   memory_gb: True

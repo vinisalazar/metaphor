@@ -20,8 +20,6 @@ properties:
 
   max_mb:
     type: integer
-  mb_per_core:
-    type: integer
 
 ###############################################################
 # QC
@@ -57,6 +55,17 @@ properties:
         type: boolean
     required:
       - activate
+
+  host_removal:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      reference:
+        type: string
+    required:
+      - activate
+      - reference
 
   fastqc:
     type: object
@@ -214,10 +223,16 @@ properties:
   plot_taxonomies:
     type: object
     properties:
+      activate:
+        type: boolean
       tax_cutoff:
-        type: number
+        type: integer
+      colormap:
+        type: string
     required:
+      - activate
       - tax_cutoff
+      - colormap
 
 ###############################################################
 # Binning
@@ -233,9 +248,12 @@ properties:
         type: boolean
       minfasta:
         type: integer
+      batchsize:
+        type: integer
     required:
       - activate
       - minfasta
+      - batchsize
 
   metabat2:
     type: object
@@ -300,9 +318,10 @@ properties:
 required:
   - samples
   - coassembly
-  - mb_per_core
+  - max_mb
   - cutadapt
   - merge_reads
+  - host_removal
   - fastqc
   - multiqc
   - concatenate_contigs

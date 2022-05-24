@@ -15,6 +15,7 @@ __doc__ = """
 from argparse import Namespace
 from pathlib import Path
 from hashlib import md5
+from textwrap import dedent
 
 import requests
 from tqdm import tqdm
@@ -66,22 +67,30 @@ def check_test_directory(directory):
 
 def download_data(directory, test_files, download_url):
     test_directory = check_test_directory(directory)
-    print("Starting data download.")
     downloaded, skipped = 0, 0
-    for filename, hexdigest in tqdm(test_files.items()):
-        local_file = test_directory.joinpath(filename)
-        if (not local_file.exists()) or (get_md5(local_file) != hexdigest):
-            url = download_url + filename
-            download_file(url, local_file)
+    test_files = {
+        test_directory.joinpath(filename): hexdigest
+        for filename, hexdigest in test_files.items()
+    }
+
+    if all(
+        local_file.exists() and (get_md5(local_file) == hexdigest)
+        for local_file, hexdigest in test_files.items()
+    ):
+        skipped += len(test_files)
+    else:
+        print("Starting data download.")
+        for filename in tqdm(test_files.keys()):
+            url = download_url + Path(filename).name
+            download_file(url, filename)
             downloaded += 1
-        else:
-            # print(f"File '{filename}' exists and hash is correct. Skipping download.")
-            skipped += 1
 
     for v in "downloaded", "skipped":
         if eval(v):
             msg = v.capitalize() + f" {eval(v)} files."
             print(msg)
+
+    return
 
 
 test_files = {
@@ -131,14 +140,22 @@ def main(args):
         config={
             "samples": samples_file,
             "coassembly": coassembly,
-            "mb_per_core": mem_mb,
+            "max_mb": mem_mb,
         },
         cores=cores,
         dryrun=dry_run,
         use_conda=True,
+        conda_frontend="mamba",
         conda_prefix=conda_prefix,
         printshellcmds=True,
         wrapper_prefix=wrapper_prefix,
         printreason=True,
     )
-    get_successful_completion(sm_exit, "Test complete.")
+    test_complete_message = """
+    Test complete!
+
+    This means that you can use this directory to run your actual analysis.
+    All necessary software is in the .snakemake/conda/ directory, and databases are in the data/ directory.
+    Simply delete the output/ directory and you're good to go.
+    """
+    get_successful_completion(sm_exit, dedent(test_complete_message))
