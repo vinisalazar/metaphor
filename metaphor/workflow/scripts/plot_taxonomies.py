@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 import argparse
+from audioop import avg
 import logging
 from pathlib import Path
+from textwrap import wrap
 
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.patches import Rectangle
 
 #######################################
 # Taxa bar plots
@@ -53,6 +56,18 @@ def create_tax_barplot(dataframe, save=True, outfile=None):
     axs[0].get_legend().remove()
     axs[0].set_xlabel("Relative abundance")
     axs[0].set_ylabel("")
+
+    # Get legend for filtered average
+    if (filtered_label := "Filtered/Low abundance") in dataframe.index:
+        avg_filtered = dataframe.loc[filtered_label].mean()
+        avg_filtered = round(avg_filtered, 4) * 100
+        handle, label = [
+            Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor="none", linewidth=0)
+        ], [f"Avg. of {avg_filtered}% reads were filtered as low abundance."]
+        handles += handle
+        labels += label
+        labels = ["\n".join(wrap(l, 20)) for l in labels]
+
     axs[1].legend(handles, labels, title=rank.capitalize() if rank else "")
     axs[1].set_xticks([])
     axs[1].set_yticks([])
@@ -78,7 +93,8 @@ def process_rank_file(args):
         rank_df = rank_df.iloc[:cutoff]
         # Group low abundance and undetermined taxa
         filtered = abs(rank_df.sum() - 1)
-        rank_df.loc["Filtered/Low abundance"] = filtered
+        breakpoint()
+        rank_df.loc[f"Filtered/Low abundance"] = filtered
 
         rank_df = rank_df[sorted(rank_df.columns, reverse=True)]
 
