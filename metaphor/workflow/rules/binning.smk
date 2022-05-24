@@ -18,7 +18,7 @@ rule vamb:
         catalogue="output/mapping/{binning_group}/catalogue.fna.gz",
     output:
         clusters=get_vamb_output(),
-        scaffolds2bin="output/binning/DAS_tool/{binning_group}/vamb_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/vamb/{binning_group}/vamb_scaffolds2bin.tsv",
     params:  # defaults in vamb's README
         outdir=lambda w, output: get_parent(output.clusters),
         binsplit_sep="C",
@@ -57,7 +57,7 @@ rule metabat2:
         depths="output/mapping/{binning_group}/bam_contig_depths.txt",
     output:
         outdir=directory("output/binning/metabat2/{binning_group}/"),
-        scaffolds2bin="output/binning/DAS_tool/{binning_group}/metabat2_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/metabat2/{binning_group}/metabat2_scaffolds2bin.tsv",
     params:
         minContig=2500,
         seed=config["metabat2"]["seed"],
@@ -110,7 +110,7 @@ rule concoct:
         ),
     output:
         outdir=directory("output/binning/concoct/{binning_group}/"),
-        scaffolds2bin="output/binning/DAS_tool/{binning_group}/concoct_scaffolds2bin.tsv",
+        scaffolds2bin="output/binning/concoct/{binning_group}/concoct_scaffolds2bin.tsv",
     params:
         contig_size=10000,
         bed=lambda w, output: str(Path(output.outdir).joinpath("contigs.bed")),
@@ -175,8 +175,13 @@ rule DAS_tool:
     input:
         contigs="output/mapping/{binning_group}/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
+        # Only use the proteins if the assembly groups are the same as the binning groups.
+        proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa")
+        if (group_names == binning_group_names)
+        or (config["coassembly"] and config["cobinning"])
+        else (),
     output:
-        proteins="output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa",
+        summary="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
     params:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
         binners=",".join(binners),
@@ -184,6 +189,7 @@ rule DAS_tool:
             Path(output.proteins).parent.joinpath("DAS_tool")
         ),
         score_threshold=config["das_tool"]["score_threshold"],
+        proteins=lambda w, input: f"-p {input.proteins}" if input.proteins else "",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -199,6 +205,7 @@ rule DAS_tool:
                  -l {params.binners}                                \
                  -c {input.contigs}                                 \
                  -o {params.outpreffix}                             \
+                    {params.proteins}                               \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \

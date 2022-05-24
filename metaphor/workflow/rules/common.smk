@@ -609,7 +609,7 @@ binners = [b for b in ("concoct", "metabat2", "vamb") if is_activated(b)]
 
 def get_DAS_tool_input():
     scaffolds2bin = (
-        lambda binner: f"output/binning/DAS_tool/{{binning_group}}/{binner}_scaffolds2bin.tsv"
+        lambda binner: f"output/binning/{binner}/{{binning_group}}/{binner}_scaffolds2bin.tsv"
     )
     return sorted(scaffolds2bin(b) for b in binners)
 
@@ -648,7 +648,7 @@ def get_binning_output():
             "output/binning/concoct/{binning_group}", binning_group=binning_group_names
         ),
         "das_tool": expand(
-            "output/binning/DAS_tool/{binning_group}/DAS_tool_proteins.faa",
+            "output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
             binning_group=binning_group_names,
         ),
     }
