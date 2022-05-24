@@ -498,7 +498,7 @@ def get_all_lineage_parser_outputs():
 
 
 def get_prokka_output():
-    return expand("output/annotation/prokka/{sample}/{sample}.faa", sample=sample_IDs)
+    return directory(f"output/annotation/prokka/{binning_group}/" for binning_group in binning_group_names)
 
 
 def get_taxa_plot_outputs():

@@ -30,9 +30,9 @@ rule concatenate_contigs:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/concatenate_contigs.log",
+        "output/logs/mapping/concatenate_contigs/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/concatenate_contigs.txt"
+        "output/benchmarks/mapping/concatenate_contigs/{binning_group}.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -54,9 +54,9 @@ rule decompress_catalogue:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/decompress_catalogue.log",
+        "output/logs/mapping/decompress_catalogue/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/decompress_catalogue.txt"
+        "output/benchmarks/mapping/decompress_catalogue/{binning_group}.txt"
     conda:
         "../envs/utils.yaml"
     shell:
@@ -104,9 +104,9 @@ rule create_index:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/create_index.log",
+        "output/logs/mapping/create_index/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/create_index.txt"
+        "output/benchmarks/mapping/create_index/{binning_group}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -136,9 +136,9 @@ rule map_reads:
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/map_reads/{binning_group}/{sample}.log",
+        "output/logs/mapping/map_reads/{binning_group}-{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/map_reads/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/map_reads/{binning_group}-{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -170,9 +170,9 @@ rule sort_reads:
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/sort_reads/{binning_group}/{sample}.log",
+        "output/logs/mapping/sort_reads/{binning_group}-{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/sort_reads/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/sort_reads/{binning_group}-{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
@@ -193,9 +193,9 @@ rule index_reads:
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
     log:
-        "output/logs/mapping/index_reads/{binning_group}/{sample}.log",
+        "output/logs/mapping/index_reads/{binning_group}-{sample}.log",
     benchmark:
-        "output/benchmarks/mapping/index_reads/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/index_reads/{binning_group}-{sample}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -241,9 +241,9 @@ rule jgi_summarize_bam_contig_depths:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}/jgi_summarize_bam_contig_depths.log",
+        "output/logs/mapping/jgi_summarize_bam_contig_depths/{binning_group}.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}/jgi_summarize_bam_contig_depths.txt"
+        "output/benchmarks/mapping/jgi_summarize_bam_contig_depths/{binning_group}.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:
