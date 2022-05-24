@@ -355,6 +355,7 @@ rule plot_cog_taxonomy:
         ),
     params:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
+        colormap=config["plot_taxonomies"]["colormap"]
     log:
         "output/logs/annotation/plot_taxonomies_{rank}.log",
     benchmark:

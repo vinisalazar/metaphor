@@ -105,6 +105,7 @@ plot_cog_functional:
 plot_taxonomies:
   activate: True
   tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
+  colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
 # Binning

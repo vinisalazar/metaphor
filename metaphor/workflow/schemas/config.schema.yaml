@@ -223,10 +223,16 @@ properties:
   plot_taxonomies:
     type: object
     properties:
+      activate:
+        type: boolean
       tax_cutoff:
         type: integer
+      colormap:
+        type: string
     required:
+      - activate
       - tax_cutoff
+      - colormap
 
 ###############################################################
 # Binning
