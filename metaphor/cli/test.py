@@ -67,22 +67,30 @@ def check_test_directory(directory):
 
 def download_data(directory, test_files, download_url):
     test_directory = check_test_directory(directory)
-    print("Starting data download.")
     downloaded, skipped = 0, 0
-    for filename, hexdigest in tqdm(test_files.items()):
-        local_file = test_directory.joinpath(filename)
-        if (not local_file.exists()) or (get_md5(local_file) != hexdigest):
-            url = download_url + filename
-            download_file(url, local_file)
+    test_files = {
+        test_directory.joinpath(filename): hexdigest
+        for filename, hexdigest in test_files.items()
+    }
+
+    if all(
+        local_file.exists() and (get_md5(local_file) == hexdigest)
+        for local_file, hexdigest in test_files.items()
+    ):
+        skipped += len(test_files)
+    else:
+        print("Starting data download.")
+        for filename in tqdm(test_files.keys()):
+            url = download_url + Path(filename).name
+            download_file(url, filename)
             downloaded += 1
-        else:
-            # print(f"File '{filename}' exists and hash is correct. Skipping download.")
-            skipped += 1
 
     for v in "downloaded", "skipped":
         if eval(v):
             msg = v.capitalize() + f" {eval(v)} files."
             print(msg)
+
+    return
 
 
 test_files = {
