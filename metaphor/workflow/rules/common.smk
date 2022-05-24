@@ -498,10 +498,15 @@ def get_all_lineage_parser_outputs():
 
 
 def get_prokka_output():
-    return directory(
-        f"output/annotation/prokka/{binning_group}/"
-        for binning_group in binning_group_names
-    )
+    bins_dict = {}
+    for group in binning_group_names:
+        bins_dict[group] = glob(f"output/binning/DAS_tool/{group}/DAS_tool_DASTool_bins/*")
+
+    for group, list_of_bins in bins_dict.items():
+        list_of_bins = [Path(bin_).stem for bin_ in list_of_bins]
+        bins_dict[group] = [f"output/annotation/prokka/{group}/{bin_}/{bin_}.fna" for bin_ in list_of_bins]
+
+    return bins_dict.values()
 
 
 def get_taxa_plot_outputs():

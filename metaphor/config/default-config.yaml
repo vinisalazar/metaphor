@@ -79,7 +79,7 @@ prodigal:
 
 prokka:
   activate: False
-  args: "--metagenome --quiet --force"
+  args: "--quiet --force"
   kingdom: "Bacteria"
 
 diamond:

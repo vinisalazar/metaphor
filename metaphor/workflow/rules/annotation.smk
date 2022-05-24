@@ -72,15 +72,18 @@ rule prodigal:
 
 rule prokka:
     input:
-        genome_bin="output/annotation/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
+        genome_bin="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
     output:
-        outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.faa",
+        outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna"
     params:
-        bin_=lambda w: w.bin,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
+    wildcard_constraints:
+        binning_group="|".join(binning_group_names),
     threads: get_threads_per_task_size("small")
+    resources:
+        mem_mb=get_max_mb(),
     log:
         "output/logs/annotation/prokka/{binning_group}/{bin}.log",
     benchmark:
@@ -94,7 +97,7 @@ rule prokka:
                --cpus {threads}             \
                --prefix {wildcards.bin}     \
                {params.args}                \
-               {input.contigs}          
+               {input.genome_bin}          
         """
 
 
