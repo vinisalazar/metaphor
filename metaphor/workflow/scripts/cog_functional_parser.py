@@ -86,7 +86,9 @@ def create_merged_df(dmnd_out, cog_csv, def_tab):
         names=cog_csv_names,
         index_col="Protein ID",
         usecols=["Protein ID", "COG ID"],
-    ).drop_duplicates()
+    )
+    # Remove duplicate Protein IDs
+    cog_csv = cog_csv[~cog_csv.index.duplicated(keep="first")]
 
     # Merge COG database information (cog_csv, def_tab) with Diamond output (df)
     logging.info("Merging dataframes.")
