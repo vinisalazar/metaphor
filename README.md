@@ -1,5 +1,10 @@
 # Metaphor
-## Metagenomics Pipeline for Short Reads
+## Metagenomics Pipeline for sHOrt Reads
+
+![https://metaphor-workflow.readthedocs.io/](https://img.shields.io/readthedocs/metaphor-workflow?color=g) ![https://github.com/vinisalazar/metaphor/tags](https://img.shields.io/github/v/tag/vinisalazar/metaphor?color=g&label=release)
+
+<!-- [![Version](https://anaconda.org/bioconda/metaphor/badges/version.svg)](https://anaconda.org/bioconda/metaphor)
+[![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor) -->
 
 Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads data. It includes the following steps:
 - Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [Cutadapt](https://github.com/marcelm/cutadapt))
@@ -12,33 +17,30 @@ Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads 
 Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable.
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
+Check out our [documentation!](metaphor-workflow.readthedocs.io)
+
 ### Installation
 The first thing that you need to install Metaphor is [conda](https://docs.conda.io/). To install it, please follow their [user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
 Once you have conda, we highly recommend that you use [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for installing Metaphor. If mamba is not available, replace all `mamba` commands for `conda`.
 
-Run the following commands to install Metaphor from source.
+Run the following commands to install Metaphor from source. Metaphor will soon be available to install through Bioconda.
+
 ```bash
 
 # Install mamba (if you haven't already)
 $ conda install mamba -n base -c conda-forge
 
 # Copy the code to your machine
-$ git clone git@github.com:vinisalazar/metaphor.git
-
-# If you don't want to set up GitHub authentication
-# You can download the latest version from this URL
-# https://github.com/vinisalazar/metaphor/archive/refs/tags/
-# Download a .zip or .tar.gz file and extract it
+$ git clone git@github.com:vinisalazar/metaphor.git  # or download from 'tags' page
 
 # Go into the metaphor directory
 $ cd metaphor
 
-# Create the Metaphor environment
+# Create an environment for Metaphor
 $ mamba env create -f environment.yaml
 
 # Activate the environment
-# After this step, (metaphor) should show up next to your prompt.
 $ conda activate metaphor
 
 # Install Metaphor with pip
@@ -74,15 +76,11 @@ $ metaphor execute -i path/to/directory/of/fastq
 
 If you receive any errors, feel free to open an issue describing your problem.
 
-<!-- 
-TO-DO:
-### Documentation 
--->
 
 ##### DISCLAIMER
 Metaphor is a derivative work of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), originally released under the
 Apache 2.0 license, developed by [Bobbie Shaban](https://gitlab.unimelb.edu.au/bshaban), Mar Quiroga, Robert Turnbull
 and Edoardo Tescari at Melbourne Data Analytics Platform ([MDAP](https://mdap.unimelb.edu.au/)) at the
 University of Melbourne.
-[Link to MetaGenePipe.](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/). For more information, please see the [license file](./LICENSE.md).
+[Link to MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/). For more information, please see the [license file](./LICENSE.md).
 
