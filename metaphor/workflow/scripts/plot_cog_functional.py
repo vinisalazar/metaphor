@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 
 def create_heatmap(args):
     logging.info(f"Processing COG categories file: '{args.categories_file}'.")
-    dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0)
+    dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0).T
     logging.info(f"{len(dataframe)} categories detected.")
 
     if args.filter_categories:
@@ -50,10 +50,9 @@ def main(args):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--categories_file")
-    parser.add_argument("--categories_plt")
-    parser.add_argument("--filter_categories")
-    parser.add_argument("--categories_cutoff")
-    parser.add_argument("--tax_cutoff")
+    parser.add_argument("--categories_plot")
+    parser.add_argument("--filter_categories", action="store_true")
+    parser.add_argument("--categories_cutoff", type=float)
     args = parser.parse_args()
     return args
 

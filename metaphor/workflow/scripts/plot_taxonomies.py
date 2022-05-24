@@ -60,13 +60,16 @@ def create_tax_barplot(dataframe, save=True, outfile=None):
     # Get legend for filtered average
     if (filtered_label := "Filtered/Low abundance") in dataframe.index:
         avg_filtered = dataframe.loc[filtered_label].mean()
-        avg_filtered = round(avg_filtered, 4) * 100
-        handle, label = [
-            Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor="none", linewidth=0)
-        ], [f"Avg. of {avg_filtered}% reads were filtered as low abundance."]
-        handles += handle
-        labels += label
-        labels = ["\n".join(wrap(l, 20)) for l in labels]
+        avg_filtered = round(avg_filtered * 100, 2)
+        if avg_filtered > 1e-6:
+            handle, label = [
+                Rectangle(
+                    (0, 0), 1, 1, fc="w", fill=False, edgecolor="none", linewidth=0
+                )
+            ], [f"Avg. of {avg_filtered}% reads were filtered as low abundance."]
+            handles += handle
+            labels += label
+            labels = ["\n".join(wrap(l, 20)) for l in labels]
 
     axs[1].legend(handles, labels, title=rank.capitalize() if rank else "")
     axs[1].set_xticks([])
@@ -93,7 +96,6 @@ def process_rank_file(args):
         rank_df = rank_df.iloc[:cutoff]
         # Group low abundance and undetermined taxa
         filtered = abs(rank_df.sum() - 1)
-        breakpoint()
         rank_df.loc[f"Filtered/Low abundance"] = filtered
 
         rank_df = rank_df[sorted(rank_df.columns, reverse=True)]

@@ -48,13 +48,13 @@ def main(args):
     for count in ("absolute", "relative"):
         outdf = df[[i for i in df.columns if count in i]]
         outdf = outdf.rename(lambda s: s.replace(f"_{count}", ""), axis="columns")
-        outdf = outdf.round(6).reset_index()
+        outdf = outdf.round(6).T.fillna(0.0)
         try:
             attr = f"functional_{count}_counts"
             outfile = getattr(args, attr)
-            outdf.to_csv(outfile, index=False, sep="\t")
+            outdf.to_csv(outfile, sep="\t")
             if outfile:
-                logging.info(f"Wrote {len(outdf)} records to '{outfile}'.")
+                logging.info(f"Wrote {outdf.shape[1]} records to '{outfile}'.")
         except AttributeError:
             logging.error(
                 f"Attribute {attr} wasn't found, please check the passed args:\n{args}"
