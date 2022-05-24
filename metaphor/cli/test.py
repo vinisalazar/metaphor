@@ -142,4 +142,7 @@ def main(args):
         wrapper_prefix=wrapper_prefix,
         printreason=True,
     )
-    get_successful_completion(sm_exit, "Test complete.")
+    test_complete_message = "Test complete!\nThis means that you can use this directory to run your actual analysis.    \
+                             Simply delete the output/ directory and you're good to go. All necessary software is       \
+                             is in the .snakemake/conda/ directory, and databases are in the data/ directory."
+    get_successful_completion(sm_exit, test_complete_message)
