@@ -94,19 +94,19 @@ rule concoct:
         catalogue="output/mapping/{binning_group}/catalogue.fna",
         bams=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
-        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        sample=list(samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
             ]
             .unique()
-            .to_list(),
+            ),
         ),
         bais=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam.bai",
-        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        sample=list(
+            samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
-            ]
-            .unique()
-            .to_list(),
+                ].unique()
+            ),
         ),
     output:
         outdir=directory("output/binning/concoct/{binning_group}/"),
