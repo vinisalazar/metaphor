@@ -18,9 +18,7 @@ cores_per_medium_task: 0.5    # Total of workflow cores to use per medium task
 cores_per_small_task: 0.25    # Total of workflow cores to use per small task
 
 # Memory settings
-max_mb: 8196          # Max MB memory to be used. This sould be over the number of 'cores * mb_per_core'. Must correspond to the maximum resources requested from the machine (e.g. in a cluster).
-mb_per_core: 2048     # How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.
-
+max_mb: 8196          # Max MB memory to be used.
 
 
 ###############################################################
