@@ -186,7 +186,7 @@ rule DAS_tool:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
         binners=",".join(binners),
         outpreffix=lambda w, output: str(
-            Path(output.proteins).parent.joinpath("DAS_tool")
+            Path(output.summary).parent.joinpath("DAS_tool")
         ),
         score_threshold=config["das_tool"]["score_threshold"],
         proteins=lambda w, input: f"-p {input.proteins}" if input.proteins else "",
