@@ -432,7 +432,7 @@ def get_all_assembly_outputs():
 # Annotation
 ###############################################################
 
-ranks = "species genus family order class phylum kingdom domain".split()
+ranks = "species genus family order class phylum domain".split()
 
 
 def get_cog_db_file(filename):
@@ -506,7 +506,7 @@ def get_taxa_plot_outputs():
 
 
 def get_cog_functional_plot_outputs():
-    return "output/annotation/cog/tables/COG_categories_relative.tsv"
+    return "output/annotation/cog/plots/COG_categories_relative.png"
 
 
 def get_annotation_output():
