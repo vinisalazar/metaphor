@@ -15,6 +15,7 @@ __doc__ = """
 from argparse import Namespace
 from pathlib import Path
 from hashlib import md5
+from textwrap import dedent
 
 import requests
 from tqdm import tqdm
@@ -142,7 +143,11 @@ def main(args):
         wrapper_prefix=wrapper_prefix,
         printreason=True,
     )
-    test_complete_message = "Test complete!\nThis means that you can use this directory to run your actual analysis.    \
-                             Simply delete the output/ directory and you're good to go. All necessary software is       \
-                             is in the .snakemake/conda/ directory, and databases are in the data/ directory."
-    get_successful_completion(sm_exit, test_complete_message)
+    test_complete_message = """
+    Test complete!
+
+    This means that you can use this directory to run your actual analysis.
+    All necessary software is in the .snakemake/conda/ directory, and databases are in the data/ directory.
+    Simply delete the output/ directory and you're good to go.
+    """
+    get_successful_completion(sm_exit, dedent(test_complete_message))
