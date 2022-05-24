@@ -145,7 +145,7 @@ def main():
         func=metaphor_test,
         directory="test_data_metaphor",
         cores=3,
-        mem_mb=1024,
+        mem_mb=8196,
         dry_run=False,
     )
 
