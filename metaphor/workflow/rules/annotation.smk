@@ -74,7 +74,7 @@ rule prokka:
     input:
         genome_bin="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
     output:
-        outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna"
+        outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
