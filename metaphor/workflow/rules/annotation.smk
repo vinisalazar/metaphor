@@ -70,22 +70,21 @@ rule prodigal:
         """
 
 
-# TODO: refactor for coassembly
 rule prokka:
     input:
-        contigs=get_contigs_input(),
+        genome_bin="output/annotation/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
     output:
-        outfile="output/annotation/prokka/{sample}/{sample}.faa",
+        outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.faa",
     params:
-        sample=lambda w: w.sample,
+        bin_=lambda w: w.bin,
         outdir=lambda w, output: str(Path(output.outfile).parent),
         kingdom=config["prokka"]["kingdom"],
         args=config["prokka"]["args"],
     threads: get_threads_per_task_size("small")
     log:
-        "output/logs/annotation/prokka/{sample}.log",
+        "output/logs/annotation/prokka/{binning_group}/{bin}.log",
     benchmark:
-        "output/benchmarks/annotation/prokka/{sample}.txt"
+        "output/benchmarks/annotation/prokka/{binning_group}/{bin}.txt"
     conda:
         "../envs/prokka.yaml"
     shell:
@@ -93,7 +92,7 @@ rule prokka:
         prokka --outdir {params.outdir}     \
                --kingdom {params.kingdom}   \
                --cpus {threads}             \
-               --prefix {params.sample}     \
+               --prefix {wildcards.bin}     \
                {params.args}                \
                {input.contigs}          
         """

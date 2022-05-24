@@ -28,9 +28,9 @@ rule vamb:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/vamb.log",
+        "output/logs/binning/vamb/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/vamb.txt"
+        "output/benchmarks/binning/vamb/{binning_group}.txt"
     conda:
         "../envs/vamb.yaml"
     shell:
@@ -68,9 +68,9 @@ rule metabat2:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/metabat2.log",
+        "output/logs/binning/metabat2/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/metabat2.txt"
+        "output/benchmarks/binning/metabat2/{binning_group}.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:
@@ -129,9 +129,9 @@ rule concoct:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/concoct.log",
+        "output/logs/binning/concoct/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/concoct.txt"
+        "output/benchmarks/binning/concoct/{binning_group}.txt"
     conda:
         "../envs/concoct.yaml"
     shell:
@@ -194,9 +194,9 @@ rule DAS_tool:
     resources:
         mem_mb=get_mb_per_cores,
     log:
-        "output/logs/binning/{binning_group}/DAS_tool.log",
+        "output/logs/binning/DAS_tool/{binning_group}.log",
     benchmark:
-        "output/benchmarks/binning/{binning_group}/DAS_tool.txt"
+        "output/benchmarks/binning/DAS_tool/{binning_group}.txt"
     conda:
         "../envs/das_tool.yaml"
     shell:
