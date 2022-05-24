@@ -27,7 +27,7 @@ def format_index(index):
     for s in index:
         try:
             s = str(s)
-            if len(s.split()) >= 2 and "Undetermined/other" not in s:
+            if len(s.split()) >= 2 and "Low abundance" not in s:
                 s = s.split()[0][0] + ". " + " ".join(s.split()[1:])
                 s = "$" + s + "$"
         except (TypeError, ValueError):
@@ -52,6 +52,7 @@ def create_tax_barplot(dataframe, save=True, outfile=None):
     handles, labels = axs[0].get_legend_handles_labels()
     axs[0].get_legend().remove()
     axs[0].set_xlabel("Relative abundance")
+    axs[0].set_ylabel("")
     axs[1].legend(handles, labels, title=rank.capitalize() if rank else "")
     axs[1].set_xticks([])
     axs[1].set_yticks([])
@@ -64,23 +65,22 @@ def create_tax_barplot(dataframe, save=True, outfile=None):
 
 
 def process_rank_file(args):
-    cutoff = float(args.tax_cutoff)
-    rank_df = pd.read_csv(args.taxonomy_relative_counts, sep="\t", index_col=0)
-    rank_df = rank_df[rank_df.mean(axis=1) > cutoff]
+    cutoff = int(args.tax_cutoff)
+    rank_df = pd.read_csv(args.taxonomy_relative_counts, sep="\t", index_col=0).T
     rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
     rank_df.index.name = args.rank
 
     # Sort in descending abundance
     rank_df = rank_df.loc[rank_df.sum(axis=1).sort_values(ascending=False).index]
 
-    # Group low abundance and undetermined taxa
-    filtered = abs(rank_df.sum() - 1)
-    if filtered.sum() < cutoff:
-        pass
-    else:
-        rank_df.loc["Undetermined/other"] = filtered
+    # Apply cutoff
+    if cutoff:
+        rank_df = rank_df.iloc[:cutoff]
+        # Group low abundance and undetermined taxa
+        filtered = abs(rank_df.sum() - 1)
+        rank_df.loc["Filtered/Low abundance"] = filtered
 
-    rank_df = rank_df[sorted(rank_df.columns, reverse=True)]
+        rank_df = rank_df[sorted(rank_df.columns, reverse=True)]
 
     return rank_df
 

@@ -224,7 +224,7 @@ properties:
     type: object
     properties:
       tax_cutoff:
-        type: number
+        type: integer
     required:
       - tax_cutoff
 

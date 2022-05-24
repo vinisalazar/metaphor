@@ -37,6 +37,7 @@ def main(args):
 
     logging.info(f"Loaded {len(df)} records.")
 
+    df["staxids"] = df["staxids"].astype(int, errors="ignore")
     df = df[["staxids", "sscinames"]].value_counts()
     df.name = "absolute"
     df.to_csv(tax_out, sep="\t")

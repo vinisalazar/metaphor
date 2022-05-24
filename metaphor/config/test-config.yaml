@@ -104,7 +104,7 @@ plot_cog_functional:
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 0.01
+  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
 
 ###############################################################
 # Binning
