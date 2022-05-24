@@ -252,10 +252,10 @@ rule taxonomy_parser:
 
 rule concatenate_cog_functional:
     input:
-        functional_counts=expand(
+        functional_counts=lambda wildcards: expand(
             "output/annotation/cog/{group}/{group}_{kind}.tsv",
             group=group_names,
-            kind=functional_kinds,
+            kind=wildcards.kind,
         ),
     output:
         functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
@@ -311,7 +311,6 @@ rule lineage_parser:
         order=get_group_or_sample_file("annotation", "cog", "order.tsv"),
         klass=get_group_or_sample_file("annotation", "cog", "class.tsv"),
         phylum=get_group_or_sample_file("annotation", "cog", "phylum.tsv"),
-        kingdom=get_group_or_sample_file("annotation", "cog", "kingdom.tsv"),
         domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
@@ -329,7 +328,7 @@ rule plot_cog_functional:
     input:
         categories_file="output/annotation/cog/tables/COG_categories_relative.tsv",
     output:
-        categories_plt=report(
+        categories_plot=report(
             get_cog_functional_plot_outputs(),
             category="Annotation",
         ),
