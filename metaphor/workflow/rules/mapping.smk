@@ -127,7 +127,7 @@ rule map_reads:
         N=50,
         preset="sr",
         flags=3584,
-        split_prefix="output/mapping/bam/{binning_group}/{sample}"
+        split_prefix="output/mapping/bam/{binning_group}/{sample}",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
