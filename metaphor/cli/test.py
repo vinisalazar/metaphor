@@ -73,6 +73,7 @@ def download_data(directory, test_files, download_url):
         for filename, hexdigest in test_files.items()
     }
 
+    # Skip file download if they already exist
     if all(
         local_file.exists() and (get_md5(local_file) == hexdigest)
         for local_file, hexdigest in test_files.items()
@@ -151,7 +152,7 @@ def main(args):
         cmd += f" --profile {profile} "
 
     if dry_run:
-        cmd += f" --dry-run "
+        cmd += f" --dry-run --conda-frontend conda "
 
     cmd += f" {extras}"
 

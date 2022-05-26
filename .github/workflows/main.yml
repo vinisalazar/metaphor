@@ -51,7 +51,6 @@ jobs:
     #     $CONDA/bin/conda env update --file environment.yaml --name base
     - name: Test workflow
       run: |
-        conda install -n base -c conda-forge mamba -y
         conda config --set channel_priority strict
         pip install .
         python -m metaphor.cli.cli test --dry-run

@@ -9,4 +9,5 @@ How to troubleshoot Metaphor.
 - Dealing with conda environments
 - Hanging processes
 - Using `snakemake --unlock`
+    - argparse bug https://bugs.python.org/issue47002
  -->
