@@ -5,13 +5,11 @@ __doc__ = """
     """
 
 
-import os
 import sys
 from argparse import Namespace
 from pathlib import Path
 from shutil import copyfile
-
-from snakemake import snakemake
+from subprocess import CalledProcessError, check_call
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
@@ -28,46 +26,10 @@ def main(args):
     input_dir = args.input_dir
     join_units = args.join_units
     cores = args.cores
-    mem_mb = args.mem_mb
-    coassembly = args.coassembly
+    max_mb = args.max_mb
     confirm = args.confirm
-    until = args.until
-    if until and not isinstance(until, list):
-        until = until.split()
-
-    profile_args = (
-        "jobscript",
-        "cluster",
-        "cluster_config",
-        "cluster_sync",
-        "cluster_status",
-        "cluster_cancel",
-        "cluster_sidecar",
-        "report_stylesheet",
-    )
-
-    if args.profile:
-        # Code taken from snakemake.__init__.py main function
-        from snakemake import get_profile_file
-
-        # reparse args while inferring config file from profile
-        profile_file = get_profile_file(args.profile, "config.yaml")
-        profile = load_yaml(profile_file)
-
-        def adjust_path(f):
-            if os.path.exists(f) or os.path.isabs(f):
-                return f
-            else:
-                return get_profile_file(args.profile, f, return_default=True)
-
-        # update file paths to be relative to the profile
-        # (if they do not exist relative to CWD)
-        for key, value in profile.items():
-            if key in profile_args:
-                if isinstance(value, list):
-                    setattr(args, key, [adjust_path(cfg) for cfg in value])
-                else:
-                    setattr(args, key, adjust_path(value))
+    extras = args.extras
+    profile = args.profile
 
     if not Path(config_file).exists():
         if not confirm:
@@ -86,19 +48,17 @@ def main(args):
     # Load config file to check for input_dir
     config = load_yaml(config_file)
 
-    samples_file = config["samples"]
-    if mem_mb is None:
-        mem_mb = config["max_mb"]
-    if coassembly is None:
-        coassembly = config["coassembly"]
+    samples = config["samples"]
+    if max_mb is None:
+        max_mb = config["max_mb"]
     if not input_dir:
         assert Path(
-            samples_file
-        ).exists(), f"Samples file {samples_file} doesn't exist. Please provide an input directory with FASTQ or a valid samples file."
+            samples
+        ).exists(), f"Samples file {samples} doesn't exist. Please provide an input directory with FASTQ or a valid samples file."
     else:
         create_input_table_args = Namespace()
         create_input_table_args.input_dir = input_dir
-        create_input_table_args.output_file = samples_file = "samples.csv"
+        create_input_table_args.output_file = samples = "samples.csv"
         create_input_table_args.join_units = join_units
         print("\nCreating input table for test files.\n")
         create_input_table(create_input_table_args)
@@ -110,28 +70,32 @@ def main(args):
         "This may require the installation of conda environments which should take a while.\n"
     )
     if not confirm:
-        confirm_message(cores, mem_mb)
-    sm_exit = snakemake(
-        snakefile=snakefile,
-        configfiles=[
-            config_file,
-        ],
-        config={
-            "samples": samples_file,
-            "coassembly": coassembly,
-            "max_mb": mem_mb,
-        },
-        cores=cores,
-        use_conda=True,
-        conda_frontend="mamba",
-        printshellcmds=True,
-        wrapper_prefix=wrapper_prefix,
-        until=[] if not until else until,
-        # profile settings
-        report_stylesheet=vars(args).get("report_stylesheet", None),
-        cluster=vars(args).get("cluster", None),
-        cluster_config=vars(args).get("cluster_config", None),
-        cluster_sync=vars(args).get("cluster_sync", None),
-        printreason=True,
-    )
-    get_successful_completion(sm_exit, "Metaphor finished successfully.")
+        confirm_message(cores, max_mb)
+
+    cmd = f"""
+    snakemake --snakefile {snakefile}           \
+              --configfile {config_file}        \
+              --cores {cores}                   \
+              -p -r                             \
+              --use-conda                       \
+              --wrapper-prefix {wrapper_prefix}
+    """
+
+    for arg in ("samples", "max_mb"):
+        if value := eval(arg):
+            cmd += f" --config {arg}={value} "
+
+    if profile:
+        cmd += f" --profile {profile} "
+
+    cmd += f" {extras} "
+
+    try:
+        retcode = check_call(cmd.split())
+    except CalledProcessError as e:
+        retcode = e.returncode
+        raise
+    except Exception as e:
+        retcode = 1
+        raise
+    get_successful_completion(retcode, "Metaphor finished successfully.")
