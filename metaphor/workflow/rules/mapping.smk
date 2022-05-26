@@ -127,6 +127,7 @@ rule map_reads:
         N=50,
         preset="sr",
         flags=3584,
+        split_prefix="output/mapping/bam/{binning_group}/{sample}",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -143,15 +144,16 @@ rule map_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {threads}                    \
-                    -N {params.N}                   \
-                    -ax {params.preset}             \
-                    {input.catalogue_idx}           \
-                    {input.fastq1}                  \
-                    {input.fastq2} ; }} 2>> {log}   |
-        {{ samtools view                            \
-                    -F {params.flags}               \
-                    -b --threads                    \
+        {{ minimap2 -t {threads}                        \
+                    -N {params.N}                       \
+                    -ax {params.preset}                 \
+                    --split-prefix {params.split_prefix}\
+                    {input.catalogue_idx}               \
+                    {input.fastq1}                      \
+                    {input.fastq2} ; }} 2>> {log}       |
+        {{ samtools view                                \
+                    -F {params.flags}                   \
+                    -b --threads                        \
                     {threads} > {output.bam} ; }} 2>> {log}
         """
 

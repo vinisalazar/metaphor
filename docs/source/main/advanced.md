@@ -102,7 +102,7 @@ For the **`R1`** and **`R2`** files, the relative path may also be used, but the
 where the workflow is being run, so the full path is more errorproof. 
 
 There are more columns that you can add to your input file:
-* an **`unit_name`** column can be added to specify multiple files for the same sample. Sometimes when sequencing
+* A **`unit_name`** column can be added to specify multiple files for the same sample. Sometimes when sequencing
 libraries are very big, they can be divided into multiple files. You can specify this column so Metaphor will treat
 separate files as the same samples. During the workflow, they will be concatenated together (this can be configured
 by the config `merge_reads` parameter. For example:
@@ -114,7 +114,11 @@ by the config `merge_reads` parameter. For example:
 | `sample_2`    | `L1`          | `/path/to/sample_1_L1_R1.fq.gz` | `/path/to/sample_1_L1_R2.fq.gz` |
 | `sample_2`    | `L2`          | `/path/to/sample_1_L2_R1.fq.gz` | `/path/to/sample_1_L2_R2.fq.gz` |
 
-* a **`metaquast_reference`** column can be added to each row to specify MetaQuast reference files for each sample.
+* A **`group`** column can be added to define assembly and binning groups. This is specially useful if you are analysing
+independent datasets. You don't have to run Metaphor multiple times; rather, you can just set each of your datasets as a
+group and run the workflow once for all datasets. See the [following section](#assembly-and-binning) for details.
+
+* A **`metaquast_reference`** column can be added to each row to specify MetaQuast reference files for each sample.
 [MetaQuast](http://quast.sourceforge.net/metaquast) is a program to evaluate and compare metagenome assemblies against
 a reference database. Although it's disabled by default in Metaphor, if you have reference assemblies, such as a list
 of reference genomes or an assembled metagenome, you can use that as a reference to evaluate your Metaphor-generated
@@ -257,6 +261,8 @@ The workflow is structured in accordance with the
 Metaphor's Snakefile is very simple. Basically, it imports all of the Metaphor rules (defined in separate `.smk`
 files for each module) and requires a single `rule all` which will require the final output to be produced. More on that
 later.
+
+All of Metaphor's
 
 
 <!--

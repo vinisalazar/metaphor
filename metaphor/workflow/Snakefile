@@ -17,7 +17,7 @@ from metaphor.config import default_config
 configfile: default_config
 
 
-report: "metaphor/report/metaphor.rst"
+report: "report/metaphor.rst"
 
 
 ##### load rules #####

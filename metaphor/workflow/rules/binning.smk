@@ -160,7 +160,7 @@ rule concoct:
 
         mkdir {params.fasta_bins}
 
-        {{ extract_fasta_bins.py {output.uncompressed_catalogue}    \
+        {{ extract_fasta_bins.py {input.catalogue}                  \
                                  {params.clustering_merged}         \
                                  --output_path {params.fasta_bins} ; }} 2>> {log}
 
@@ -175,11 +175,7 @@ rule DAS_tool:
     input:
         contigs="output/mapping/{binning_group}/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
-        # Only use the proteins if the assembly groups are the same as the binning groups.
-        proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa")
-        if (group_names == binning_group_names)
-        or (config["coassembly"] and config["cobinning"])
-        else (),
+        proteins="output/mapping/{binning_group}_proteins_catalogue.faa",
     output:
         summary="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
     params:
@@ -189,7 +185,6 @@ rule DAS_tool:
             Path(output.summary).parent.joinpath("DAS_tool")
         ),
         score_threshold=config["das_tool"]["score_threshold"],
-        proteins=lambda w, input: f"-p {input.proteins}" if input.proteins else "",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -205,7 +200,7 @@ rule DAS_tool:
                  -l {params.binners}                                \
                  -c {input.contigs}                                 \
                  -o {params.outpreffix}                             \
-                    {params.proteins}                               \
+                 -p {input.proteins}                                \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \

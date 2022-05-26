@@ -16,10 +16,10 @@ from argparse import Namespace
 from pathlib import Path
 from hashlib import md5
 from textwrap import dedent
+from subprocess import check_call, CalledProcessError
 
 import requests
 from tqdm import tqdm
-from snakemake import snakemake
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
@@ -73,6 +73,7 @@ def download_data(directory, test_files, download_url):
         for filename, hexdigest in test_files.items()
     }
 
+    # Skip file download if they already exist
     if all(
         local_file.exists() and (get_md5(local_file) == hexdigest)
         for local_file, hexdigest in test_files.items()
@@ -110,16 +111,17 @@ def main(args):
     directory = args.directory
     coassembly = args.coassembly
     cores = args.cores
-    mem_mb = args.mem_mb
+    max_mb = args.max_mb
     join = args.join_units
     samples_file = "samples.csv"
     create_input_table_args = Namespace()
     create_input_table_args.input_dir = directory
     create_input_table_args.output_file = samples_file
     create_input_table_args.join_units = join
-    conda_prefix = directory if args.remove_conda else None
     confirm = args.confirm
     dry_run = args.dry_run
+    extras = args.extras
+    profile = args.profile
 
     # Start execution
     download_data(directory, test_files, download_url)
@@ -131,31 +133,50 @@ def main(args):
         "This may require the installation of conda environments which should take a while.\n"
     )
     if not confirm and not dry_run:
-        confirm_message(cores, mem_mb)
-    sm_exit = snakemake(
-        snakefile=snakefile,
-        configfiles=[
-            test_config,
-        ],
-        config={
-            "samples": samples_file,
-            "coassembly": coassembly,
-            "max_mb": mem_mb,
-        },
-        cores=cores,
-        dryrun=dry_run,
-        use_conda=True,
-        conda_frontend="mamba",
-        conda_prefix=conda_prefix,
-        printshellcmds=True,
-        wrapper_prefix=wrapper_prefix,
-        printreason=True,
-    )
-    test_complete_message = """
+        confirm_message(cores, max_mb)
+
+    cmd = f"""
+    snakemake --snakefile {snakefile}           \
+              --configfile {test_config}        \
+              --cores {cores}                   \
+              -p -r                             \
+              --use-conda                       \
+              --wrapper-prefix {wrapper_prefix}
+    """
+
+    for arg in ("max_mb", "coassembly"):
+        if value := eval(arg):
+            cmd += f" --config {arg}={value} "
+
+    if profile:
+        cmd += f" --profile {profile} "
+
+    if dry_run:
+        cmd += f" --dry-run --conda-frontend conda "
+
+    cmd += f" {extras}"
+
+    test_complete_message = (
+        """
     Test complete!
 
     This means that you can use this directory to run your actual analysis.
     All necessary software is in the .snakemake/conda/ directory, and databases are in the data/ directory.
     Simply delete the output/ directory and you're good to go.
     """
-    get_successful_completion(sm_exit, dedent(test_complete_message))
+        if not dry_run
+        else """
+    Dry run complete. You can run the full testing suite by repeating without the `--dry-run` flag.
+    """
+    )
+
+    try:
+        retcode = check_call(cmd.split())
+    except CalledProcessError as e:
+        retcode = e.returncode
+        raise
+    except Exception as e:
+        retcode = 1
+        raise
+
+    get_successful_completion(retcode, dedent(test_complete_message))

@@ -46,40 +46,30 @@ def main():
         "-f", "--configfile", help="Configuration file to run the workflow."
     )
     execute.add_argument(
+        "-e",
+        "--extras",
+        help="String of extra arguments to be passed on to Snakemake.",
+        type=str,
+    )
+    execute.add_argument(
         "-j",
         "--join-units",
         action="store_true",
         help="Whether to join units (S001, S002) with the same preffix as the same file.",
     )
-    execute.add_argument(
-        "-c", "--cores", help="Number of processors to be used.", type=int
-    )
+    execute.add_argument("-c", "--cores", help="Number of cores to be used.", type=int)
     execute.add_argument("-l", "--profile", help="Profile to be used to run Metaphor.")
     execute.add_argument(
         "-m",
-        "--mem_mb",
-        help="Amount of MB RAM to be used PER CORE. "
-        "i.e. if you set 1024 and 2 cores, it will use up to 2048 MB of RAM.",
+        "--max_mb",
+        help="Max amount of MB RAM to be used. Can be set in config.",
         type=int,
-    )
-    execute.add_argument(
-        "-co",
-        "--coassembly",
-        action="store_true",
-        help="Whether to run tests in coassembly mode, "
-        "i.e. all samples are pooled together and assembled.",
     )
     execute.add_argument(
         "-y",
         "--confirm",
         action="store_true",
         help="Don't ask for confirmation when running tests.",
-    )
-    execute.add_argument(
-        "--until",
-        help="Only run workflow until the listed files are generated (see Snakemake docs). "
-        "Files must be space separated with the complete output path.",
-        nargs="+",
     )
 
     execute.set_defaults(
@@ -88,9 +78,9 @@ def main():
         configfile="metaphor_settings.yaml",
         join_units=False,
         cores=4,
-        mem_mb=None,
+        max_mb=None,
         profile=None,
-        coassembly=None,
+        extras="",
     )
 
     ###############################################################
@@ -107,7 +97,8 @@ def main():
     test.add_argument(
         "-c", "--cores", help="Number of processors to use in tests.", type=int
     )
-    test.add_argument("-m", "--mem_mb", help="Amount of RAM to use in tests.", type=int)
+    test.add_argument("-m", "--max_mb", help="Amount of RAM to use in tests.", type=int)
+    test.add_argument("-l", "--profile", help="Profile to be used to run Metaphor.")
     test.add_argument(
         "-co",
         "--coassembly",
@@ -130,23 +121,24 @@ def main():
         action="store_true",
     )
     test.add_argument(
-        "--remove-conda",
-        help="If this option is selected, conda environments will be created in the test "
-        "directory instead of the current directory (and therefore are deleted when tests finish).",
-        action="store_true",
-    )
-    test.add_argument(
         "-dry",
         "--dry-run",
         action="store_true",
         help="Whether to run tests as a dry-run only (used for CI).",
     )
+    test.add_argument(
+        "-e",
+        "--extras",
+        help="String of extra arguments to be passed on to Snakemake.",
+        type=str,
+    )
     test.set_defaults(
         func=metaphor_test,
         directory="test_data_metaphor",
         cores=3,
-        mem_mb=8196,
+        max_mb=8196,
         dry_run=False,
+        extras="",
     )
 
     ###############################################################
