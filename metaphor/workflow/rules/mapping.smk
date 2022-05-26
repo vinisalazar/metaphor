@@ -146,9 +146,11 @@ rule map_reads:
         {{ minimap2 -t {threads}                    \
                     -N {params.N}                   \
                     -ax {params.preset}             \
+                    --split-prefix {sample}         \
+                    --heap-sort=yes                 \
                     {input.catalogue_idx}           \
                     {input.fastq1}                  \
-                    {input.fastq2} ; }} &> {log}    |
+                    {input.fastq2} ; }} 2>> {log}   |
         {{ samtools view                            \
                     -F {params.flags}               \
                     -b --threads                    \
