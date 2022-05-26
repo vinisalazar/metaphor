@@ -148,7 +148,7 @@ rule map_reads:
                     -ax {params.preset}             \
                     {input.catalogue_idx}           \
                     {input.fastq1}                  \
-                    {input.fastq2} ; }} 2>> {log}   |
+                    {input.fastq2} ; }} &> {log}    |
         {{ samtools view                            \
                     -F {params.flags}               \
                     -b --threads                    \
