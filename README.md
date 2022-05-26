@@ -3,8 +3,8 @@
 
 ![https://metaphor-workflow.readthedocs.io/](https://img.shields.io/readthedocs/metaphor-workflow?color=g) ![https://github.com/vinisalazar/metaphor/tags](https://img.shields.io/github/v/tag/vinisalazar/metaphor?color=g&label=release)
 
-<!-- [![Version](https://anaconda.org/bioconda/metaphor/badges/version.svg)](https://anaconda.org/bioconda/metaphor)
-[![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor) -->
+[![Version](https://anaconda.org/bioconda/metaphor/badges/version.svg)](https://anaconda.org/bioconda/metaphor)
+<!-- [![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor) -->
 
 Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads data. It includes the following steps:
 - Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [Cutadapt](https://github.com/marcelm/cutadapt))
@@ -24,28 +24,13 @@ The first thing that you need to install Metaphor is [conda](https://docs.conda.
 
 Once you have conda, we highly recommend that you use [mamba](https://mamba.readthedocs.io/en/latest/installation.html) for installing Metaphor. If mamba is not available, replace all `mamba` commands for `conda`.
 
-Run the following commands to install Metaphor from source. Metaphor will soon be available to install through Bioconda.
-
+To install, either create a new environment or install it in your preferred environment:
 ```bash
-
-# Install mamba (if you haven't already)
-$ conda install mamba -n base -c conda-forge
-
-# Copy the code to your machine
-$ git clone git@github.com:vinisalazar/metaphor.git  # or download from 'tags' page
-
-# Go into the metaphor directory
-$ cd metaphor
-
-# Create an environment for Metaphor
-$ mamba env create -f environment.yaml
-
-# Activate the environment
+$ mamba create -n metaphor metaphor -c conda-forge -c bioconda
 $ conda activate metaphor
-
-# Install Metaphor with pip
-$ pip install .
 ```
+
+You should see the `(metaphor)` indicator next to your prompt.
 
 ### Testing
 After installing, check if your Metaphor installation works:
