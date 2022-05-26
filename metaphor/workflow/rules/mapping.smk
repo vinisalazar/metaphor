@@ -143,17 +143,17 @@ rule map_reads:
         "../envs/samtools.yaml"
     shell:
         """
-        {{ minimap2 -t {threads}                    \
-                    -N {params.N}                   \
-                    -ax {params.preset}             \
-                    --split-prefix {sample}         \
-                    --heap-sort=yes                 \
-                    {input.catalogue_idx}           \
-                    {input.fastq1}                  \
-                    {input.fastq2} ; }} 2>> {log}   |
-        {{ samtools view                            \
-                    -F {params.flags}               \
-                    -b --threads                    \
+        {{ minimap2 -t {threads}                        \
+                    -N {params.N}                       \
+                    -ax {params.preset}                 \
+                    --split-prefix {wildcards.sample}   \
+                    --heap-sort=yes                     \
+                    {input.catalogue_idx}               \
+                    {input.fastq1}                      \
+                    {input.fastq2} ; }} 2>> {log}       |
+        {{ samtools view                                \
+                    -F {params.flags}                   \
+                    -b --threads                        \
                     {threads} > {output.bam} ; }} 2>> {log}
         """
 
