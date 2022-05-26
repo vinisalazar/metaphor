@@ -2,17 +2,17 @@ import sys
 import yaml
 
 
-def get_successful_completion(bool, msg):
+def get_successful_completion(status, msg):
     """
     Prints a message if the workflow completed successfully.
 
     args:
-        bool: bool
-            True if the workflow completed successfully, else False.
+        status: int
+            0 if the workflow completed successfully, else retcode.
         msg: str
             Message to be printed if bool is True.
     """
-    if not bool:
+    if status:
         raise Exception(
             "The workflow did not complete successfully, "
             "or there is nothing to be done (all expected outputs have been produced)."
