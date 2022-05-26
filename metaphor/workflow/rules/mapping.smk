@@ -148,7 +148,6 @@ rule map_reads:
                     -N {params.N}                       \
                     -ax {params.preset}                 \
                     --split-prefix {params.split_prefix}\
-                    --heap-sort=yes                     \
                     {input.catalogue_idx}               \
                     {input.fastq1}                      \
                     {input.fastq2} ; }} 2>> {log}       |
