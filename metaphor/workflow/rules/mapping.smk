@@ -127,6 +127,7 @@ rule map_reads:
         N=50,
         preset="sr",
         flags=3584,
+        split_prefix="output/mapping/bam/{binning_group}/{sample}"
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -146,7 +147,7 @@ rule map_reads:
         {{ minimap2 -t {threads}                        \
                     -N {params.N}                       \
                     -ax {params.preset}                 \
-                    --split-prefix {wildcards.sample}   \
+                    --split-prefix {params.split_prefix}\
                     --heap-sort=yes                     \
                     {input.catalogue_idx}               \
                     {input.fastq1}                      \
