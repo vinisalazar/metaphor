@@ -176,7 +176,7 @@ rule DAS_tool:
         contigs="output/mapping/{binning_group}/catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
         # Only use the proteins if the assembly groups are the same as the binning groups.
-        proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa")
+        proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa", wildcard="{binning_group}")
         if (group_names == binning_group_names)
         or (config["coassembly"] and config["cobinning"])
         else (),

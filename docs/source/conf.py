@@ -34,6 +34,7 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ["myst_parser", "sphinx.ext.autodoc"]
+myst_heading_anchors = 1
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
