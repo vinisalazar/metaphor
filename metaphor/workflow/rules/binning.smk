@@ -160,7 +160,7 @@ rule concoct:
 
         mkdir {params.fasta_bins}
 
-        {{ extract_fasta_bins.py {output.uncompressed_catalogue}    \
+        {{ extract_fasta_bins.py {input.catalogue}                  \
                                  {params.clustering_merged}         \
                                  --output_path {params.fasta_bins} ; }} 2>> {log}
 
