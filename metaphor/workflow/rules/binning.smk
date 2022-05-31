@@ -204,6 +204,8 @@ rule DAS_tool:
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \
+                 --write_bin_evals                                  \
+                 --create_plots                                     \
                  --threads {threads} &> {log}
 
         rm -rf {input.contigs}
