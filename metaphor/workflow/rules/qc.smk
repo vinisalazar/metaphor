@@ -154,7 +154,7 @@ rule multiqc:
     input:
         get_multiqc_input(),
     output:
-        report="output/qc/multiqc.html",
+        report=report("output/qc/multiqc.html", category="QC"),
     log:
         "output/logs/qc/multiqc.log",
     benchmark:
