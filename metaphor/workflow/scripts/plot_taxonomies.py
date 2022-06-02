@@ -15,7 +15,7 @@ from matplotlib.patches import Rectangle
 #######################################
 
 # String used to describe the low abundance taxa that are filtered/bundled together.
-filtered_label = "Filtered/Low abundance"
+filtered_label = "Undetermined/Low abundance"
 
 
 def calculate_legend_width(index):
