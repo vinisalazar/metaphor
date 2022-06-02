@@ -16,7 +16,6 @@ from argparse import Namespace
 from pathlib import Path
 from hashlib import md5
 from textwrap import dedent
-from subprocess import check_call, CalledProcessError
 
 import requests
 from tqdm import tqdm
@@ -24,7 +23,7 @@ from tqdm import tqdm
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
 from metaphor.config import test_config
-from metaphor.utils import confirm_message, get_successful_completion
+from metaphor.utils import confirm_message, get_successful_completion, run_cmd
 
 from .create_input_table import main as create_input_table
 
@@ -170,13 +169,6 @@ def main(args):
     """
     )
 
-    try:
-        retcode = check_call(cmd.split())
-    except CalledProcessError as e:
-        retcode = e.returncode
-        raise
-    except Exception as e:
-        retcode = 1
-        raise
+    retcode = run_cmd(cmd)
 
     get_successful_completion(retcode, dedent(test_complete_message))

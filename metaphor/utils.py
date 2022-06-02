@@ -1,5 +1,6 @@
 import sys
 import yaml
+from subprocess import check_call, CalledProcessError
 
 
 def get_successful_completion(status, msg):
@@ -84,3 +85,16 @@ def confirm_message(cores, mem_mb):
     if yn.lower() != "y":
         print("Metaphor execution cancelled.")
         sys.exit()
+
+
+def run_cmd(cmd):
+    try:
+        retcode = check_call(cmd.split())
+    except CalledProcessError as e:
+        retcode = e.returncode
+        raise
+    except Exception as e:
+        retcode = 1
+        raise
+
+    return retcode

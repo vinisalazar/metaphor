@@ -9,12 +9,17 @@ import sys
 from argparse import Namespace
 from pathlib import Path
 from shutil import copyfile
-from subprocess import CalledProcessError, check_call
+from datetime import datetime
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
 from metaphor.config import default_config
-from metaphor.utils import confirm_message, get_successful_completion, load_yaml
+from metaphor.utils import (
+    confirm_message,
+    get_successful_completion,
+    load_yaml,
+    run_cmd,
+)
 
 from .create_input_table import main as create_input_table
 
@@ -30,6 +35,7 @@ def main(args):
     confirm = args.confirm
     extras = args.extras
     profile = args.profile
+    skip_report = args.skip_report
 
     if not Path(config_file).exists():
         if not confirm:
@@ -90,12 +96,13 @@ def main(args):
 
     cmd += f" {extras} "
 
-    try:
-        retcode = check_call(cmd.split())
-    except CalledProcessError as e:
-        retcode = e.returncode
-        raise
-    except Exception as e:
-        retcode = 1
-        raise
+    retcode = run_cmd(cmd)
     get_successful_completion(retcode, "Metaphor finished successfully.")
+
+    if not skip_report:
+        timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        fileout = f"metaphor_report_{timestamp}.html"
+        cmd += f" --report {fileout}"
+        retcode = run_cmd(cmd)
+
+    get_successful_completion(retcode, f"Report created at '{fileout}'.")
