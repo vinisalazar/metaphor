@@ -76,7 +76,7 @@ def bin_scores(
     return ax
 
 
-def bin_quantities(
+def bin_quantity(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
     fig, ax = plt.subplots()
@@ -151,13 +151,11 @@ def main(args):
     bins_eval = args.bins_eval
     score_threshold = args.score_threshold
     binning_group = args.binning_group
-    save = not args.skip_save
+    save = not getattr(args, "skip_save", False)
     df, rename_dict, qc_pass, domain = create_df(bins_eval, score_threshold)
     bin_quality(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
     bin_scores(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
-    bin_quantities(
-        df, rename_dict, score_threshold, qc_pass, domain, binning_group, save
-    )
+    bin_quantity(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
     bin_sizes(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
     bin_N50(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
     print()
