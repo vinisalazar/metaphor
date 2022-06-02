@@ -129,6 +129,7 @@ concoct:
 das_tool:
   activate: True
   score_threshold: 0.0
+  bins_report: True
 
 ###############################################################
 # Postprocessing

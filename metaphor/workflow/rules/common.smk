@@ -654,7 +654,10 @@ def get_all_vamb_output():
 def get_binning_report_output(binning_group):
     plots = [f"bin_{i}" for i in "quality scores quantity sizes N50".split()]
     plots_dict = {
-        plot: report(f"output/binning/plots/{binning_group}/{plot}.png", category="Binning") for plot in plots
+        plot: report(
+            f"output/binning/plots/{binning_group}/{plot}.png", category="Binning"
+        )
+        for plot in plots
     }
     return plots_dict
 
@@ -676,7 +679,9 @@ def get_binning_output():
             [
                 get_binning_report_output(binning_group).values()
                 for binning_group in binning_group_names
-            ],
+            ]
+            if config["das_tool"]["bins_report"]
+            else [],
         ],
     }
     return (v for k, v in binners.items() if is_activated(k))

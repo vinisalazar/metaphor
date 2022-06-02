@@ -284,9 +284,12 @@ properties:
         type: boolean
       score_threshold:
         type: number
+      bins_plot:
+        type: boolean
     required:
       - activate
       - score_threshold
+      - bins_report
 
 ###############################################################
 # Postprocessing
