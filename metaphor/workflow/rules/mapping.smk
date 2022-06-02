@@ -20,7 +20,7 @@ rule concatenate_contigs:
     input:
         contigs=get_contigs_input(expand_=True),
     output:
-        catalogue="output/mapping/{binning_group}/catalogue.fna.gz",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
     resources:
@@ -43,9 +43,9 @@ rule concatenate_contigs:
 
 rule decompress_catalogue:
     input:
-        catalogue_gz="output/mapping/{binning_group}/catalogue.fna.gz",
+        catalogue_gz="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
     output:
-        catalogue="output/mapping/{binning_group}/catalogue.fna",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
     threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
@@ -67,7 +67,7 @@ rule decompress_catalogue:
 
 rule concatenate_proteins:
     """
-    Used by DAS_Tool (skips the Prodigal run).
+    Used by DAS_Tool (skips the Prodigal run). This is deactivated for now.
     """
     input:
         proteins=expand(
@@ -94,9 +94,9 @@ rule concatenate_proteins:
 
 rule create_index:
     input:
-        catalogue_fna="output/mapping/{binning_group}/catalogue.fna.gz",
+        catalogue_fna="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
     output:
-        catalogue_idx="output/mapping/{binning_group}/catalogue.mmi",
+        catalogue_idx="output/mapping/{binning_group}/{binning_group}_contig_catalogue.mmi",
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -117,7 +117,7 @@ rule create_index:
 
 rule map_reads:
     input:
-        catalogue_idx="output/mapping/{binning_group}/catalogue.mmi",
+        catalogue_idx="output/mapping/{binning_group}/{binning_group}_contig_catalogue.mmi",
         fastq1=get_map_reads_input_R1,
         fastq2=get_map_reads_input_R2,
     output:

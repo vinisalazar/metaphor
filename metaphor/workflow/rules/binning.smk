@@ -15,7 +15,7 @@ from pathlib import Path
 rule vamb:
     input:
         bam_contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",
-        catalogue="output/mapping/{binning_group}/catalogue.fna.gz",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
     output:
         clusters=get_vamb_output(),
         scaffolds2bin="output/binning/vamb/{binning_group}/vamb_scaffolds2bin.tsv",
@@ -53,7 +53,7 @@ rule vamb:
 
 rule metabat2:
     input:
-        contigs="output/mapping/{binning_group}/catalogue.fna.gz",
+        contigs="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
         depths="output/mapping/{binning_group}/bam_contig_depths.txt",
     output:
         outdir=directory("output/binning/metabat2/{binning_group}/"),
@@ -91,7 +91,7 @@ rule metabat2:
 
 rule concoct:
     input:
-        catalogue="output/mapping/{binning_group}/catalogue.fna",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
         bams=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
         sample=list(
@@ -173,16 +173,15 @@ rule DAS_tool:
     Refine bins assembled with one or more binners.
     """
     input:
-        contigs="output/mapping/{binning_group}/catalogue.fna",
+        contigs="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
-        proteins="output/mapping/{binning_group}_proteins_catalogue.faa",
     output:
-        summary="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
+        summary="output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
     params:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
         binners=",".join(binners),
         outpreffix=lambda w, output: str(
-            Path(output.summary).parent.joinpath("DAS_tool")
+            Path(output.summary).parent.joinpath(w.binning_group)
         ),
         score_threshold=config["das_tool"]["score_threshold"],
     threads: get_threads_per_task_size("big")
@@ -200,7 +199,6 @@ rule DAS_tool:
                  -l {params.binners}                                \
                  -c {input.contigs}                                 \
                  -o {params.outpreffix}                             \
-                 -p {input.proteins}                                \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \

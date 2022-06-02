@@ -661,7 +661,7 @@ def get_binning_output():
             "output/binning/concoct/{binning_group}", binning_group=binning_group_names
         ),
         "das_tool": expand(
-            "output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
+            "output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
             binning_group=binning_group_names,
         ),
     }

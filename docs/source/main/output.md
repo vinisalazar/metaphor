@@ -75,8 +75,8 @@ contains 3-4 files:
 This module contains the files that map the original reads back to the contigs. These files are required for the
 binning process:
 * `bam`: directory with BAM (four different kinds) files for all samples.
-* `catalogue.fna.gz`: concatenated contigs for all samples.
-* `catalogue.mmi`: index file of the concatenated contigs.
+* `{binning_group}_contig_catalogue.fna.gz`: concatenated contigs for all samples.
+* `{binning_group}_contig_catalogue.mmi`: index file of the concatenated contigs.
 * `bam_contig_depths.txt`: coverage of each contig calculated from BAM files.
 
 ## Binning
