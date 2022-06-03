@@ -124,8 +124,11 @@ def main(args):
 
     # Start execution
     download_data(directory, test_files, download_url)
-    print("\nCreating input table for test files.\n")
-    create_input_table(create_input_table_args)
+    if Path(samples_file).exists():
+        print(f"\nInput file '{samples_file}' already exists. Skipping creation.")
+    else:
+        print("\nCreating input table for test files.\n")
+        create_input_table(create_input_table_args)
     print()
     print("Starting Snakemake.")
     print(
