@@ -150,12 +150,9 @@ properties:
         type: boolean
       args:
         type: string
-      kingdom:
-        type: string
     required:
       - activate
       - args
-      - kingdom
 
   diamond:
     type: object

@@ -77,7 +77,6 @@ prodigal:
 prokka:
   activate: True
   args: "--quiet --force"
-  kingdom: "Bacteria"
 
 diamond:
   db: "data/COG2020/cog-20.dmnd"  # for testing purposes only

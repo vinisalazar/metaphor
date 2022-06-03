@@ -80,7 +80,6 @@ prodigal:
 prokka:
   activate: False
   args: "--quiet --force"
-  kingdom: "Bacteria"
 
 diamond:
   db: "data/COG2020/cog-20.dmnd"      # Will try to create from db_source if it doesn't exist.
