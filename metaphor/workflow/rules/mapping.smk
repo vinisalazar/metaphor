@@ -37,7 +37,7 @@ rule concatenate_contigs:
         "../envs/vamb.yaml"
     shell:
         """
-        concatenate.py -m {params.sequence_length_cutoff} --keepnames {output} {input} &> {log}
+        concatenate.py -m {params.sequence_length_cutoff} {output} {input} &> {log}
         """
 
 
