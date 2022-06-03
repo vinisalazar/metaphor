@@ -20,6 +20,8 @@ properties:
 
   max_mb:
     type: integer
+  local_execution:
+    type: boolean
 
 ###############################################################
 # QC
@@ -314,6 +316,7 @@ required:
   - samples
   - coassembly
   - max_mb
+  - local_execution
   - cutadapt
   - merge_reads
   - host_removal
