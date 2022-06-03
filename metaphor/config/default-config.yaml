@@ -54,13 +54,10 @@ multiqc:
 ###############################################################
 coassembly: False  # Whether to perform coassembly (also known as pooled assembly). If this is true, all samples are merged together and assembled into a single file of contigs.
 
-# Parameters should be named after the corresponding rule
-concatenate_contigs:
-  sequence_length_cutoff: 1
-
 megahit:
   preset: "meta-large"
   cleanup: True
+  min_contig_len: 200
 
 metaquast:
   activate: False

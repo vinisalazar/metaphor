@@ -52,12 +52,10 @@ multiqc:
 
 coassembly: False
 
-concatenate_contigs:
-  sequence_length_cutoff: 500
-
 megahit:
   preset: "meta-large"
   cleanup: True
+  min_contig_len: 200
 
 metaquast:
   activate: False

@@ -22,7 +22,7 @@ rule concatenate_contigs:
     output:
         catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
     params:
-        sequence_length_cutoff=config["concatenate_contigs"]["sequence_length_cutoff"],
+        sequence_length_cutoff=config["megahit"]["min_contig_length"],
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -37,7 +37,7 @@ rule concatenate_contigs:
         "../envs/vamb.yaml"
     shell:
         """
-        concatenate.py -m {params.sequence_length_cutoff} {output} {input} &> {log}
+        concatenate.py -m {params.sequence_length_cutoff} --keepnames {output} {input} &> {log}
         """
 
 

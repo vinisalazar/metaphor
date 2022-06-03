@@ -90,14 +90,6 @@ properties:
   coassembly:
     type: boolean
 
-  concatenate_contigs:
-    type: object
-    properties:
-      sequence_length_cutoff: 
-        type: integer
-    required:
-      - sequence_length_cutoff
-
   megahit:
     type: object
     properties:
@@ -105,9 +97,12 @@ properties:
         type: string
       cleanup:
         type: boolean
+      min_contig_len:
+        type: integer
     required:
       - preset
       - cleanup
+      - min_contig_len
 
   metaquast:
     type: object
@@ -324,7 +319,6 @@ required:
   - host_removal
   - fastqc
   - multiqc
-  - concatenate_contigs
   - megahit
   - metaquast
   - prodigal
