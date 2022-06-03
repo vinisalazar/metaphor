@@ -22,7 +22,7 @@ rule concatenate_contigs:
     output:
         catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
     params:
-        sequence_length_cutoff=config["megahit"]["min_contig_length"],
+        sequence_length_cutoff=config["megahit"]["min_contig_len"],
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:

@@ -41,7 +41,7 @@ rule megahit:
         fastq1=lambda w, input: ",".join(input.fastq1),
         fastq2=lambda w, input: ",".join(input.fastq2),
         out_dir=lambda w, output: get_parent(get_parent(output.contigs)),  # this is equivalent to "{output}/megahit"
-        min_contig_len=200,
+        min_contig_len=config["megahit"]["min_contig_len"],
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
         cleanup=lambda w, output: cleanup_rule(
