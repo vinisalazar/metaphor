@@ -75,7 +75,6 @@ def get_final_output():
     final_output = (
         get_qc_output(),
         get_all_assembly_outputs(),
-        # get_mapping_output(),
         get_annotation_output(),
         get_binning_output(),
     )
@@ -287,12 +286,14 @@ def get_fastq_groups(wildcards, sense, kind="filtered"):
     elif is_activated("trimming"):
         kind = "cutadapt"
         add = getattr(wildcards, "unit", "_")
-    return sorted(
+
+    fastq_groups =  sorted(
         [
             f"output/qc/{kind}/{sample_name}{add}{sense}.fq.gz"
             for sample_name in samples.loc[wildcards.group, "sample_name"].to_list()
         ]
     )
+    return fastq_groups
 
 
 def get_multiqc_input():
@@ -456,10 +457,7 @@ def get_diamond_output():
 
 
 def get_all_diamond_outputs():
-    if config["coassembly"]:
-        return expand(get_diamond_output(), group=group_names)
-    else:
-        return expand(get_diamond_output(), group=sample_IDs)
+    return expand(get_diamond_output(), group=binning_group_names)
 
 
 def get_concatenate_taxonomies_outputs():
@@ -501,7 +499,7 @@ def get_prokka_output():
     bins_dict = {}
     for group in binning_group_names:
         bins_dict[group] = glob(
-            f"output/binning/DAS_tool/{group}/DAS_tool_DASTool_bins/*"
+            f"output/binning/DAS_tool/{group}/{group}_DASTool_bins/*"
         )
 
     for group, list_of_bins in bins_dict.items():
