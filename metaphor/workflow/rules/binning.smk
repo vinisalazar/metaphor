@@ -176,12 +176,12 @@ rule DAS_tool:
         contigs="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
     output:
-        summary="output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
+        bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
     params:
         fmt_scaffolds2bin=lambda w, input: ",".join(input.scaffolds2bin),
         binners=",".join(binners),
         outpreffix=lambda w, output: str(
-            Path(output.summary).parent.joinpath(w.binning_group)
+            Path(output.bin_evals).parent.joinpath(w.binning_group)
         ),
         score_threshold=config["das_tool"]["score_threshold"],
     threads: get_threads_per_task_size("big")
