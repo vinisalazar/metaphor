@@ -29,7 +29,7 @@ from pathlib import Path
 
 rule prodigal:
     input:
-        contigs=get_contigs_input(),
+        contigs="output/mapping/{group}/{group}_contig_catalogue.fna",
     output:
         proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa"),
         genbank=get_group_or_sample_file("annotation", "prodigal", "genbank.gbk"),
@@ -49,7 +49,7 @@ rule prodigal:
         else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     wildcard_constraints:
-        group="|".join(group_names),
+        group="|".join(binning_group_names),
     resources:
         mem_mb=get_max_mb(),
     log:
@@ -72,12 +72,13 @@ rule prodigal:
 
 rule prokka:
     input:
-        genome_bin="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
+        genome_bin="output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_bins/{bin}.fa",
+        bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
     output:
         outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
         outdir=lambda w, output: str(Path(output.outfile).parent),
-        kingdom="bacteria",  # Only bacteria supported for now
+        kingdom_cmd=lambda w, input: f"grep '{w.bin}' {input.bin_evals}",
         args=config["prokka"]["args"],
     wildcard_constraints:
         binning_group="|".join(binning_group_names),
@@ -92,12 +93,16 @@ rule prokka:
         "../envs/prokka.yaml"
     shell:
         """
+        # Get kingdom from bin eval file
+        kingdom=$({params.kingdom_cmd} | cut -f 5)
+        kingdom=$(echo $kingdom | head -c 1 | tr '[a-z]' '[A-Z]'; echo $kingdom | tail -c +2)
+
         prokka --outdir {params.outdir}     \
-               --kingdom {params.kingdom}   \
+               --kingdom $kingdom           \
                --cpus {threads}             \
                --prefix {wildcards.bin}     \
                {params.args}                \
-               {input.genome_bin}          
+               {input.genome_bin} &> {log}
         """
 
 
@@ -194,7 +199,7 @@ rule diamond:
         output_format=config["diamond"]["output_format"],
         extra="--iterate --top 0",
     wildcard_constraints:
-        group="|".join(group_names),
+        group="|".join(binning_group_names),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -244,6 +249,8 @@ rule taxonomy_parser:
         tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_parser"),
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     benchmark:
         get_group_benchmark_or_log("benchmark", "annotation", "cog_parser")
     conda:
@@ -256,7 +263,7 @@ rule concatenate_cog_functional:
     input:
         functional_counts=lambda wildcards: expand(
             "output/annotation/cog/{group}/{group}_{kind}.tsv",
-            group=group_names,
+            group=binning_group_names,
             kind=wildcards.kind,
         ),
     output:
@@ -278,7 +285,7 @@ rule concatenate_taxonomies:
     input:
         files=lambda wildcards: expand(
             "output/annotation/cog/{group}/{group}_{rank}.tsv",
-            group=group_names,
+            group=binning_group_names,
             rank=wildcards.rank,
         ),
     output:
@@ -316,6 +323,8 @@ rule lineage_parser:
         domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     log:
         get_group_benchmark_or_log("log", "annotation", "lineage_parser"),
     benchmark:
