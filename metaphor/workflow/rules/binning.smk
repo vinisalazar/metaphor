@@ -101,7 +101,7 @@ rule concoct:
             ),
         ),
         bais=lambda wildcards: expand(
-            "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam.bai",
+            "output/mapping/bam/{{binning_group}}/{sample}-to-contigs.sorted.bam.bai",
         sample=list(
             samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
