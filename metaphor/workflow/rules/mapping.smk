@@ -20,7 +20,7 @@ rule concatenate_contigs:
     input:
         contigs=get_contigs_input(expand_=True),
     output:
-        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["megahit"]["min_contig_len"],
     resources:
@@ -43,9 +43,9 @@ rule concatenate_contigs:
 
 rule decompress_catalogue:
     input:
-        catalogue_gz="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
+        catalogue_gz="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     output:
-        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna",
     threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
@@ -67,7 +67,7 @@ rule decompress_catalogue:
 
 rule concatenate_proteins:
     """
-    Used by DAS_Tool (skips the Prodigal run). This is deactivated for now.
+    Used by DAS_Tool (skips the Prodigal run).
     """
     input:
         proteins=expand(
@@ -75,7 +75,7 @@ rule concatenate_proteins:
             group=group_names,
         ),
     output:
-        prot_catalogue="output/mapping/{binning_group}_proteins_catalogue.faa",
+        prot_catalogue="output/mapping/{binning_group}/{binning_group}_proteins_catalogue.faa",
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -83,20 +83,20 @@ rule concatenate_proteins:
         if config["cobinning"]
         else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/{binning_group}_concatenate_proteins.log",
+        "output/logs/mapping/concatenate_proteins/{binning_group}_concatenate_proteins.log",
     benchmark:
-        "output/benchmarks/mapping/{binning_group}_concatenate_proteins.txt"
+        "output/benchmarks/mapping/concatenate_proteins/{binning_group}_concatenate_proteins.txt"
     conda:
         "../envs/utils.yaml"
     shell:
         """cat {input} > {output}"""
 
 
-rule create_index:
+rule create_contigs_index:
     input:
-        catalogue_fna="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
+        catalogue_fna="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     output:
-        catalogue_idx="output/mapping/{binning_group}/{binning_group}_contig_catalogue.mmi",
+        catalogue_idx="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.mmi",
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -115,19 +115,43 @@ rule create_index:
         """
 
 
+rule create_genes_index:
+    input:
+        catalogue_fna="output/annotation/prodigal/{binning_group}/{binning_group}_genes.fna",
+    output:
+        catalogue_idx="output/mapping/{binning_group}/{binning_group}_genes_catalogue.mmi",
+    resources:
+        mem_mb=get_max_mb(),
+    wildcard_constraints:
+        binning_group="cobinning"
+        if config["cobinning"]
+        else "|".join(binning_group_names),
+    log:
+        "output/logs/mapping/create_genes_index/{binning_group}.log",
+    benchmark:
+        "output/benchmarks/mapping/create_genes_index/{binning_group}.txt"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        """
+        minimap2 -d {output} {input} &> {log}
+        """
+
+
+
 rule map_reads:
     input:
-        catalogue_idx="output/mapping/{binning_group}/{binning_group}_contig_catalogue.mmi",
+        catalogue_idx="output/mapping/{binning_group}/{binning_group}_{kind}_catalogue.mmi",
         fastq1=get_map_reads_input_R1,
         fastq2=get_map_reads_input_R2,
     output:
         # This one needs wildcard named 'sample' because of the input functions.
-        bam="output/mapping/bam/{binning_group}/{sample}.map.bam",
+        bam="output/mapping/bam/{binning_group}/{sample}-to-{kind}.map.bam",
     params:
         N=50,
         preset="sr",
         flags=3584,
-        split_prefix="output/mapping/bam/{binning_group}/{sample}",
+        split_prefix="output/mapping/bam/{binning_group}/{sample}-to-{kind}",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -136,10 +160,11 @@ rule map_reads:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
+        kind="contigs|genes",
     log:
-        "output/logs/mapping/map_reads/{binning_group}-{sample}.log",
+        "output/logs/mapping/map_reads/{binning_group}-{sample}-to-{kind}.log",
     benchmark:
-        "output/benchmarks/mapping/map_reads/{binning_group}-{sample}.txt"
+        "output/benchmarks/mapping/map_reads/{binning_group}-{sample}-to-{kind}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -160,9 +185,9 @@ rule map_reads:
 
 rule sort_reads:
     input:
-        bam="output/mapping/bam/{binning_group}/{sample}.map.bam",
+        bam="output/mapping/bam/{binning_group}/{sample}-to-{kind}.map.bam",
     output:
-        sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
+        sort="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -171,10 +196,11 @@ rule sort_reads:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
+        kind="contigs|genes",        
     log:
-        "output/logs/mapping/sort_reads/{binning_group}-{sample}.log",
+        "output/logs/mapping/sort_reads/{binning_group}-{sample}-to-{kind}.log",
     benchmark:
-        "output/benchmarks/mapping/sort_reads/{binning_group}-{sample}.txt"
+        "output/benchmarks/mapping/sort_reads/{binning_group}-{sample}-to-{kind}.txt"
     conda:
         "../envs/samtools.yaml"
     wrapper:
@@ -183,9 +209,9 @@ rule sort_reads:
 
 rule index_reads:
     input:
-        sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
+        sort="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
     output:
-        index="output/mapping/bam/{binning_group}/{sample}.sorted.bam.bai",
+        index="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam.bai",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -194,10 +220,11 @@ rule index_reads:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
+        kind="contigs|genes",        
     log:
-        "output/logs/mapping/index_reads/{binning_group}-{sample}.log",
+        "output/logs/mapping/index_reads/{binning_group}-{sample}-to-{kind}.log",
     benchmark:
-        "output/benchmarks/mapping/index_reads/{binning_group}-{sample}.txt"
+        "output/benchmarks/mapping/index_reads/{binning_group}-{sample}-to-{kind}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -206,9 +233,9 @@ rule index_reads:
 
 rule flagstat:
     input:
-        sort="output/mapping/bam/{binning_group}/{sample}.sorted.bam",
+        sort="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
     output:
-        flagstat="output/mapping/bam/{binning_group}/{sample}.flagstat.txt",
+        flagstat="output/mapping/bam/{binning_group}/{sample}-to-{kind}.flagstat.txt",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -217,10 +244,11 @@ rule flagstat:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
+        kind="contigs|genes",        
     log:
-        "output/logs/mapping/flagstat/{binning_group}/{sample}.log",
+        "output/logs/mapping/flagstat/{binning_group}/{sample}-to-{kind}.log",
     benchmark:
-        "output/benchmarks/mapping/flagstat/{binning_group}/{sample}.txt"
+        "output/benchmarks/mapping/flagstat/{binning_group}/{sample}-to-{kind}.txt"
     conda:
         "../envs/samtools.yaml"
     shell:
@@ -230,23 +258,26 @@ rule flagstat:
 rule jgi_summarize_bam_contig_depths:
     input:
         lambda wildcards: expand(
-            "output/mapping/bam/{binning_group}/{sample}.sorted.bam",
+            "output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
         binning_group=wildcards.binning_group,
         sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
             ].unique(),
+        kind=wildcards.kind
         ),
     output:
-        contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",
+        contig_depths="output/mapping/{binning_group}/bam_{kind}_depths.txt",
     wildcard_constraints:
         binning_group="cobinning"
         if config["cobinning"]
         else "|".join(binning_group_names),
+        kind="contigs|genes",        
     log:
-        "output/logs/mapping/jgi_summarize_bam_contig_depths/{binning_group}.log",
+        "output/logs/mapping/jgi_summarize_bam_{kind}_depths/{binning_group}-to-{kind}.log",
     benchmark:
-        "output/benchmarks/mapping/jgi_summarize_bam_contig_depths/{binning_group}.txt"
+        "output/benchmarks/mapping/jgi_summarize_bam_{kind}_depths/{binning_group}-to-{kind}.txt"
     conda:
         "../envs/metabat2.yaml"
     shell:
         "jgi_summarize_bam_contig_depths {input} --outputDepth {output} 2> {log}"
+
