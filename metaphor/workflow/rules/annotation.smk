@@ -77,7 +77,7 @@ rule prokka:
         outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
         outdir=lambda w, output: str(Path(output.outfile).parent),
-        kingdom=config["prokka"]["kingdom"],
+        kingdom="bacteria",  # Only bacteria supported for now
         args=config["prokka"]["args"],
     wildcard_constraints:
         binning_group="|".join(binning_group_names),
