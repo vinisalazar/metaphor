@@ -236,6 +236,8 @@ rule cog_functional_parser:
         codes_out_relative=get_group_or_sample_file("annotation", "cog", "codes_relative.tsv"),
         pathways_out_absolute=get_group_or_sample_file("annotation", "cog", "pathways_absolute.tsv"),
         pathways_out_relative=get_group_or_sample_file("annotation", "cog", "pathways_relative.tsv"),
+    wildcard_constraints:
+        group="|".join(binning_group_names)
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
@@ -266,19 +268,20 @@ rule taxonomy_parser:
 rule concatenate_cog_functional:
     input:
         functional_counts=lambda wildcards: expand(
-            "output/annotation/cog/{group}/{group}_{kind}.tsv",
+            "output/annotation/cog/{group}/{group}_{kind}_{count_type}.tsv",
             group=binning_group_names,
             kind=wildcards.kind,
+            count_type=wildcards.count_type,
         ),
     output:
-        functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
-        functional_relative_counts="output/annotation/cog/tables/COG_{kind}_relative.tsv",
+        concatenated_functional_counts="output/annotation/cog/tables/concatenated_{kind}_{count_type}.tsv",
     wildcard_constraints:
         kind="|".join(functional_kinds),
+        count_type="absolute|relative"
     log:
-        "output/logs/annotation/concatenate_cog_{kind}.log",
+        "output/logs/annotation/concatenate_{kind}_{count_type}.log",
     benchmark:
-        "output/benchmarks/annotation/concatenate_cog_{kind}.txt"
+        "output/benchmarks/annotation/concatenate_{kind}_{count_type}.txt"
     conda:
         "../envs/utils.yaml"
     script:
@@ -341,19 +344,21 @@ rule lineage_parser:
 
 rule plot_cog_functional:
     input:
-        categories_file="output/annotation/cog/tables/COG_categories_relative.tsv",
+        categories_file="output/annotation/cog/{group}/{group}_categories_relative.tsv",
     output:
         categories_plot=report(
-            get_cog_functional_plot_outputs(),
+            get_cog_functional_plot_output("{group}"),
             category="Annotation",
         ),
     params:
         filter_categories=config["plot_cog_functional"]["filter_categories"],
         categories_cutoff=config["plot_cog_functional"]["categories_cutoff"],
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     log:
-        "output/logs/annotation/plot_cog_functional.log",
+        "output/logs/annotation/{group}/plot_cog_functional.log",
     benchmark:
-        "output/benchmarks/annotation/plot_cog_functional.txt"
+        "output/benchmarks/annotation/{group}/plot_cog_functional.txt"
     conda:
         "../envs/utils.yaml"
     script:

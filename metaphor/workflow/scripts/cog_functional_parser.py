@@ -212,7 +212,7 @@ def write_cog_codes(
         .sum()
     )
 
-    relative = absolute / absolute.sum()
+    relative = round(absolute / absolute.sum(), 4)
 
     @lru_cache(1024)
     def get_COG_name(cog_name):
@@ -237,7 +237,7 @@ def load_dataframe(file, **kwargs):
 
 def write_dfs(absolute, absolute_out, relative_out, relative=None):
     if relative is None:
-        relative = absolute / absolute.sum()
+        relative = round(absolute / absolute.sum(), 4)
     for kind in "absolute", "relative":
         df, outfile = eval(kind), eval(f"{kind}_out")
         df.columns = [i.replace("-to-genes.sorted.bam", "") for i in df.columns]

@@ -476,7 +476,7 @@ functional_kinds = ["categories", "codes", "pathways"]
 
 def get_concatenate_cog_functional_outputs():
     return expand(
-        "output/annotation/cog/tables/COG_{functional_kinds}_{kind}.tsv",
+        "output/annotation/cog/tables/concatenated_{functional_kinds}_{kind}.tsv",
         functional_kinds=functional_kinds,
         kind=("absolute", "relative"),
     )
@@ -516,8 +516,12 @@ def get_taxa_plot_outputs():
     return expand("output/annotation/cog/plots/COG_{rank}_relative.png", rank=ranks)
 
 
-def get_cog_functional_plot_outputs():
-    return "output/annotation/cog/plots/COG_categories_relative.png"
+def get_cog_functional_plot_output(group):
+    return f"output/annotation/cog/plots/{group}_cog_categories_relative.png"
+
+
+def get_all_cog_functional_plot_outputs():
+    return expand("output/annotation/cog/plots/{group}_cog_categories_relative.png", group=binning_group_names)
 
 
 def get_annotation_output():
@@ -537,7 +541,7 @@ def get_annotation_output():
             get_all_lineage_parser_outputs(),
             config["lineage_parser"]["rankedlineage"],
         ),
-        "plot_cog": get_cog_functional_plot_outputs(),
+        "plot_cog": get_all_cog_functional_plot_outputs(),
         "prokka": get_prokka_output(),
     }
 
