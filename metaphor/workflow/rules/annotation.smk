@@ -29,7 +29,7 @@ from pathlib import Path
 
 rule prodigal:
     input:
-        contigs="output/mapping/{group}/{group}_contig_catalogue.fna",
+        contigs="output/mapping/{group}/{group}_contigs_catalogue.fna",
     output:
         proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa"),
         genbank=get_group_or_sample_file("annotation", "prodigal", "genbank.gbk"),
@@ -228,6 +228,7 @@ rule cog_functional_parser:
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
+        bam_genes_depths="output/mapping/{group}/bam_genes_depths.txt"
     output:
         categories_out=get_group_or_sample_file("annotation", "cog", "categories.tsv"),
         codes_out=get_group_or_sample_file("annotation", "cog", "codes.tsv"),
