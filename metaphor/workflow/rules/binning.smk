@@ -14,8 +14,8 @@ from pathlib import Path
 
 rule vamb:
     input:
-        bam_contig_depths="output/mapping/{binning_group}/bam_contig_depths.txt",
-        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
+        bam_contig_depths="output/mapping/{binning_group}/bam_contigs_depths.txt",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     output:
         clusters=get_vamb_output(),
         scaffolds2bin="output/binning/vamb/{binning_group}/vamb_scaffolds2bin.tsv",
@@ -53,8 +53,8 @@ rule vamb:
 
 rule metabat2:
     input:
-        contigs="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna.gz",
-        depths="output/mapping/{binning_group}/bam_contig_depths.txt",
+        contigs="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
+        depths="output/mapping/{binning_group}/bam_contigs_depths.txt",
     output:
         outdir=directory("output/binning/metabat2/{binning_group}/"),
         scaffolds2bin="output/binning/metabat2/{binning_group}/metabat2_scaffolds2bin.tsv",
@@ -91,9 +91,9 @@ rule metabat2:
 
 rule concoct:
     input:
-        catalogue="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
+        catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna",
         bams=lambda wildcards: expand(
-            "output/mapping/bam/{{binning_group}}/{sample}.sorted.bam",
+            "output/mapping/bam/{{binning_group}}/{sample}-to-contigs.sorted.bam",
         sample=list(
             samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
@@ -173,8 +173,9 @@ rule DAS_tool:
     Refine bins assembled with one or more binners.
     """
     input:
-        contigs="output/mapping/{binning_group}/{binning_group}_contig_catalogue.fna",
+        contigs="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
+        proteins="output/annotation/prodigal/{binning_group}/{binning_group}_proteins.faa"
     output:
         bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
     params:
@@ -199,14 +200,12 @@ rule DAS_tool:
                  -l {params.binners}                                \
                  -c {input.contigs}                                 \
                  -o {params.outpreffix}                             \
+                 -p {input.proteins}                                \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \
                  --write_bin_evals                                  \
-                 --create_plots                                     \
                  --threads {threads} &> {log}
-
-        rm -rf {input.contigs}
         """
 
 
