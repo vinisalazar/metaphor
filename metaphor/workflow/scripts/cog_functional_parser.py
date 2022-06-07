@@ -219,6 +219,8 @@ def write_cog_codes(
         return def_tab.loc[cog_name, "COG name"]
 
     relative["COG name"] = absolute["COG name"] = absolute.index.map(get_COG_name)
+    absolute = absolute.reset_index().set_index(keys=["COG ID", "COG name"])
+    relative = relative.reset_index().set_index(keys=["COG ID", "COG name"])
     write_dfs(absolute, codes_out_absolute, codes_out_relative, relative)
 
 
