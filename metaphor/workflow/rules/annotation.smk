@@ -228,11 +228,14 @@ rule cog_functional_parser:
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
-        bam_genes_depths="output/mapping/{group}/bam_genes_depths.txt"
+        coverage_depths="output/mapping/{group}/bam_genes_depths.txt"
     output:
-        categories_out=get_group_or_sample_file("annotation", "cog", "categories.tsv"),
-        codes_out=get_group_or_sample_file("annotation", "cog", "codes.tsv"),
-        pathways_out=get_group_or_sample_file("annotation", "cog", "pathways.tsv"),
+        categories_out_absolute=get_group_or_sample_file("annotation", "cog", "categories_absolute.tsv"),
+        categories_out_relative=get_group_or_sample_file("annotation", "cog", "categories_relative.tsv"),
+        codes_out_absolute=get_group_or_sample_file("annotation", "cog", "codes_absolute.tsv"),
+        codes_out_relative=get_group_or_sample_file("annotation", "cog", "codes_relative.tsv"),
+        pathways_out_absolute=get_group_or_sample_file("annotation", "cog", "pathways_absolute.tsv"),
+        pathways_out_relative=get_group_or_sample_file("annotation", "cog", "pathways_relative.tsv"),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
