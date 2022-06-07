@@ -195,6 +195,7 @@ def parse_args():
     parser.add_argument("--categories_out")
     parser.add_argument("--codes_out")
     parser.add_argument("--pathways_out")
+    parser.add_argument("--bam_genes_depths")
     args = parser.parse_args()
     return args
 
