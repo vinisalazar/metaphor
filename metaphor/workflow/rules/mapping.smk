@@ -138,7 +138,6 @@ rule create_genes_index:
         """
 
 
-
 rule map_reads:
     input:
         catalogue_idx="output/mapping/{binning_group}/{binning_group}_{kind}_catalogue.mmi",
@@ -196,7 +195,7 @@ rule sort_reads:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
-        kind="contigs|genes",        
+        kind="contigs|genes",
     log:
         "output/logs/mapping/sort_reads/{binning_group}-{sample}-to-{kind}.log",
     benchmark:
@@ -220,7 +219,7 @@ rule index_reads:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
-        kind="contigs|genes",        
+        kind="contigs|genes",
     log:
         "output/logs/mapping/index_reads/{binning_group}-{sample}-to-{kind}.log",
     benchmark:
@@ -244,7 +243,7 @@ rule flagstat:
         if config["cobinning"]
         else "|".join(binning_group_names),
         sample="|".join(sample_IDs),
-        kind="contigs|genes",        
+        kind="contigs|genes",
     log:
         "output/logs/mapping/flagstat/{binning_group}/{sample}-to-{kind}.log",
     benchmark:
@@ -263,7 +262,7 @@ rule jgi_summarize_bam_contig_depths:
         sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
         "sample_name"
             ].unique(),
-        kind=wildcards.kind
+            kind=wildcards.kind,
         ),
     output:
         contig_depths="output/mapping/{binning_group}/bam_{kind}_depths.txt",
@@ -271,7 +270,7 @@ rule jgi_summarize_bam_contig_depths:
         binning_group="cobinning"
         if config["cobinning"]
         else "|".join(binning_group_names),
-        kind="contigs|genes",        
+        kind="contigs|genes",
     log:
         "output/logs/mapping/jgi_summarize_bam_{kind}_depths/{binning_group}-to-{kind}.log",
     benchmark:
@@ -280,4 +279,3 @@ rule jgi_summarize_bam_contig_depths:
         "../envs/metabat2.yaml"
     shell:
         "jgi_summarize_bam_contig_depths {input} --outputDepth {output} 2> {log}"
-

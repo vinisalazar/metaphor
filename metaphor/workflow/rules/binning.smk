@@ -175,7 +175,7 @@ rule DAS_tool:
     input:
         contigs="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna",
         scaffolds2bin=get_DAS_tool_input(),
-        proteins="output/annotation/prodigal/{binning_group}/{binning_group}_proteins.faa"
+        proteins="output/annotation/prodigal/{binning_group}/{binning_group}_proteins.faa",
     output:
         bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_summary.tsv",
     params:
@@ -185,7 +185,7 @@ rule DAS_tool:
             Path(output.bin_evals).parent.joinpath(w.binning_group)
         ),
         score_threshold=config["das_tool"]["score_threshold"],
-        extra=""
+        extra="",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,

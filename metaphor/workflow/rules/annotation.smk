@@ -228,16 +228,28 @@ rule cog_functional_parser:
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
-        coverage_depths="output/mapping/{group}/bam_genes_depths.txt"
+        coverage_depths="output/mapping/{group}/bam_genes_depths.txt",
     output:
-        categories_out_absolute=get_group_or_sample_file("annotation", "cog", "categories_absolute.tsv"),
-        categories_out_relative=get_group_or_sample_file("annotation", "cog", "categories_relative.tsv"),
-        codes_out_absolute=get_group_or_sample_file("annotation", "cog", "codes_absolute.tsv"),
-        codes_out_relative=get_group_or_sample_file("annotation", "cog", "codes_relative.tsv"),
-        pathways_out_absolute=get_group_or_sample_file("annotation", "cog", "pathways_absolute.tsv"),
-        pathways_out_relative=get_group_or_sample_file("annotation", "cog", "pathways_relative.tsv"),
+        categories_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "categories_absolute.tsv"
+        ),
+        categories_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "categories_relative.tsv"
+        ),
+        codes_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "codes_absolute.tsv"
+        ),
+        codes_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "codes_relative.tsv"
+        ),
+        pathways_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "pathways_absolute.tsv"
+        ),
+        pathways_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "pathways_relative.tsv"
+        ),
     wildcard_constraints:
-        group="|".join(binning_group_names)
+        group="|".join(binning_group_names),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
@@ -251,10 +263,14 @@ rule cog_functional_parser:
 rule taxonomy_parser:
     input:
         dmnd_out=get_diamond_output(),
-        coverage_depths="output/mapping/{group}/bam_genes_depths.txt"
+        coverage_depths="output/mapping/{group}/bam_genes_depths.txt",
     output:
-        tax_out_absolute=get_group_or_sample_file("annotation", "cog", "tax_absolute.tsv"),
-        tax_out_relative=get_group_or_sample_file("annotation", "cog", "tax_relative.tsv"),
+        tax_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "tax_absolute.tsv"
+        ),
+        tax_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "tax_relative.tsv"
+        ),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_parser"),
     wildcard_constraints:
@@ -279,7 +295,7 @@ rule concatenate_cog_functional:
         concatenated_functional_counts="output/annotation/cog/tables/concatenated_{kind}_{count_type}.tsv",
     wildcard_constraints:
         kind="|".join(functional_kinds),
-        count_type="absolute|relative"
+        count_type="absolute|relative",
     log:
         "output/logs/annotation/concatenate_{kind}_{count_type}.log",
     benchmark:
@@ -307,7 +323,7 @@ rule concatenate_taxonomies:
                 "tax",
             ]
         ),
-        count_type="absolute|relative"
+        count_type="absolute|relative",
     log:
         "output/logs/annotation/concatenate_cog_{rank}_{count_type}.log",
     benchmark:
@@ -324,7 +340,9 @@ rule lineage_parser:
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species=get_group_or_sample_file("annotation", "cog", "species_{count_type}.tsv"),
+        species=get_group_or_sample_file(
+            "annotation", "cog", "species_{count_type}.tsv"
+        ),
         genus=get_group_or_sample_file("annotation", "cog", "genus_{count_type}.tsv"),
         family=get_group_or_sample_file("annotation", "cog", "family_{count_type}.tsv"),
         order=get_group_or_sample_file("annotation", "cog", "order_{count_type}.tsv"),
@@ -338,7 +356,9 @@ rule lineage_parser:
     log:
         get_group_benchmark_or_log("log", "annotation", "lineage_parser_{count_type}"),
     benchmark:
-        get_group_benchmark_or_log("benchmark", "annotation", "lineage_parser_{count_type}")
+        get_group_benchmark_or_log(
+            "benchmark", "annotation", "lineage_parser_{count_type}"
+        )
     conda:
         "../envs/utils.yaml"
     script:

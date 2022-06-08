@@ -287,7 +287,7 @@ def get_fastq_groups(wildcards, sense, kind="filtered"):
         kind = "cutadapt"
         add = getattr(wildcards, "unit", "_")
 
-    fastq_groups =  sorted(
+    fastq_groups = sorted(
         [
             f"output/qc/{kind}/{sample_name}{add}{sense}.fq.gz"
             for sample_name in samples.loc[wildcards.group, "sample_name"].to_list()
@@ -513,7 +513,11 @@ def get_prokka_output():
 
 
 def get_taxa_plot_outputs():
-    return expand("output/annotation/cog/{group}/plots/{group}_{rank}_relative.png", rank=ranks, group=binning_group_names)
+    return expand(
+        "output/annotation/cog/{group}/plots/{group}_{rank}_relative.png",
+        rank=ranks,
+        group=binning_group_names,
+    )
 
 
 def get_cog_functional_plot_output(group):
@@ -521,7 +525,10 @@ def get_cog_functional_plot_output(group):
 
 
 def get_all_cog_functional_plot_outputs():
-    return expand("output/annotation/cog/{group}/plots/{group}_cog_categories_relative.png", group=binning_group_names)
+    return expand(
+        "output/annotation/cog/{group}/plots/{group}_cog_categories_relative.png",
+        group=binning_group_names,
+    )
 
 
 def get_annotation_output():
