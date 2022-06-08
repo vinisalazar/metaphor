@@ -373,7 +373,7 @@ rule plot_cog_taxonomy:
         taxonomy_relative_counts="output/annotation/cog/{group}/{group}_{rank}_relative.tsv",
     output:
         taxonomy_barplot=report(
-            "output/annotation/cog/{group}/plots/COG_{rank}_relative.png",
+            "output/annotation/cog/{group}/plots/{group}_{rank}_relative.png",
             category="Annotation",
         ),
     params:

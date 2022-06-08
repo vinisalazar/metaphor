@@ -462,7 +462,7 @@ def get_all_diamond_outputs():
 
 def get_concatenate_taxonomies_outputs():
     return expand(
-        "output/annotation/cog/tables/COG_{rank}_{kind}.tsv",
+        "output/annotation/cog/tables/concatenated_{rank}_{kind}.tsv",
         rank=ranks
         + [
             "tax",
@@ -513,15 +513,15 @@ def get_prokka_output():
 
 
 def get_taxa_plot_outputs():
-    return expand("output/annotation/cog/plots/COG_{rank}_relative.png", rank=ranks)
+    return expand("output/annotation/cog/{group}/plots/{group}_{rank}_relative.png", rank=ranks, group=binning_group_names)
 
 
 def get_cog_functional_plot_output(group):
-    return f"output/annotation/cog/plots/{group}_cog_categories_relative.png"
+    return f"output/annotation/cog/{group}/plots/{group}_cog_categories_relative.png"
 
 
 def get_all_cog_functional_plot_outputs():
-    return expand("output/annotation/cog/plots/{group}_cog_categories_relative.png", group=binning_group_names)
+    return expand("output/annotation/cog/{group}/plots/{group}_cog_categories_relative.png", group=binning_group_names)
 
 
 def get_annotation_output():
