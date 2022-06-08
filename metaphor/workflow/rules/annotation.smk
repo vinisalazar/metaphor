@@ -73,7 +73,7 @@ rule prodigal:
 rule prokka:
     input:
         genome_bin="output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_bins/{bin}.fa",
-        bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_allBins.eval",
+        bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_summary.tsv",
     output:
         outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
