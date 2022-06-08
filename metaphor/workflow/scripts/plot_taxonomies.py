@@ -104,9 +104,8 @@ def create_tax_barplot(dataframe, tax_cutoff, colormap, save=True, outfile=None)
 
 def process_rank_file(args):
     cutoff = int(args.tax_cutoff)
-    rank_df = pd.read_csv(args.taxonomy_relative_counts, sep="\t", index_col=0).T
+    rank_df = pd.read_csv(args.taxonomy_relative_counts, sep="\t", index_col=0)
     rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
-    rank_df.index.name = args.rank
 
     # Sort in descending abundance
     rank_df = rank_df.loc[rank_df.sum(axis=1).sort_values(ascending=False).index]
