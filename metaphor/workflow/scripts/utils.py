@@ -44,6 +44,16 @@ def driver(main_fn, snakemake_obj, file, parse_args_fn=None):
         logging.error(traceback.format_exc())
 
 
+def write_dfs(absolute, absolute_out, relative_out, relative=None):
+    if relative is None:
+        relative = round(absolute / absolute.sum(), 4)
+    for kind in "absolute", "relative":
+        df, outfile = eval(kind), eval(f"{kind}_out")
+        df.columns = [i.replace("-to-genes.sorted.bam", "") for i in df.columns]
+        df.to_csv(outfile, sep="\t")
+        logging.info(f"Wrote {len(df)} rows to '{outfile}'.")
+
+
 cog_csv_names = [
     "Gene ID (GenBank or ad hoc)",
     "NCBI Assembly ID",

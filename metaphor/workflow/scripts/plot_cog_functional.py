@@ -10,13 +10,13 @@ from matplotlib import pyplot as plt
 
 def create_heatmap(args):
     logging.info(f"Processing COG categories file: '{args.categories_file}'.")
-    dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0).T
+    dataframe = pd.read_csv(args.categories_file, sep="\t", index_col=0)
     logging.info(f"{len(dataframe)} categories detected.")
 
     if args.filter_categories:
         logging.info("Filtering categories.")
-        dataframe = dataframe.drop("Function unknown")
-        dataframe = dataframe.drop("General function prediction only")
+        dataframe = dataframe.drop("Function unknown", errors="ignore")
+        dataframe = dataframe.drop("General function prediction only", errors="ignore")
         dataframe = dataframe[dataframe > args.categories_cutoff]
         dataframe = dataframe.dropna()
         filtered = (abs(dataframe.sum() - 1)).mean()
@@ -33,12 +33,12 @@ def create_heatmap(args):
 
         vmin = args.categories_cutoff
 
-    # TODO: improve this path construction
-    outfile = str(Path(args.categories_file).with_suffix(".png")).replace(
-        "tables", "plots"
-    )
+    # Sort rows by abundance
+    reidx = dataframe.mean(axis=1).sort_values(ascending=False).index
+    dataframe = dataframe.reindex(reidx)
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
     sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
+    outfile = args.categories_plot
     plt.savefig(outfile, bbox_inches="tight")
     logging.info(f"Generated plot: '{outfile}'.")
 
@@ -49,10 +49,10 @@ def main(args):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--categories_file")
-    parser.add_argument("--categories_plot")
-    parser.add_argument("--filter_categories", action="store_true")
-    parser.add_argument("--categories_cutoff", type=float)
+    parser.add_argument("--categories-file")
+    parser.add_argument("--categories-plot")
+    parser.add_argument("--filter-categories", action="store_true")
+    parser.add_argument("--categories-cutoff", type=float)
     args = parser.parse_args()
     return args
 

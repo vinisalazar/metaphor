@@ -75,7 +75,6 @@ def get_final_output():
     final_output = (
         get_qc_output(),
         get_all_assembly_outputs(),
-        # get_mapping_output(),
         get_annotation_output(),
         get_binning_output(),
     )
@@ -287,12 +286,14 @@ def get_fastq_groups(wildcards, sense, kind="filtered"):
     elif is_activated("trimming"):
         kind = "cutadapt"
         add = getattr(wildcards, "unit", "_")
-    return sorted(
+
+    fastq_groups = sorted(
         [
             f"output/qc/{kind}/{sample_name}{add}{sense}.fq.gz"
             for sample_name in samples.loc[wildcards.group, "sample_name"].to_list()
         ]
     )
+    return fastq_groups
 
 
 def get_multiqc_input():
@@ -456,15 +457,12 @@ def get_diamond_output():
 
 
 def get_all_diamond_outputs():
-    if config["coassembly"]:
-        return expand(get_diamond_output(), group=group_names)
-    else:
-        return expand(get_diamond_output(), group=sample_IDs)
+    return expand(get_diamond_output(), group=binning_group_names)
 
 
 def get_concatenate_taxonomies_outputs():
     return expand(
-        "output/annotation/cog/tables/COG_{rank}_{kind}.tsv",
+        "output/annotation/cog/tables/concatenated_{rank}_{kind}.tsv",
         rank=ranks
         + [
             "tax",
@@ -478,15 +476,18 @@ functional_kinds = ["categories", "codes", "pathways"]
 
 def get_concatenate_cog_functional_outputs():
     return expand(
-        "output/annotation/cog/tables/COG_{functional_kinds}_{kind}.tsv",
+        "output/annotation/cog/tables/concatenated_{functional_kinds}_{kind}.tsv",
         functional_kinds=functional_kinds,
         kind=("absolute", "relative"),
     )
 
 
 def get_lineage_parser_outputs():
+    count_types = ("absolute", "relative")
     return (
-        get_group_or_sample_file("annotation", "cog", f"{rank}.tsv") for rank in ranks
+        get_group_or_sample_file("annotation", "cog", f"{rank}_{count_type}.tsv")
+        for rank in ranks
+        for count_type in count_types
     )
 
 
@@ -501,7 +502,7 @@ def get_prokka_output():
     bins_dict = {}
     for group in binning_group_names:
         bins_dict[group] = glob(
-            f"output/binning/DAS_tool/{group}/DAS_tool_DASTool_bins/*"
+            f"output/binning/DAS_tool/{group}/{group}_DASTool_bins/*"
         )
 
     for group, list_of_bins in bins_dict.items():
@@ -515,11 +516,22 @@ def get_prokka_output():
 
 
 def get_taxa_plot_outputs():
-    return expand("output/annotation/cog/plots/COG_{rank}_relative.png", rank=ranks)
+    return expand(
+        "output/annotation/cog/{group}/plots/{group}_{rank}_relative.png",
+        rank=ranks,
+        group=binning_group_names,
+    )
 
 
-def get_cog_functional_plot_outputs():
-    return "output/annotation/cog/plots/COG_categories_relative.png"
+def get_cog_functional_plot_output(group):
+    return f"output/annotation/cog/{group}/plots/{group}_cog_categories_relative.png"
+
+
+def get_all_cog_functional_plot_outputs():
+    return expand(
+        "output/annotation/cog/{group}/plots/{group}_cog_categories_relative.png",
+        group=binning_group_names,
+    )
 
 
 def get_annotation_output():
@@ -539,7 +551,7 @@ def get_annotation_output():
             get_all_lineage_parser_outputs(),
             config["lineage_parser"]["rankedlineage"],
         ),
-        "plot_cog": get_cog_functional_plot_outputs(),
+        "plot_cog": get_all_cog_functional_plot_outputs(),
         "prokka": get_prokka_output(),
     }
 
@@ -651,6 +663,17 @@ def get_all_vamb_output():
     )
 
 
+def get_binning_report_output(binning_group):
+    plots = [f"bin_{i}" for i in "quality scores quantity sizes N50".split()]
+    plots_dict = {
+        plot: report(
+            f"output/binning/plots/{binning_group}/{plot}.png", category="Binning"
+        )
+        for plot in plots
+    }
+    return plots_dict
+
+
 def get_binning_output():
     binners = {
         "vamb": get_all_vamb_output(),
@@ -660,10 +683,18 @@ def get_binning_output():
         "concoct": expand(
             "output/binning/concoct/{binning_group}", binning_group=binning_group_names
         ),
-        "das_tool": expand(
-            "output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_summary.tsv",
-            binning_group=binning_group_names,
-        ),
+        "das_tool": [
+            expand(
+                "output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_summary.tsv",
+                binning_group=binning_group_names,
+            ),
+            [
+                get_binning_report_output(binning_group).values()
+                for binning_group in binning_group_names
+            ]
+            if config["das_tool"]["bins_report"]
+            else [],
+        ],
     }
     return (v for k, v in binners.items() if is_activated(k))
 

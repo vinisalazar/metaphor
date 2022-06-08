@@ -63,21 +63,21 @@ sample, and two extra subdirectories:
     * `plots`: the plots generated from the concatenated tables.
 * `diamond`: output tables of the DIAMOND annotation. These tables are similar to
 [BLAST tabular](https://www.metagenomics.wiki/tools/blast/blastn-output-format-6) format.
-* `prodigal`: output of gene prediction with Prodigal. Contains subdirectories for each sample. Each subdirectory
+* `prodigal`: output of gene prediction with Prodigal. Contains subdirectories for each binning group. Each subdirectory
 contains 3-4 files:
-    * `{sample}_genbank.gbk`: the [GenBank Flat File format](https://www.ncbi.nlm.nih.gov/Sitemap/samplerecord.html).
-    * `{sample}_genes.fna`: predicted coding sequences as nucleotides.
-    * `{sample}_proteins.faa`: predicted coding sequences as amino acids
-    * `{sample}_scores.cds` (optional):  is the tabular format with the scores for all possible genes.
+    * `{binning_group}_genbank.gbk`: the [GenBank Flat File format](https://www.ncbi.nlm.nih.gov/Sitemap/samplerecord.html).
+    * `{binning_group}_genes.fna`: predicted coding sequences as nucleotides.
+    * `{binning_group}_proteins.faa`: predicted coding sequences as amino acids
+    * `{binning_group}_scores.cds` (optional):  is the tabular format with the scores for all possible genes.
 
 ## Mapping
 
-This module contains the files that map the original reads back to the contigs. These files are required for the
+This module contains the files that map the original reads back to both contigs and genes (CDSs). These files are required for the
 binning process:
 * `bam`: directory with BAM (four different kinds) files for all samples.
-* `catalogue.fna.gz`: concatenated contigs for all samples.
-* `catalogue.mmi`: index file of the concatenated contigs.
-* `bam_contig_depths.txt`: coverage of each contig calculated from BAM files.
+* `{binning_group}_{genes|contigs}_catalogue.fna.gz`: concatenated contigs for all samples.
+* `{binning_group}_{genes|contigs}_catalogue.mmi`: index file of the concatenated contigs and genes
+* `bam_{genes|contigs}_depths.txt`: coverage of each contig calculated from BAM files.
 
 ## Binning
 

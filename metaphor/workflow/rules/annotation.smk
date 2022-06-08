@@ -29,7 +29,7 @@ from pathlib import Path
 
 rule prodigal:
     input:
-        contigs=get_contigs_input(),
+        contigs="output/mapping/{group}/{group}_contigs_catalogue.fna",
     output:
         proteins=get_group_or_sample_file("annotation", "prodigal", "proteins.faa"),
         genbank=get_group_or_sample_file("annotation", "prodigal", "genbank.gbk"),
@@ -49,7 +49,7 @@ rule prodigal:
         else "",
         quiet="-q" if config["prodigal"]["quiet"] else "",
     wildcard_constraints:
-        group="|".join(group_names),
+        group="|".join(binning_group_names),
     resources:
         mem_mb=get_max_mb(),
     log:
@@ -72,12 +72,13 @@ rule prodigal:
 
 rule prokka:
     input:
-        genome_bin="output/binning/DAS_tool/{binning_group}/DAS_tool_DASTool_bins/{bin}.fa",
+        genome_bin="output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_bins/{bin}.fa",
+        bin_evals="output/binning/DAS_tool/{binning_group}/{binning_group}_DASTool_summary.tsv",
     output:
         outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
         outdir=lambda w, output: str(Path(output.outfile).parent),
-        kingdom=config["prokka"]["kingdom"],
+        kingdom_cmd=lambda w, input: f"grep '{w.bin}' {input.bin_evals}",
         args=config["prokka"]["args"],
     wildcard_constraints:
         binning_group="|".join(binning_group_names),
@@ -92,12 +93,16 @@ rule prokka:
         "../envs/prokka.yaml"
     shell:
         """
+        # Get kingdom from bin eval file
+        kingdom=$({params.kingdom_cmd} | cut -f 5)
+        kingdom=$(echo $kingdom | head -c 1 | tr '[a-z]' '[A-Z]'; echo $kingdom | tail -c +2)
+
         prokka --outdir {params.outdir}     \
-               --kingdom {params.kingdom}   \
+               --kingdom $kingdom           \
                --cpus {threads}             \
                --prefix {wildcards.bin}     \
                {params.args}                \
-               {input.genome_bin}          
+               {input.genome_bin} &> {log}
         """
 
 
@@ -194,7 +199,7 @@ rule diamond:
         output_format=config["diamond"]["output_format"],
         extra="--iterate --top 0",
     wildcard_constraints:
-        group="|".join(group_names),
+        group="|".join(binning_group_names),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -223,10 +228,28 @@ rule cog_functional_parser:
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
+        coverage_depths="output/mapping/{group}/bam_genes_depths.txt",
     output:
-        categories_out=get_group_or_sample_file("annotation", "cog", "categories.tsv"),
-        codes_out=get_group_or_sample_file("annotation", "cog", "codes.tsv"),
-        pathways_out=get_group_or_sample_file("annotation", "cog", "pathways.tsv"),
+        categories_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "categories_absolute.tsv"
+        ),
+        categories_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "categories_relative.tsv"
+        ),
+        codes_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "codes_absolute.tsv"
+        ),
+        codes_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "codes_relative.tsv"
+        ),
+        pathways_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "pathways_absolute.tsv"
+        ),
+        pathways_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "pathways_relative.tsv"
+        ),
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_functional_parser"),
     benchmark:
@@ -240,10 +263,18 @@ rule cog_functional_parser:
 rule taxonomy_parser:
     input:
         dmnd_out=get_diamond_output(),
+        coverage_depths="output/mapping/{group}/bam_genes_depths.txt",
     output:
-        tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
+        tax_out_absolute=get_group_or_sample_file(
+            "annotation", "cog", "tax_absolute.tsv"
+        ),
+        tax_out_relative=get_group_or_sample_file(
+            "annotation", "cog", "tax_relative.tsv"
+        ),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_parser"),
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     benchmark:
         get_group_benchmark_or_log("benchmark", "annotation", "cog_parser")
     conda:
@@ -255,19 +286,20 @@ rule taxonomy_parser:
 rule concatenate_cog_functional:
     input:
         functional_counts=lambda wildcards: expand(
-            "output/annotation/cog/{group}/{group}_{kind}.tsv",
-            group=group_names,
+            "output/annotation/cog/{group}/{group}_{kind}_{count_type}.tsv",
+            group=binning_group_names,
             kind=wildcards.kind,
+            count_type=wildcards.count_type,
         ),
     output:
-        functional_absolute_counts="output/annotation/cog/tables/COG_{kind}_absolute.tsv",
-        functional_relative_counts="output/annotation/cog/tables/COG_{kind}_relative.tsv",
+        concatenated_functional_counts="output/annotation/cog/tables/concatenated_{kind}_{count_type}.tsv",
     wildcard_constraints:
         kind="|".join(functional_kinds),
+        count_type="absolute|relative",
     log:
-        "output/logs/annotation/concatenate_cog_{kind}.log",
+        "output/logs/annotation/concatenate_{kind}_{count_type}.log",
     benchmark:
-        "output/benchmarks/annotation/concatenate_cog_{kind}.txt"
+        "output/benchmarks/annotation/concatenate_{kind}_{count_type}.txt"
     conda:
         "../envs/utils.yaml"
     script:
@@ -276,14 +308,14 @@ rule concatenate_cog_functional:
 
 rule concatenate_taxonomies:
     input:
-        files=lambda wildcards: expand(
-            "output/annotation/cog/{group}/{group}_{rank}.tsv",
-            group=group_names,
+        taxonomy_counts=lambda wildcards: expand(
+            "output/annotation/cog/{group}/{group}_{rank}_{count_type}.tsv",
+            group=binning_group_names,
             rank=wildcards.rank,
+            count_type=wildcards.count_type,
         ),
     output:
-        absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
-        relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
+        concatenated_taxonomy_counts="output/annotation/cog/tables/concatenated_{rank}_{count_type}.tsv",
     wildcard_constraints:
         rank="|".join(
             ranks
@@ -291,10 +323,11 @@ rule concatenate_taxonomies:
                 "tax",
             ]
         ),
+        count_type="absolute|relative",
     log:
-        "output/logs/annotation/concatenate_cog_{rank}.log",
+        "output/logs/annotation/concatenate_cog_{rank}_{count_type}.log",
     benchmark:
-        "output/benchmarks/annotation/concatenate_cog_{rank}.txt"
+        "output/benchmarks/annotation/concatenate_cog_{rank}_{count_type}.txt"
     conda:
         "../envs/utils.yaml"
     script:
@@ -303,23 +336,29 @@ rule concatenate_taxonomies:
 
 rule lineage_parser:
     input:
-        tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
+        tax_out=get_group_or_sample_file("annotation", "cog", "tax_{count_type}.tsv"),
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species=get_group_or_sample_file("annotation", "cog", "species.tsv"),
-        genus=get_group_or_sample_file("annotation", "cog", "genus.tsv"),
-        family=get_group_or_sample_file("annotation", "cog", "family.tsv"),
-        order=get_group_or_sample_file("annotation", "cog", "order.tsv"),
-        klass=get_group_or_sample_file("annotation", "cog", "class.tsv"),
-        phylum=get_group_or_sample_file("annotation", "cog", "phylum.tsv"),
-        domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
+        species=get_group_or_sample_file(
+            "annotation", "cog", "species_{count_type}.tsv"
+        ),
+        genus=get_group_or_sample_file("annotation", "cog", "genus_{count_type}.tsv"),
+        family=get_group_or_sample_file("annotation", "cog", "family_{count_type}.tsv"),
+        order=get_group_or_sample_file("annotation", "cog", "order_{count_type}.tsv"),
+        klass=get_group_or_sample_file("annotation", "cog", "class_{count_type}.tsv"),
+        phylum=get_group_or_sample_file("annotation", "cog", "phylum_{count_type}.tsv"),
+        domain=get_group_or_sample_file("annotation", "cog", "domain_{count_type}.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     log:
-        get_group_benchmark_or_log("log", "annotation", "lineage_parser"),
+        get_group_benchmark_or_log("log", "annotation", "lineage_parser_{count_type}"),
     benchmark:
-        get_group_benchmark_or_log("benchmark", "annotation", "lineage_parser")
+        get_group_benchmark_or_log(
+            "benchmark", "annotation", "lineage_parser_{count_type}"
+        )
     conda:
         "../envs/utils.yaml"
     script:
@@ -328,19 +367,21 @@ rule lineage_parser:
 
 rule plot_cog_functional:
     input:
-        categories_file="output/annotation/cog/tables/COG_categories_relative.tsv",
+        categories_file="output/annotation/cog/{group}/{group}_categories_relative.tsv",
     output:
         categories_plot=report(
-            get_cog_functional_plot_outputs(),
+            get_cog_functional_plot_output("{group}"),
             category="Annotation",
         ),
     params:
         filter_categories=config["plot_cog_functional"]["filter_categories"],
         categories_cutoff=config["plot_cog_functional"]["categories_cutoff"],
+    wildcard_constraints:
+        group="|".join(binning_group_names),
     log:
-        "output/logs/annotation/plot_cog_functional.log",
+        "output/logs/annotation/{group}/plot_cog_functional.log",
     benchmark:
-        "output/benchmarks/annotation/plot_cog_functional.txt"
+        "output/benchmarks/annotation/{group}/plot_cog_functional.txt"
     conda:
         "../envs/utils.yaml"
     script:
@@ -349,19 +390,19 @@ rule plot_cog_functional:
 
 rule plot_cog_taxonomy:
     input:
-        taxonomy_relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
+        taxonomy_relative_counts="output/annotation/cog/{group}/{group}_{rank}_relative.tsv",
     output:
         taxonomy_barplot=report(
-            "output/annotation/cog/plots/COG_{rank}_relative.png",
+            "output/annotation/cog/{group}/plots/{group}_{rank}_relative.png",
             category="Annotation",
         ),
     params:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
         colormap=config["plot_taxonomies"]["colormap"],
     log:
-        "output/logs/annotation/plot_taxonomies_{rank}.log",
+        "output/logs/annotation/{group}/plot_taxonomies_{rank}.log",
     benchmark:
-        "output/benchmarks/annotation/plot_taxonomies_{rank}.txt"
+        "output/benchmarks/annotation/{group}/plot_taxonomies_{rank}.txt"
     conda:
         "../envs/utils.yaml"
     script:

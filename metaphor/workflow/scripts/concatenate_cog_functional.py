@@ -34,10 +34,8 @@ def main(args):
         for k, v in df.items()
     }
 
-    # This handles repeated TaxIDs with different tax names
-    # It only keeps the first tax name
     try:
-        df = pd.concat(df.values(), axis=1)
+        df = pd.concat(df.values(), axis=1).fillna(0)
     except pd.errors.InvalidIndexError:
         df = (
             v.groupby(v.index).agg({v.columns[0]: "first", v.columns[1]: sum})
@@ -45,31 +43,17 @@ def main(args):
         )
         df = pd.concat(df, axis=1)
 
-    for count in ("absolute", "relative"):
-        outdf = df[[i for i in df.columns if count in i]]
-        outdf = outdf.rename(lambda s: s.replace(f"_{count}", ""), axis="columns")
-        outdf = outdf.round(6).T.fillna(0.0)
-        try:
-            attr = f"functional_{count}_counts"
-            outfile = getattr(args, attr)
-            outdf.to_csv(outfile, sep="\t")
-            if outfile:
-                logging.info(f"Wrote {outdf.shape[1]} records to '{outfile}'.")
-        except AttributeError:
-            logging.error(
-                f"Attribute {attr} wasn't found, please check the passed args:\n{args}"
-            )
-            pass
+    # Transpose to have samples as rows
+    df = df.T
+    outfile = args.concatenated_functional_counts
+    df.to_csv(outfile, sep="\t")
+    logging.info(f"Wrote concatenated output to '{outfile}'.")
 
 
 def parse_args():
-    # Unfortunately this ugly block of code is required due to standardization of argument parsing across the workflow
-    # 'Simple is better than complex.'
-    # 'Special cases aren't special enough to break the rules.'
     parser = argparse.ArgumentParser()
     parser.add_argument("--functional-counts")
-    parser.add_argument("--functional-relative-counts")
-    parser.add_argument("--functional-absolute-counts")
+    parser.add_argument("--concatenated-functional-counts")
     parser.add_argument("--kind")
     args = parser.parse_args()
     return args

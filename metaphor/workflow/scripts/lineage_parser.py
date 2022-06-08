@@ -1,4 +1,5 @@
 import argparse
+import logging
 import pandas as pd
 
 
@@ -6,6 +7,7 @@ rankedlineage_names = (
     "taxid tax_name species genus family order class phylum kingdom domain nan".split()
 )
 ranks = rankedlineage_names[2:-1]
+ranks.remove("kingdom")
 
 
 def main(args):
@@ -14,6 +16,7 @@ def main(args):
         sep="\t",
         index_col=0,
     )
+    logging.info("Loading NCBI Taxonomy lineage data.")
     rankedlineage = pd.read_csv(
         args.rankedlineage,
         sep="|",
@@ -27,9 +30,9 @@ def main(args):
 
     for rank in ranks:
         rank_df = tax.groupby(rank).sum()
-        rank_df = pd.concat((rank_df, rank_df / rank_df.sum()), axis=1)
-        rank_df.columns = "absolute", "relative"
-        rank_df.to_csv(vars(args).get(rank), sep="\t")
+        outfile = getattr(args, rank)
+        rank_df.to_csv(outfile, sep="\t")
+        logging.info(f"Wrote {len(rank_df)} records to '{outfile}'.")
 
 
 def parse_snakemake_args(snakemake):

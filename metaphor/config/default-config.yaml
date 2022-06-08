@@ -23,6 +23,7 @@ cores_per_small_task: 0.25    # Percentage of workflow cores to use per small ta
 
 # Memory settings
 max_mb: 65536         # Max MB memory to be used.
+local_execution: True  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
 
 ###############################################################
 # QC
@@ -54,13 +55,10 @@ multiqc:
 ###############################################################
 coassembly: False  # Whether to perform coassembly (also known as pooled assembly). If this is true, all samples are merged together and assembled into a single file of contigs.
 
-# Parameters should be named after the corresponding rule
-concatenate_contigs:
-  sequence_length_cutoff: 1
-
 megahit:
   preset: "meta-large"
   cleanup: True
+  min_contig_len: 200
 
 metaquast:
   activate: False
@@ -80,7 +78,6 @@ prodigal:
 prokka:
   activate: False
   args: "--quiet --force"
-  kingdom: "Bacteria"
 
 diamond:
   db: "data/COG2020/cog-20.dmnd"      # Will try to create from db_source if it doesn't exist.
@@ -103,11 +100,11 @@ lineage_parser:
 plot_cog_functional:
   activate: True
   filter_categories: True
-  categories_cutoff: 0.01
+  categories_cutoff: 0.01  # Remove categories with mean abundance across samples smaller than this value
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Leave as 0 for no filtering. Low abundance taxa will be grouped as 'Low abundance'.
+  tax_cutoff: 20  # Only show the N most abundant taxa for any rank. Leave as 0 for no filtering. Low abundance taxa will be grouped as 'Low abundance'.
   colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
@@ -132,6 +129,7 @@ concoct:
 das_tool:
   activate: True
   score_threshold: 0.5
+  bins_report: True
 
 ###############################################################
 # POSTPROCESSING

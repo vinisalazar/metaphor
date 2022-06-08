@@ -71,6 +71,11 @@ def main():
         action="store_true",
         help="Don't ask for confirmation when running tests.",
     )
+    execute.add_argument(
+        "--skip-report",
+        action="store_true",
+        help="Don't create report when run finishes.",
+    )
 
     execute.set_defaults(
         func=metaphor_execute,
@@ -81,6 +86,7 @@ def main():
         max_mb=None,
         profile=None,
         extras="",
+        skip_report=False
     )
 
     ###############################################################

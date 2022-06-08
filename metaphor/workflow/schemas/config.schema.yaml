@@ -20,6 +20,8 @@ properties:
 
   max_mb:
     type: integer
+  local_execution:
+    type: boolean
 
 ###############################################################
 # QC
@@ -90,14 +92,6 @@ properties:
   coassembly:
     type: boolean
 
-  concatenate_contigs:
-    type: object
-    properties:
-      sequence_length_cutoff: 
-        type: integer
-    required:
-      - sequence_length_cutoff
-
   megahit:
     type: object
     properties:
@@ -105,9 +99,12 @@ properties:
         type: string
       cleanup:
         type: boolean
+      min_contig_len:
+        type: integer
     required:
       - preset
       - cleanup
+      - min_contig_len
 
   metaquast:
     type: object
@@ -150,12 +147,9 @@ properties:
         type: boolean
       args:
         type: string
-      kingdom:
-        type: string
     required:
       - activate
       - args
-      - kingdom
 
   diamond:
     type: object
@@ -284,9 +278,12 @@ properties:
         type: boolean
       score_threshold:
         type: number
+      bins_plot:
+        type: boolean
     required:
       - activate
       - score_threshold
+      - bins_report
 
 ###############################################################
 # Postprocessing
@@ -319,12 +316,12 @@ required:
   - samples
   - coassembly
   - max_mb
+  - local_execution
   - cutadapt
   - merge_reads
   - host_removal
   - fastqc
   - multiqc
-  - concatenate_contigs
   - megahit
   - metaquast
   - prodigal

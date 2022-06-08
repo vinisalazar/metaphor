@@ -19,6 +19,7 @@ cores_per_small_task: 0.25    # Total of workflow cores to use per small task
 
 # Memory settings
 max_mb: 8196          # Max MB memory to be used.
+local_execution: True  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
 
 
 ###############################################################
@@ -52,12 +53,10 @@ multiqc:
 
 coassembly: False
 
-concatenate_contigs:
-  sequence_length_cutoff: 500
-
 megahit:
   preset: "meta-large"
   cleanup: True
+  min_contig_len: 200
 
 metaquast:
   activate: False
@@ -77,7 +76,6 @@ prodigal:
 prokka:
   activate: True
   args: "--quiet --force"
-  kingdom: "Bacteria"
 
 diamond:
   db: "data/COG2020/cog-20.dmnd"  # for testing purposes only
@@ -104,7 +102,7 @@ plot_cog_functional:
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
+  tax_cutoff: 20  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
   colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
@@ -129,6 +127,7 @@ concoct:
 das_tool:
   activate: True
   score_threshold: 0.0
+  bins_report: True
 
 ###############################################################
 # Postprocessing
@@ -137,7 +136,7 @@ das_tool:
 postprocessing:
   activate: True
   runtime_unit: "m"
-  runtime_cutoff: 1
+  runtime_cutoff: 0
   memory_unit: "max_vms"
   memory_cutoff: 0
   memory_gb: True
