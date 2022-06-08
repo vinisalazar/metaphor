@@ -13,12 +13,16 @@ import argparse
 
 import pandas as pd
 
+from utils import write_dfs
+
 
 def main(args):
 
-    (dmnd_out, tax_out,) = (
+    (dmnd_out, cov_depths, tax_out_absolute, tax_out_relative) = (
         args.dmnd_out,
-        args.tax_out,
+        args.coverage_depths,
+        args.tax_out_absolute,
+        args.tax_out_relative,
     )
 
     # Load data
@@ -27,27 +31,36 @@ def main(args):
         dmnd_out,
         sep="\t",
         usecols=["qseqid", "sseqid", "bitscore", "staxids", "sscinames"],
+        index_col="qseqid",
     )
-
-    # Keep the best score
-    df = df.sort_values("bitscore", ascending=False)
-    df = df.drop_duplicates("qseqid")
-
     logging.info(f"Loaded {len(df)} records.")
 
+    # Keep the best score, format taxids
+    df = df.sort_values("bitscore", ascending=False)
+    df = df[df.index.duplicated(keep="first")]
     df["staxids"] = df["staxids"].astype(int, errors="ignore")
-    df = df[["staxids", "sscinames"]].value_counts()
-    df.name = "absolute"
-    df.to_csv(tax_out, sep="\t")
-    logging.info(f"Wrote {len(df)} rows to '{tax_out}'.")
-    del df
+
+    logging.info("Merging coverage depths.")
+    covs = pd.read_csv(cov_depths, sep="\t", index_col=0)
+    df = df.join(covs)
+
+    # Calculating counts from cov depths
+    samples = [i for i in df.columns if i.endswith(".sorted.bam")]
+
+    df = round(
+        df[["staxids", "sscinames"] + samples].groupby(["staxids", "sscinames"]).sum(),
+        4,
+    )
+    write_dfs(df, tax_out_absolute, tax_out_relative)
 
 
 def parse_args():
     # TODO: improve these arguments and add parser description
     parser = argparse.ArgumentParser()
     parser.add_argument("--dmnd_out")
-    parser.add_argument("--tax_out")
+    parser.add_argument("--coverage_depths")
+    parser.add_argument("--tax_out_relative")
+    parser.add_argument("--tax_out_absolute")
     args = parser.parse_args()
     return args
 

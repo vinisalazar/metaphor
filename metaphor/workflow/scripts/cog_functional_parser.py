@@ -12,7 +12,7 @@ import logging
 import argparse
 from pathlib import Path
 from functools import lru_cache
-from utils import cog_csv_names
+from utils import cog_csv_names, write_dfs
 
 import pandas as pd
 
@@ -233,16 +233,6 @@ def load_dataframe(file, **kwargs):
         df_ = pd.read_csv(file, **kwargs, encoding="latin-1")
 
     return df_
-
-
-def write_dfs(absolute, absolute_out, relative_out, relative=None):
-    if relative is None:
-        relative = round(absolute / absolute.sum(), 4)
-    for kind in "absolute", "relative":
-        df, outfile = eval(kind), eval(f"{kind}_out")
-        df.columns = [i.replace("-to-genes.sorted.bam", "") for i in df.columns]
-        df.to_csv(outfile, sep="\t")
-        logging.info(f"Wrote {len(df)} rows to '{outfile}'.")
 
 
 def parse_args():

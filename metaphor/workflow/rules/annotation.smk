@@ -251,8 +251,10 @@ rule cog_functional_parser:
 rule taxonomy_parser:
     input:
         dmnd_out=get_diamond_output(),
+        coverage_depths="output/mapping/{group}/bam_genes_depths.txt"
     output:
-        tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
+        tax_out_absolute=get_group_or_sample_file("annotation", "cog", "tax_absolute.tsv"),
+        tax_out_relative=get_group_or_sample_file("annotation", "cog", "tax_relative.tsv"),
     log:
         get_group_benchmark_or_log("log", "annotation", "cog_parser"),
     wildcard_constraints:
@@ -290,14 +292,14 @@ rule concatenate_cog_functional:
 
 rule concatenate_taxonomies:
     input:
-        files=lambda wildcards: expand(
-            "output/annotation/cog/{group}/{group}_{rank}.tsv",
+        taxonomy_counts=lambda wildcards: expand(
+            "output/annotation/cog/{group}/{group}_{rank}_{count_type}.tsv",
             group=binning_group_names,
             rank=wildcards.rank,
+            count_type=wildcards.count_type,
         ),
     output:
-        absolute_counts="output/annotation/cog/tables/COG_{rank}_absolute.tsv",
-        relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
+        concatenated_taxonomy_counts="output/annotation/cog/tables/concatenated_{rank}_{count_type}.tsv",
     wildcard_constraints:
         rank="|".join(
             ranks
@@ -305,10 +307,11 @@ rule concatenate_taxonomies:
                 "tax",
             ]
         ),
+        count_type="absolute|relative"
     log:
-        "output/logs/annotation/concatenate_cog_{rank}.log",
+        "output/logs/annotation/concatenate_cog_{rank}_{count_type}.log",
     benchmark:
-        "output/benchmarks/annotation/concatenate_cog_{rank}.txt"
+        "output/benchmarks/annotation/concatenate_cog_{rank}_{count_type}.txt"
     conda:
         "../envs/utils.yaml"
     script:
@@ -317,25 +320,25 @@ rule concatenate_taxonomies:
 
 rule lineage_parser:
     input:
-        tax_out=get_group_or_sample_file("annotation", "cog", "tax.tsv"),
+        tax_out=get_group_or_sample_file("annotation", "cog", "tax_{count_type}.tsv"),
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species=get_group_or_sample_file("annotation", "cog", "species.tsv"),
-        genus=get_group_or_sample_file("annotation", "cog", "genus.tsv"),
-        family=get_group_or_sample_file("annotation", "cog", "family.tsv"),
-        order=get_group_or_sample_file("annotation", "cog", "order.tsv"),
-        klass=get_group_or_sample_file("annotation", "cog", "class.tsv"),
-        phylum=get_group_or_sample_file("annotation", "cog", "phylum.tsv"),
-        domain=get_group_or_sample_file("annotation", "cog", "domain.tsv"),
+        species_relative=get_group_or_sample_file("annotation", "cog", "species_{count_type}.tsv"),
+        genus_relative=get_group_or_sample_file("annotation", "cog", "genus_{count_type}.tsv"),
+        family_relative=get_group_or_sample_file("annotation", "cog", "family_{count_type}.tsv"),
+        order_relative=get_group_or_sample_file("annotation", "cog", "order_{count_type}.tsv"),
+        class_relative=get_group_or_sample_file("annotation", "cog", "class_{count_type}.tsv"),
+        phylum_relative=get_group_or_sample_file("annotation", "cog", "phylum_{count_type}.tsv"),
+        domain_relative=get_group_or_sample_file("annotation", "cog", "domain_{count_type}.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
     wildcard_constraints:
         group="|".join(binning_group_names),
     log:
-        get_group_benchmark_or_log("log", "annotation", "lineage_parser"),
+        get_group_benchmark_or_log("log", "annotation", "lineage_parser_{count_type}"),
     benchmark:
-        get_group_benchmark_or_log("benchmark", "annotation", "lineage_parser")
+        get_group_benchmark_or_log("benchmark", "annotation", "lineage_parser_{count_type}")
     conda:
         "../envs/utils.yaml"
     script:
@@ -367,19 +370,19 @@ rule plot_cog_functional:
 
 rule plot_cog_taxonomy:
     input:
-        taxonomy_relative_counts="output/annotation/cog/tables/COG_{rank}_relative.tsv",
+        taxonomy_relative_counts="output/annotation/cog/{group}/{group}_{rank}_relative.tsv",
     output:
         taxonomy_barplot=report(
-            "output/annotation/cog/plots/COG_{rank}_relative.png",
+            "output/annotation/cog/{group}/plots/COG_{rank}_relative.png",
             category="Annotation",
         ),
     params:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
         colormap=config["plot_taxonomies"]["colormap"],
     log:
-        "output/logs/annotation/plot_taxonomies_{rank}.log",
+        "output/logs/annotation/{group}/plot_taxonomies_{rank}.log",
     benchmark:
-        "output/benchmarks/annotation/plot_taxonomies_{rank}.txt"
+        "output/benchmarks/annotation/{group}/plot_taxonomies_{rank}.txt"
     conda:
         "../envs/utils.yaml"
     script:
