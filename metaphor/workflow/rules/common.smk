@@ -485,7 +485,9 @@ def get_concatenate_cog_functional_outputs():
 def get_lineage_parser_outputs():
     count_types = ("absolute", "relative")
     return (
-        get_group_or_sample_file("annotation", "cog", f"{rank}_{count_type}.tsv") for rank in ranks for count_type in count_types
+        get_group_or_sample_file("annotation", "cog", f"{rank}_{count_type}.tsv")
+        for rank in ranks
+        for count_type in count_types
     )
 
 
