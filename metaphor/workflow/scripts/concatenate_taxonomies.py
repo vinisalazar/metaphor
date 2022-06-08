@@ -17,7 +17,7 @@ def main(args):
     # If it's a single file, make it into a list
     if isinstance(counts, str):
         counts = counts.split()
-    logging.info("Loading '{rank}' files:\n" + "\n".join(counts) + "\n")
+    logging.info(f"Loading '{rank}' files:\n" + "\n".join(counts) + "\n")
 
     # Create dictionary of sample_names: dataframe
     df = {
