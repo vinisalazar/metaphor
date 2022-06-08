@@ -160,14 +160,14 @@ def get_mb_per_cores(wildcards, threads, task_type="big"):
     if config["local_execution"]:
         return threads * int(config["max_mb"] / workflow.cores)
     else:
-        return get_max_mb()
+        return get_max_mb(0.0)
 
 
 def get_max_mb(margin=0.2):
     """
     Gets the config max_mb and subtracts a margin from itself.
     """
-    assert 0 < margin < 1, f"Margin '{margin}' must be between 0 and 1."
+    assert 0 <= margin < 1, f"Margin '{margin}' must be between 0 and 1, zero included."
     mb = config["max_mb"] - (config["max_mb"] * margin)
     return round(mb)
 
