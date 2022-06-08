@@ -324,13 +324,13 @@ rule lineage_parser:
         rankedlineage=config["lineage_parser"]["rankedlineage"],
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
-        species_relative=get_group_or_sample_file("annotation", "cog", "species_{count_type}.tsv"),
-        genus_relative=get_group_or_sample_file("annotation", "cog", "genus_{count_type}.tsv"),
-        family_relative=get_group_or_sample_file("annotation", "cog", "family_{count_type}.tsv"),
-        order_relative=get_group_or_sample_file("annotation", "cog", "order_{count_type}.tsv"),
-        class_relative=get_group_or_sample_file("annotation", "cog", "class_{count_type}.tsv"),
-        phylum_relative=get_group_or_sample_file("annotation", "cog", "phylum_{count_type}.tsv"),
-        domain_relative=get_group_or_sample_file("annotation", "cog", "domain_{count_type}.tsv"),
+        species=get_group_or_sample_file("annotation", "cog", "species_{count_type}.tsv"),
+        genus=get_group_or_sample_file("annotation", "cog", "genus_{count_type}.tsv"),
+        family=get_group_or_sample_file("annotation", "cog", "family_{count_type}.tsv"),
+        order=get_group_or_sample_file("annotation", "cog", "order_{count_type}.tsv"),
+        klass=get_group_or_sample_file("annotation", "cog", "class_{count_type}.tsv"),
+        phylum=get_group_or_sample_file("annotation", "cog", "phylum_{count_type}.tsv"),
+        domain=get_group_or_sample_file("annotation", "cog", "domain_{count_type}.tsv"),
     resources:
         mem_mb=get_max_mb(0.5),
     wildcard_constraints:
