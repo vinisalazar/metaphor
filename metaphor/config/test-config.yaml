@@ -102,7 +102,7 @@ plot_cog_functional:
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
+  tax_cutoff: 20  # Only show the N most abundant taxa for any rank. Low abundance taxa will be grouped as 'undetermined/other'.
   colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
@@ -136,7 +136,7 @@ das_tool:
 postprocessing:
   activate: True
   runtime_unit: "m"
-  runtime_cutoff: 1
+  runtime_cutoff: 0
   memory_unit: "max_vms"
   memory_cutoff: 0
   memory_gb: True

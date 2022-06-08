@@ -100,11 +100,11 @@ lineage_parser:
 plot_cog_functional:
   activate: True
   filter_categories: True
-  categories_cutoff: 0.01
+  categories_cutoff: 0.01  # Remove categories with mean abundance across samples smaller than this value
 
 plot_taxonomies:
   activate: True
-  tax_cutoff: 30  # Only show the N most abundant taxa for any rank. Leave as 0 for no filtering. Low abundance taxa will be grouped as 'Low abundance'.
+  tax_cutoff: 20  # Only show the N most abundant taxa for any rank. Leave as 0 for no filtering. Low abundance taxa will be grouped as 'Low abundance'.
   colormap: "tab20c"  # Which matplotlib colormap to use
 
 ###############################################################
