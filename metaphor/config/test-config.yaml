@@ -122,7 +122,7 @@ metabat2:
   preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
 
 concoct:
-  activate: True
+  activate: False  # CONCOCT installation can be problematic in some OSs so this is disabled for testing
 
 das_tool:
   activate: True
