@@ -28,13 +28,14 @@ def calculate_legend_width(index):
         return (4, 1)
 
 
-def format_index(index):
+def format_index(index, abbreviate_genus=True):
     new_index = []
     for s in index:
         try:
             s = str(s)
             if len(s.split()) >= 2 and (s != filtered_label):
-                s = s.split()[0][0] + ". " + " ".join(s.split()[1:])
+                if abbreviate_genus:
+                    s = s.split()[0][0] + ". " + " ".join(s.split()[1:])
                 s = "$" + s + "$"
         except (TypeError, ValueError):
             pass
@@ -43,10 +44,12 @@ def format_index(index):
     return pd.Index(new_index, name=index.name)
 
 
-def create_tax_barplot(dataframe, tax_cutoff, colormap, save=True, outfile=None):
+def create_tax_barplot(
+    dataframe, tax_cutoff, colormap, save=True, outfile=None, abbreviate_genus=True
+):
     figsize = (10, len(dataframe.columns))
     if dataframe.index.name == "species":
-        dataframe.index = format_index(dataframe.index)
+        dataframe.index = format_index(dataframe.index, abbreviate_genus)
     rank = dataframe.index.name
     logging.info(f"Generating plot for rank '{rank}'.")
     fig, axs = plt.subplots(
