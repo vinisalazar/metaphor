@@ -112,12 +112,12 @@ plot_taxonomies:
 cobinning: True # Whether to perform cobinning. When this is true, only one binning group will be used. If False, samples will be binned according to their 'group' column.
 
 vamb:
-  activate: True
+  activate: False
   minfasta: 1000
   batchsize: 128
 
 metabat2:
-  activate: True
+  activate: False
   seed: 0
   preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
 
@@ -125,9 +125,9 @@ concoct:
   activate: False
 
 das_tool:
-  activate: True
+  activate: False
   score_threshold: 0.0
-  bins_report: True
+  bins_report: False
 
 ###############################################################
 # Postprocessing
