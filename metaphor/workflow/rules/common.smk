@@ -501,19 +501,21 @@ def get_all_lineage_parser_outputs():
         return expand(get_lineage_parser_outputs(), group=sample_IDs)
 
 
-def get_prokka_output(group):
-    df = pd.read_csv(
-        f"output/binning/DAS_tool/{group}/{group}_DASTool_summary.tsv", sep="\t"
-    )
-    bins = [
-        f"output/binning/DAS_tool/{group}/{group}_DASTool_bins/{i}.fa"
-        for i in df["bin"]
-    ]
-    annot_bins = [
-        f"output/annotation/prokka/{group}/{bin_}/{bin_}.fna" for bin_ in bins
-    ]
+def get_prokka_output():
+    bins_dict = {}
+    for group in binning_group_names:
+        bins_dict[group] = glob(
+            f"output/binning/DAS_tool/{group}/DAS_tool_DASTool_bins/*"
+        )
 
-    return annot_bins
+    for group, list_of_bins in bins_dict.items():
+        list_of_bins = [Path(bin_).stem for bin_ in list_of_bins]
+        bins_dict[group] = [
+            f"output/annotation/prokka/{group}/{bin_}/{bin_}.fna"
+            for bin_ in list_of_bins
+        ]
+
+    return bins_dict.values()
 
 
 def get_taxa_plot_outputs():
@@ -553,7 +555,7 @@ def get_annotation_output():
             config["lineage_parser"]["rankedlineage"],
         ),
         "plot_cog": get_all_cog_functional_plot_outputs(),
-        "prokka": (get_prokka_output(group) for group in binning_group_names)
+        "prokka": get_prokka_output()
         if is_activated("das_tool")
         else (),  # Can't run Prokka without DAS Tool!
     }
