@@ -504,9 +504,8 @@ def get_all_lineage_parser_outputs():
 def get_prokka_output():
     bins_dict = {}
     for group in binning_group_names:
-        bins_dict[group] = glob(
-            f"output/binning/DAS_tool/{group}/{group}_DASTool_bins/*"
-        )
+        df = pd.read_csv(f"output/binning/DAS_tool/{group}/{group}_DASTool_summary.tsv", sep="\t")
+        bins_dict[group] = [f"output/binning/DAS_tool/{group}/{group}_DASTool_bins/{i}.fa" for i in df["bin"]]
 
     for group, list_of_bins in bins_dict.items():
         list_of_bins = [Path(bin_).stem for bin_ in list_of_bins]
