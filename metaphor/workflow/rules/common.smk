@@ -554,7 +554,7 @@ def get_annotation_output():
             config["lineage_parser"]["rankedlineage"],
         ),
         "plot_cog": get_all_cog_functional_plot_outputs(),
-        "prokka": get_prokka_output(),
+        "prokka": get_prokka_output() if is_activated("das_tool") else (),  # Can't run Prokka without DAS Tool!
     }
 
     needs_activation = (
@@ -694,7 +694,7 @@ def get_binning_output():
                 get_binning_report_output(binning_group).values()
                 for binning_group in binning_group_names
             ]
-            if config["das_tool"]["bins_report"]
+            if (config["das_tool"]["bins_report"]) and (is_activated("das_tool"))
             else [],
         ],
     }
