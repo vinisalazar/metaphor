@@ -117,9 +117,15 @@ def cleanup_modules():
 
     modules = {
         "qc": ["output/qc/cutadapt", "output/qc/filtered", "output/qc/merged"],
-        "mapping": ["output/mapping/bam",],
+        "mapping": [
+            "output/mapping/bam",
+        ],
     }
-    paths_to_delete = [v for k, v in modules.items() if k in config["cleanup_modules"]["modules"].split()]
+    paths_to_delete = [
+        v
+        for k, v in modules.items()
+        if k in config["cleanup_modules"]["modules"].split()
+    ]
     paths_to_delete = [Path(p) for sublist in paths_to_delete for p in sublist]
     paths_to_delete = [str(p) for p in paths_to_delete if p.exists()]
     return paths_to_delete if is_activated("cleanup_modules") else ()
@@ -733,7 +739,9 @@ def get_postprocessing_output():
             "output/postprocessing/memory_barplot_sum.png",
             "output/postprocessing/memory_barplot_errorbar.png",
             "output/postprocessing/memory_barplot_errorbar.png",
-            "output/postprocessing/cleanup.txt" if is_activated("cleanup_modules") else ()
+            "output/postprocessing/cleanup.txt"
+            if is_activated("cleanup_modules")
+            else (),
         )
     else:
         return ()

@@ -14,6 +14,7 @@ Postprocessing rules:
     - plot_benchmarks: plot benchmarks
 """
 
+
 rule cleanup_modules:
     """
     Clean up unused files and directories at the end of the run.
@@ -23,11 +24,11 @@ rule cleanup_modules:
     output:
         "output/postprocessing/cleanup.txt",
     params:
-        modules=cleanup_modules()
+        modules=cleanup_modules(),
     log:
         "output/logs/postprocessing/cleanup.log",
     benchmark:
-        "output/benchmarks/postprocessing/cleanup.txt",
+        "output/benchmarks/postprocessing/cleanup.txt"
     conda:
         "../envs/utils.yaml"
     shell:
@@ -43,7 +44,6 @@ rule cleanup_modules:
         echo "If this is empty, no paths were deleted." >> {output}
         echo "To disable deletion, turn off the 'cleanup_modules' setting in the configuration file." >> {output} 
         """
-
 
 
 rule concatenate_benchmarks:
