@@ -20,6 +20,9 @@ Please refer to this website to learn how to use Metaphor. If you have any quest
 problem, don't hesitate to `open an issue in the GitHub repo <https://github.com/vinisalazar/metaphor/issues/new/choose>`_.
 Any and all feedback is appreciated!
 
+If you use Metaphor, please cite the open source software it is based on. The bib files can be found
+`here <https://github.com/vinisalazar/metaphor/tree/main/metaphor/workflow/bibs>`_ for your convenience.
+
 **Quickstart**
 
 .. code-block:: console

@@ -14,6 +14,9 @@ Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads 
 - Annotation (with [Prodigal](https://github.com/hyattpd/Prodigal), [Diamond](https://github.com/bbuchfink/diamond), and the [NCBI COG database](https://www.ncbi.nlm.nih.gov/research/cog-project/))
 - Postprocessing (with custom scripts)
 
+Please cite these software if you use Metaphor. The bib files are located [here](./metaphor/workflow/bibs/) for your convenience.
+Metaphor will support automatic citation in the future.
+
 Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable.
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
