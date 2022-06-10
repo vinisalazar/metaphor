@@ -6,6 +6,9 @@ from inspect import currentframe
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
+
+sns.set_palette("colorblind")
 
 
 def create_df(file, score_threshold):
@@ -21,12 +24,12 @@ def create_df(file, score_threshold):
         "bin_score": "Bin score",
     }
 
-    df[f"Quality threshold"] = df["bin_score"].apply(
+    df["Quality threshold"] = df["bin_score"].apply(
         lambda x: "Pass" if x >= score_threshold else "Fail"
     )
     df["SCG_set"] = df["SCG_set"].str.capitalize()
     df = df.rename(columns=rename_dict)
-    qc_pass = "Quality threshold" if score_threshold else None
+    qc_pass = f"Quality threshold" if score_threshold else None
     domain = "Domain" if len(df["Domain"].value_counts()) > 1 else None
 
     return df, rename_dict, qc_pass, domain
@@ -39,9 +42,9 @@ def bin_quality(
     sns.scatterplot(
         x="Completeness (%)",
         y="Redundancy (%)",
-        hue=qc_pass,
-        style=domain,
         data=df,
+        hue="Binning software",
+        style=qc_pass,
         ax=ax,
     )
 
@@ -62,10 +65,21 @@ def bin_scores(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
     fig, ax = plt.subplots()
-    hp = sns.histplot(x=rename_dict["bin_score"], data=df, hue=qc_pass)
+    hp = sns.histplot(
+        x=rename_dict["bin_score"], data=df, hue="Binning software", multiple="stack"
+    )
 
     if score_threshold:
-        plt.axvline(score_threshold, 0.0, 1, alpha=1, zorder=2, color="k")
+        plt.axvline(
+            score_threshold, 0.0, 1, alpha=1, zorder=2, color="k", linestyle="--"
+        )
+        trans = ax.get_xaxis_transform()
+        plt.text(
+            score_threshold * 1.01,
+            0.60,
+            qc_pass + f"({score_threshold})",
+            transform=trans,
+        )
 
     if save:
         func_name = currentframe().f_code.co_name
@@ -80,12 +94,27 @@ def bin_quantity(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
     fig, ax = plt.subplots()
-    plot_data = df[rename_dict["bin_set"]].value_counts().reset_index()
-    sns.barplot(x="index", y=rename_dict["bin_set"], data=plot_data, ax=ax)
-    ax.bar_label(ax.containers[0])
+    plot_data = pd.crosstab(df["Binning software"], df[qc_pass])
+
+    plot_data.plot(
+        kind="bar",
+        stacked=True,
+        ax=ax,
+        cmap=ListedColormap(
+            ["#4196C5", "#E6AB44"]
+        ),  # Change this if switching color palette
+        edgecolor="k",
+    )
+    # From https://stackoverflow.com/questions/41296313/stacked-bar-chart-with-centered-labels
+    for c in ax.containers:
+        # Optional: if the segment is small or 0, customize the labels
+        labels = [v.get_height() if v.get_height() > 0 else "" for v in c]
+        # Remove the labels parameter if it's not needed for customized labels
+        ax.bar_label(c, labels=labels, label_type="center")
     _ = ax.set_title("Number of bins")
     _ = ax.set_ylabel("")
     _ = ax.set_xlabel(rename_dict["bin_set"])
+    plt.xticks(rotation=0)
 
     if save:
         func_name = currentframe().f_code.co_name
