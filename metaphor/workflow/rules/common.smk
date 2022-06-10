@@ -108,6 +108,23 @@ def cleanup_rule(config_object, path):
         return ""
 
 
+def cleanup_modules():
+    """
+    Cleans up unnecessary files of the modules selected in config['cleanup_modules'] setting.
+
+    The `modules` dict points to the paths to be deleted.
+    """
+
+    modules = {
+        "qc": ["output/qc/cutadapt", "output/qc/filtered", "output/qc/merged"],
+        "mapping": ["output/mapping/bam",],
+    }
+    paths_to_delete = [v for k, v in modules.items() if k in config["cleanup_modules"]["modules"].split()]
+    paths_to_delete = [Path(p) for sublist in paths_to_delete for p in sublist]
+    paths_to_delete = [str(p) for p in paths_to_delete if p.exists()]
+    return paths_to_delete if is_activated("cleanup_modules") else ()
+
+
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
     return str(Path(path).parent)
@@ -715,6 +732,8 @@ def get_postprocessing_output():
             "output/postprocessing/runtime_barplot_errorbar.png",
             "output/postprocessing/memory_barplot_sum.png",
             "output/postprocessing/memory_barplot_errorbar.png",
+            "output/postprocessing/memory_barplot_errorbar.png",
+            "output/postprocessing/cleanup.txt" if is_activated("cleanup_modules") else ()
         )
     else:
         return ()

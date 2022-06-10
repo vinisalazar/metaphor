@@ -25,6 +25,12 @@ cores_per_small_task: 0.25    # Percentage of workflow cores to use per small ta
 max_mb: 65536         # Max MB memory to be used.
 local_execution: True  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
 
+# Modules in this string will undergo cleanup process
+# See the 'cleanup_modules' function in the common.smk module for clarification
+cleanup_modules:
+  activate: True
+  modules: "qc mapping"  # Module names to be cleaned up, space separated
+
 ###############################################################
 # QC
 ###############################################################
