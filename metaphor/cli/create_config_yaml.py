@@ -119,6 +119,12 @@ def get_general_settings():
         None,
         int, 
     )
+    setting_prompt(
+        "Are you running Metaphor locally (i.e. not on a cluster)?",
+        "local_execution",
+        None,
+        bool
+    )
     print("\n")
 
 
