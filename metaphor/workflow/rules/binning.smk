@@ -190,6 +190,7 @@ rule DAS_tool:
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
+        disk_mb=get_mb_per_cores,
     log:
         "output/logs/binning/DAS_tool/{binning_group}.log",
     benchmark:
