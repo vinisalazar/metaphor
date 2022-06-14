@@ -518,10 +518,7 @@ def get_lineage_parser_outputs():
 
 
 def get_all_lineage_parser_outputs():
-    if config["coassembly"]:
-        return expand(get_lineage_parser_outputs(), group=group_names)
-    else:
-        return expand(get_lineage_parser_outputs(), group=sample_IDs)
+    return expand(get_lineage_parser_outputs(), group=binning_group_names)
 
 
 def get_prokka_output():
