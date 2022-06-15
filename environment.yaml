@@ -9,5 +9,5 @@ dependencies:
   - pyyaml              # required for cli
   - requests
   - snakemake>=7
-  - snakemake-wrapper-utils
+  - snakemake-wrapper-utils=0.3.1
   - tqdm                # required for cli
