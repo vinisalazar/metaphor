@@ -423,7 +423,7 @@ def get_group_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffix=Tru
 def get_metaquast_output():
     if config["coassembly"]:
         if Path(config["metaquast"]["coassembly_reference"]).is_file():
-            return "output/assembly/metaquast_coassembly/report.html"
+            return "output/assembly/metaquast/coassembly/report.html"
         else:
             return ()
     else:
