@@ -371,7 +371,7 @@ def get_contigs_input(expand_=False):
 
 def get_metaquast_reference(wildcards):
     if config["coassembly"]:
-        return config["metaquast"]["metaquast_reference"]
+        return config["metaquast"]["coassembly_reference"]
     sample = wildcards.sample
     groups = wildcards.group
     try:
