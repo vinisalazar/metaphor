@@ -1,8 +1,8 @@
 """
 Generate docs for the config module.
 """
-default_config = "metaphor/config/default_value-config.yaml"
-docs_page = "docs/source/main/settings.md"
+default_config = "metaphor/config/default-config.yaml"
+docs_page = "docs/source/main/configuration.md"
 
 final_md = """
 # Configuration
@@ -41,6 +41,7 @@ def parse_config_property(string):
 
 
 with open(default_config) as f:
+    print(f"Reading config from '{default_config}'.")
     text = f.read()
     text = text.split("###############################################################")
     text = [tuple(text[line : line + 2]) for line in range(1, len(text), 2)]
@@ -82,3 +83,5 @@ for line in text:
 
 with open(docs_page, "w") as f:
     f.write(final_md)
+    print(f"Wrote rendered markdown to '{docs_page}'.")
+
