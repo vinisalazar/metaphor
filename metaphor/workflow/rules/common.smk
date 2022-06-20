@@ -419,6 +419,7 @@ def get_group_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffix=Tru
 
     return str(base_path.joinpath(f"{{group}}/{suffix}"))
 
+
 def get_metaquast_output():
     if config["coassembly"]:
         if Path(config["metaquast"]["coassembly_reference"]).is_file():
