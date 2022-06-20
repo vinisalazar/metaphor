@@ -104,7 +104,7 @@ def main(args):
     get_successful_completion(retcode, msg)
 
     # Don't run report if running unlock, lint or cleanup metadata option
-    options = ["unlock", "lint", "cleanup-metadata"]
+    options = ["unlock", "lint", "cleanup-metadata", "dry-run", "dryrun"]
     skip_report = True if any(f"--{o}" in extras for o in options) else skip_report
 
     if not skip_report:
