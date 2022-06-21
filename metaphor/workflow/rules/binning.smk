@@ -200,14 +200,14 @@ rule DAS_tool:
     shell:
         """
         DAS_Tool -i {params.fmt_scaffolds2bin}                      \
-                 -l {params.binners}                                \
                  -c {input.contigs}                                 \
                  -o {params.outpreffix}                             \
+                 -l {params.binners}                                \
                  -p {input.proteins}                                \
                  --score_threshold {params.score_threshold}         \
                  --search_engine diamond                            \
                  --write_bins                                       \
-                 --write_bins_eval                                  \
+                 --write_bin_evals                                  \
                  {params.extra}                                     \
                  --threads {threads} &> {log}
         """
