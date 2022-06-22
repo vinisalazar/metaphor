@@ -112,11 +112,14 @@ def create_merged_df(dmnd_out, cog_csv, def_tab, coverage_depths):
 
     # Merge COG database information (cog_csv, def_tab) with Diamond output (df)
     logging.info("Merging dataframes.")
-    cov_depths = load_dataframe(coverage_depths, sep="\t", index_col=0)
     merged_df = df.merge(cog_csv, left_on="Protein ID", right_index=True).reset_index(
         drop=True
     )
-    merged_df = merged_df.merge(cov_depths, left_on="qseqid", right_index=True)
+    cov_depths = load_dataframe(coverage_depths, sep="\t", index_col=0)
+    merged_df["contig"] = merged_df["qseqid"].apply(
+        lambda n: "_".join(n.split("_")[:-1])
+    )
+    merged_df = merged_df.merge(cov_depths, left_on="contig", right_index=True)
     def_tab = load_dataframe(
         def_tab,
         sep="\t",

@@ -42,7 +42,8 @@ def main(args):
 
     logging.info("Merging coverage depths.")
     covs = pd.read_csv(cov_depths, sep="\t", index_col=0)
-    df = df.join(covs)
+    df["contig"] = df.index.map(lambda n: "_".join(n.split("_")[:-1]))
+    df = df.merge(covs, left_on="contig", right_index=True)
 
     # Calculating counts from cov depths
     samples = [i for i in df.columns if i.endswith(".sorted.bam")]

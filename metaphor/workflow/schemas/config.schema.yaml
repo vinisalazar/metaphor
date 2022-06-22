@@ -23,6 +23,17 @@ properties:
   local_execution:
     type: boolean
 
+  cleanup_modules:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      modules:
+        type: string
+    required:
+      - activate
+      - modules
+
 ###############################################################
 # QC
 ###############################################################
@@ -317,6 +328,7 @@ required:
   - coassembly
   - max_mb
   - local_execution
+  - cleanup_modules
   - cutadapt
   - merge_reads
   - host_removal

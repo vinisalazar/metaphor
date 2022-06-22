@@ -108,6 +108,29 @@ def cleanup_rule(config_object, path):
         return ""
 
 
+def cleanup_modules():
+    """
+    Cleans up unnecessary files of the modules selected in config['cleanup_modules'] setting.
+
+    The `modules` dict points to the paths to be deleted.
+    """
+
+    modules = {
+        "qc": ["output/qc/cutadapt", "output/qc/filtered", "output/qc/merged"],
+        "mapping": [
+            "output/mapping/bam",
+        ],
+    }
+    paths_to_delete = [
+        v
+        for k, v in modules.items()
+        if k in config["cleanup_modules"]["modules"].split()
+    ]
+    paths_to_delete = [Path(p) for sublist in paths_to_delete for p in sublist]
+    paths_to_delete = [str(p) for p in paths_to_delete if p.exists()]
+    return paths_to_delete if is_activated("cleanup_modules") else ()
+
+
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
     return str(Path(path).parent)
@@ -157,14 +180,17 @@ def get_mb_per_cores(wildcards, threads, task_type="big"):
     wildcards: Snakemake wildcards (passed on automatically)
     threads: number of threads passed to the workflow
     """
-    return threads * int(config["max_mb"] / workflow.cores)
+    if config["local_execution"]:
+        return threads * int(config["max_mb"] / workflow.cores)
+    else:
+        return get_max_mb(0.0)
 
 
 def get_max_mb(margin=0.2):
     """
     Gets the config max_mb and subtracts a margin from itself.
     """
-    assert 0 < margin < 1, f"Margin '{margin}' must be between 0 and 1."
+    assert 0 <= margin < 1, f"Margin '{margin}' must be between 0 and 1, zero included."
     mb = config["max_mb"] - (config["max_mb"] * margin)
     return round(mb)
 
@@ -344,6 +370,8 @@ def get_contigs_input(expand_=False):
 
 
 def get_metaquast_reference(wildcards):
+    if config["coassembly"]:
+        return config["metaquast"]["coassembly_reference"]
     sample = wildcards.sample
     groups = wildcards.group
     try:
@@ -386,18 +414,16 @@ def get_group_or_sample_file(subworkflow, rule, suffix, add_sample_to_suffix=Tru
     """
     base_path = Path(f"output/{subworkflow}/{rule}/")
 
-    if config["coassembly"]:
-        return str(base_path.joinpath(f"{{group}}/{{group}}_{suffix}"))
-    else:
-        if add_sample_to_suffix:
-            suffix = f"{{group}}_{suffix}"
-        return str(base_path.joinpath(f"{{group}}/{suffix}"))
+    if add_sample_to_suffix:
+        suffix = f"{{group}}_{suffix}"
+
+    return str(base_path.joinpath(f"{{group}}/{suffix}"))
 
 
 def get_metaquast_output():
     if config["coassembly"]:
         if Path(config["metaquast"]["coassembly_reference"]).is_file():
-            return "output/assembly/metaquast_coassembly/report.html"
+            return "output/assembly/metaquast/coassembly/report.html"
         else:
             return ()
     else:
@@ -492,17 +518,14 @@ def get_lineage_parser_outputs():
 
 
 def get_all_lineage_parser_outputs():
-    if config["coassembly"]:
-        return expand(get_lineage_parser_outputs(), group=group_names)
-    else:
-        return expand(get_lineage_parser_outputs(), group=sample_IDs)
+    return expand(get_lineage_parser_outputs(), group=binning_group_names)
 
 
 def get_prokka_output():
     bins_dict = {}
     for group in binning_group_names:
         bins_dict[group] = glob(
-            f"output/binning/DAS_tool/{group}/{group}_DASTool_bins/*"
+            f"output/binning/DAS_tool/{group}/DAS_tool_DASTool_bins/*"
         )
 
     for group, list_of_bins in bins_dict.items():
@@ -552,7 +575,9 @@ def get_annotation_output():
             config["lineage_parser"]["rankedlineage"],
         ),
         "plot_cog": get_all_cog_functional_plot_outputs(),
-        "prokka": get_prokka_output(),
+        "prokka": get_prokka_output()
+        if is_activated("das_tool")
+        else (),  # Can't run Prokka without DAS Tool!
     }
 
     needs_activation = (
@@ -692,7 +717,7 @@ def get_binning_output():
                 get_binning_report_output(binning_group).values()
                 for binning_group in binning_group_names
             ]
-            if config["das_tool"]["bins_report"]
+            if (config["das_tool"]["bins_report"]) and (is_activated("das_tool"))
             else [],
         ],
     }
@@ -710,6 +735,10 @@ def get_postprocessing_output():
             "output/postprocessing/runtime_barplot_errorbar.png",
             "output/postprocessing/memory_barplot_sum.png",
             "output/postprocessing/memory_barplot_errorbar.png",
+            "output/postprocessing/memory_barplot_errorbar.png",
+            "output/postprocessing/cleanup.txt"
+            if is_activated("cleanup_modules")
+            else (),
         )
     else:
         return ()

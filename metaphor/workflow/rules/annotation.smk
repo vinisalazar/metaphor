@@ -228,7 +228,7 @@ rule cog_functional_parser:
         cog_csv=get_cog_db_file("cog-20.cog.csv"),
         def_tab=get_cog_db_file("cog-20.def.tab"),
         fun_tab=get_cog_db_file("fun-20.tab"),
-        coverage_depths="output/mapping/{group}/bam_genes_depths.txt",
+        coverage_depths="output/mapping/{group}/bam_contigs_depths.txt",
     output:
         categories_out_absolute=get_group_or_sample_file(
             "annotation", "cog", "categories_absolute.tsv"
@@ -263,7 +263,7 @@ rule cog_functional_parser:
 rule taxonomy_parser:
     input:
         dmnd_out=get_diamond_output(),
-        coverage_depths="output/mapping/{group}/bam_genes_depths.txt",
+        coverage_depths="output/mapping/{group}/bam_contigs_depths.txt",
     output:
         tax_out_absolute=get_group_or_sample_file(
             "annotation", "cog", "tax_absolute.tsv"

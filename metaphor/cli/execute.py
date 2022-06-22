@@ -97,12 +97,21 @@ def main(args):
     cmd += f" {extras} "
 
     retcode = run_cmd(cmd)
-    get_successful_completion(retcode, "Metaphor finished successfully.")
+    msg = "Metaphor finished successfully."
+    if config["prokka"]["activate"]:
+        msg += " Please rerun it if you would like to annotate the genome bins."
+
+    get_successful_completion(retcode, msg)
+
+    # Don't run report if running unlock, lint or cleanup metadata option
+    options = ["unlock", "lint", "cleanup-metadata", "dry-run", "dryrun"]
+    skip_report = True if any(f"--{o}" in extras for o in options) else skip_report
 
     if not skip_report:
         timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         fileout = f"metaphor_report_{timestamp}.html"
         cmd += f" --report {fileout}"
         retcode = run_cmd(cmd)
-
-    get_successful_completion(retcode, f"Report created at '{fileout}'.")
+        get_successful_completion(
+            retcode, f"Metaphor finished successf ully and generated the report above."
+        )

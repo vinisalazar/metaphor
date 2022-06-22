@@ -21,6 +21,9 @@ cores_per_small_task: 0.25    # Total of workflow cores to use per small task
 max_mb: 8196          # Max MB memory to be used.
 local_execution: True  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
 
+cleanup_modules:
+  activate: True
+  modules: "qc mapping"  # Module names, space separated
 
 ###############################################################
 # QC
@@ -122,7 +125,7 @@ metabat2:
   preffix: "bin"  # preffix of each bin, e.g. bin.1.fa, bin.2.fa, etc
 
 concoct:
-  activate: False
+  activate: False  # CONCOCT installation can be problematic in some OSs so this is disabled for testing
 
 das_tool:
   activate: True

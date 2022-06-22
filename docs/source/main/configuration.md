@@ -11,12 +11,9 @@ These settings are valid for all steps in the workflow.
 **`samples:`** `samples.csv`    
 
 
-**`mb_per_core:`** `2048`   How many MBs of RAM to use per processor. For more information about this, read the "Advanced" page of the docs.  
-
-
 **QC**
 
-**`cutadapt:`**   Settings for the Cutadapt cutadapt tool.  
+**`cutadapt:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
 &nbsp;&nbsp;&nbsp;**`phred:`** `33`    
 &nbsp;&nbsp;&nbsp;**`minimum_length:`** `50`    
@@ -27,6 +24,11 @@ These settings are valid for all steps in the workflow.
 
 **`merge_reads:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
+
+
+**`host_removal:`**    
+&nbsp;&nbsp;&nbsp;**`activate:`** `False`    
+&nbsp;&nbsp;&nbsp;**`reference:`** `""`    
 
 
 **`fastqc:`**    
@@ -45,6 +47,7 @@ These settings are valid for all steps in the workflow.
 **`megahit:`**    
 &nbsp;&nbsp;&nbsp;**`preset:`** `"meta-large"`    
 &nbsp;&nbsp;&nbsp;**`cleanup:`** `True`    
+&nbsp;&nbsp;&nbsp;**`min_contig_len:`** `200`    
 
 
 **`metaquast:`**    
@@ -64,8 +67,7 @@ These settings are valid for all steps in the workflow.
 
 **`prokka:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `False`    
-&nbsp;&nbsp;&nbsp;**`args:`** `"--metagenome --quiet --force"`    
-&nbsp;&nbsp;&nbsp;**`kingdom:`** `"Bacteria"`    
+&nbsp;&nbsp;&nbsp;**`args:`** `"--quiet --force"`    
 
 
 **`diamond:`**    
@@ -92,19 +94,24 @@ These settings are valid for all steps in the workflow.
 **`plot_cog_functional:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
 &nbsp;&nbsp;&nbsp;**`filter_categories:`** `True`    
-&nbsp;&nbsp;&nbsp;**`categories_cutoff:`** `0.01`    
+&nbsp;&nbsp;&nbsp;**`categories_cutoff:`** `0.01`   Remove categories with mean abundance across samples smaller than this value  
 
 
 **`plot_taxonomies:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
-&nbsp;&nbsp;&nbsp;**`tax_cutoff:`** `0.000001`   1e-6  
+&nbsp;&nbsp;&nbsp;**`tax_cutoff:`** `20`   Only show the N most abundant taxa for any rank. Leave as 0 for no filtering. Low abundance taxa will be grouped as 'Low abundance'.  
+&nbsp;&nbsp;&nbsp;**`colormap:`** `"tab20c"`   Which matplotlib colormap to use  
 
 
 **BINNING**
 
+**`cobinning:`** `True`   Whether to perform cobinning. When this is true, only one binning group will be used. If False, samples will be binned according to their 'group' column.  
+
+
 **`vamb:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
 &nbsp;&nbsp;&nbsp;**`minfasta:`** `10000`    
+&nbsp;&nbsp;&nbsp;**`batchsize:`** `256`    
 
 
 **`metabat2:`**    
@@ -120,6 +127,7 @@ These settings are valid for all steps in the workflow.
 **`das_tool:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
 &nbsp;&nbsp;&nbsp;**`score_threshold:`** `0.5`    
+&nbsp;&nbsp;&nbsp;**`bins_report:`** `True`    
 
 
 **POSTPROCESSING**
