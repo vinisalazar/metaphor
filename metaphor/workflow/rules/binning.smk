@@ -21,6 +21,7 @@ rule vamb:
         scaffolds2bin="output/binning/vamb/{binning_group}/vamb_scaffolds2bin.tsv",
     params:  # defaults in vamb's README
         outdir=lambda w, output: get_parent(output.clusters),
+        scaffolds2bin_unfiltered="output/binning/vamb/{binning_group}/vamb_scaffolds2bin_tmp.tsv",
         binsplit_sep="C",
         minfasta=config["vamb"]["minfasta"],
         batchsize=config["vamb"]["batchsize"],
@@ -46,8 +47,14 @@ rule vamb:
              --minfasta {params.minfasta} &> {log}
 
         {{ awk -v OFS='\t' '{{ print $2, $1 }}' {output.clusters} |  \
-        sed "s/$(echo '\t')/$(echo '\t')vamb./g" >          \
-        {output.scaffolds2bin} ; }} >> {log} 2>&1
+        sed "s/$(echo '\t')/$(echo '\t')vamb./g" >                   \
+        {params.scaffolds2bin_unfiltered} ; }} >> {log} 2>&1
+
+        {{ grep -E "$(ls {params.outdir}/bins/*.fna | cut -f 6 -d / |   \
+        cut -f 1 -d . | xargs | sed 's/ /$|/g')$"                       \
+        {params.scaffolds2bin_unfiltered} > {output.scaffolds2bin} ; }} >> {log} 2>&1
+
+        rm {params.scaffolds2bin_unfiltered}
         """
 
 
@@ -168,7 +175,7 @@ rule concoct:
         """
 
 
-rule DAS_tool:
+checkpoint DAS_tool:
     """
     Refine bins assembled with one or more binners.
     """

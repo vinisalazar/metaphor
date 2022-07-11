@@ -33,7 +33,7 @@ setup(
         "pyyaml",
         "requests",
         "snakemake",
-        "snakemake-wrapper-utils==0.3.1",
+        "snakemake-wrapper-utils",
         "tqdm",
     ],
     extras_require={"docs": "myst_parser"},
