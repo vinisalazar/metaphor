@@ -50,7 +50,7 @@ rule vamb:
         sed "s/$(echo '\t')/$(echo '\t')vamb./g" >                   \
         {params.scaffolds2bin_unfiltered} ; }} >> {log} 2>&1
 
-        {{ grep -E "$(ls {params.outdir}/bins/*.fna | cut -f 2 -d / |   \
+        {{ grep -E "$(ls {params.outdir}/bins/*.fna | cut -f 6 -d / |   \
         cut -f 1 -d . | xargs | sed 's/ /$|/g')$"                       \
         {params.scaffolds2bin_unfiltered} > {output.scaffolds2bin} ; }} >> {log} 2>&1
 
