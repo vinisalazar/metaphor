@@ -372,10 +372,8 @@ def get_contigs_input(expand_=False):
 def get_metaquast_reference(wildcards):
     if config["coassembly"]:
         return config["metaquast"]["coassembly_reference"]
-    sample = wildcards.sample
-    groups = wildcards.group
     try:
-        reference = samples.loc[group, sample, "metaquast_reference"].unique()[0]
+        reference = samples.loc[wildcards.group, "metaquast_reference"].unique()[0]
         assert Path(reference).is_file()
         return reference
     except (KeyError, IndexError):
@@ -390,7 +388,7 @@ def get_metaquast_reference(wildcards):
         if allow():
             return ()
         else:
-            f"Reference file '{reference}' for sample '{sample}' could not be found."
+            f"Reference file '{reference}' for sample/assembly group '{group}' could not be found."
             raise
 
 
