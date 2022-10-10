@@ -193,12 +193,6 @@ rule host_removal:
         unpaired=temp("output/qc/filtered/{sample}_unpaired_{read}.fq"),
     params:
         preset="sr",
-        fastq_pair=lambda w, output: output.filtered_fq.replace(
-            "{read}_unpaired.fq.gz", "*_unpaired.fq"
-        ),
-        paired=lambda w, output: output.filtered_fq.replace(
-            "{read}.fq.gz", "{read}_unpaired.fq.paired.fq"
-        ),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
