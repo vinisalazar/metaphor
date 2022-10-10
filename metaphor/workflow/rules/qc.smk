@@ -190,7 +190,7 @@ rule host_removal:
         else get_fastqc_input_trimmed,
         reference="output/qc/host_removal_reference_db.mmi",
     output:
-        unpaired=temp("output/qc/filtered/{sample}_unpaired_{read}.fq")
+        unpaired=temp("output/qc/filtered/{sample}_unpaired_{read}.fq"),
     params:
         preset="sr",
         fastq_pair=lambda w, output: output.filtered_fq.replace(
@@ -218,15 +218,21 @@ rule host_removal:
         {{ samtools fastq - > {output.unpaired} ; }}                2>> {log}
         """
 
+
 rule fastq_pair:
     input:
-        unpaired=expand("output/qc/filtered/{{sample}}_unpaired_{read}.fq", read=["R1", "R2"])
+        unpaired=expand(
+            "output/qc/filtered/{{sample}}_unpaired_{read}.fq", read=["R1", "R2"]
+        ),
     output:
-        paired=expand("output/qc/filtered/{{sample}}_unpaired_{read}.fq.paired.fq", read=["R1", "R2"])
+        paired=expand(
+            "output/qc/filtered/{{sample}}_unpaired_{read}.fq.paired.fq",
+            read=["R1", "R2"],
+        ),
     resources:
         mem_mb=get_max_mb,
     log:
-        "output/logs/qc/host_removal/{sample}-pairing.log"
+        "output/logs/qc/host_removal/{sample}-pairing.log",
     benchmark:
         "output/benchmarks/qc/host_removal/{sample}-pairing.txt"
     conda:
@@ -236,18 +242,19 @@ rule fastq_pair:
         fastq_pair {input.unpaired} 2>> {log}      
         """
 
+
 rule compress_paired:
     input:
-        "output/qc/filtered/{sample}_unpaired_{read}.fq.paired.fq"
+        "output/qc/filtered/{sample}_unpaired_{read}.fq.paired.fq",
     output:
-        "output/qc/filtered/{sample}_filtered_{read}.fq.gz"
+        "output/qc/filtered/{sample}_filtered_{read}.fq.gz",
     resources:
         mem_mb=get_mb_per_cores,
     threads: get_threads_per_task_size("medium")
     log:
-        "output/logs/qc/host_removal/{sample}-compress.log"
+        "output/logs/qc/host_removal/{sample}-compress-{read}.log",
     benchmark:
-        "output/benchmarks/qc/host_removal/{sample}-compress.txt"
+        "output/benchmarks/qc/host_removal/{sample}-compress-{read}.txt"
     conda:
         "../envs/utils.yaml"
     shell:
