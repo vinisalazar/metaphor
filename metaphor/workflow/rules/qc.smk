@@ -253,5 +253,5 @@ rule compress_paired:
         "../envs/utils.yaml"
     shell:
         """
-        {{ pigz -p {threads} -f -c {input} > {output} ; &> {log} }}
+        {{ pigz -p {threads} -f -c {input} > {output} ; }} &> {log}
         """
