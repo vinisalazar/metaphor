@@ -190,10 +190,12 @@ rule host_removal:
         else get_fastqc_input_trimmed,
         reference="output/qc/host_removal_reference_db.mmi",
     output:
-        paired="output/qc/filtered/{sample}_filtered_{read}.fq.paired.fq.gz",
+        filtered_fq="output/qc/filtered/{sample}_filtered_{read}.fq.gz",
     params:
         preset="sr",
-        filtered_fq=lambda w, output: output.paired.replace(".paired.fq.gz", ""),
+        unpaired=lambda w, output: output.filtered_fq.replace(
+            "{read}.fq.gz", "{read}_unpaired.fq"
+        ),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -210,9 +212,9 @@ rule host_removal:
                  {input.reference}         \
                  {input.fastqs} ; }}                                2>> {log}   | 
         {{ samtools view -buSh -f 4 ; }}                            2>> {log}   |
-        {{ samtools fastq - > {params.filtered_fq} ; }}             2>> {log}
+        {{ samtools fastq - > {params.unpaired} ; }}                2>> {log}
 
-        fastq_pair {params.filtered_fq}                             2>> {log}      
-        {{ gzip -c {output.filtered_fq}.paired.fq > {output.paired} ; }}        2>> {log}
-        rm {params.filtered_fq} 2>> {log}
+        fastq_pair {params.unpaired}                                2>> {log}      
+        {{ gzip -c {params.unpaired}.paired.fq > {output.filtered_fq} ; }}        2>> {log}
+        rm {unpaired.filtered_fq} 2>> {log}
         """
