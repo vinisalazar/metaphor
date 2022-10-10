@@ -2,5 +2,4 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - minimap2
-  - samtools=1.15.1
+  - fastq-pair
