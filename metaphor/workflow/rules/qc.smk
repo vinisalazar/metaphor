@@ -230,7 +230,7 @@ rule fastq_pair:
             read=["R1", "R2"],
         ),
     resources:
-        mem_mb=get_max_mb,
+        mem_mb=get_max_mb(),
     log:
         "output/logs/qc/host_removal/{sample}-pairing.log",
     benchmark:
