@@ -196,6 +196,9 @@ rule host_removal:
         unpaired=lambda w, output: output.filtered_fq.replace(
             "{read}.fq.gz", "{read}_unpaired.fq"
         ),
+        paired=lambda w, output: output.filtered_fq.replace(
+            "{read}.fq.gz", "{read}_unpaired.fq.paired.fq"
+        ),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -215,6 +218,6 @@ rule host_removal:
         {{ samtools fastq - > {params.unpaired} ; }}                2>> {log}
 
         fastq_pair {params.unpaired}                                2>> {log}      
-        {{ gzip -c {params.unpaired}.paired.fq > {output.filtered_fq} ; }}        2>> {log}
-        rm {unpaired.filtered_fq} 2>> {log}
+        {{ gzip -c {params.paired} > {output.filtered_fq} ; }}      2>> {log}
+        rm {params.unpaired} {params.paired} 2>> {log}
         """
