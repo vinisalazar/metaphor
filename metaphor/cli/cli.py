@@ -82,7 +82,7 @@ def main():
         help="Conda prefix where conda environments will be installed. Default is config directory, this way multiple runs of Metaphor will share the same environments.",
         type=str,
         default=None,
-        required=False
+        required=False,
     )
 
     execute.set_defaults(
@@ -95,7 +95,7 @@ def main():
         profile=None,
         extras="",
         skip_report=False,
-        conda_prefix=None
+        conda_prefix=None,
     )
 
     ###############################################################
