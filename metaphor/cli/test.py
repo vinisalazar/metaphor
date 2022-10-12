@@ -173,7 +173,7 @@ def main(args):
     """
     )
 
-    format_cmd = cmd.split()
+    format_cmd = cmd.split() + [None,]  # This ensures all elements are included in the zip
     format_cmd = list(zip(format_cmd[1::2], format_cmd[2::2]))
     format_cmd = "snakemake\t\\\n\t" + "\t\t\\\n\t".join([" ".join(t) for t in format_cmd])
     print("Your command is:")

@@ -89,9 +89,9 @@ def main(args):
     """
 
     if conda_prefix_arg:
-        cmd += f"  --conda_prefix {conda_prefix_arg}"
+        cmd += f"  --conda-prefix {conda_prefix_arg}"
     else:
-        cmd += f"  --conda_prefix {conda_prefix}"
+        cmd += f"  --conda-prefix {conda_prefix}"
 
     for arg in ("samples", "max_mb"):
         if value := eval(arg):
@@ -117,7 +117,7 @@ def main(args):
         timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         fileout = f"metaphor_report_{timestamp}.html"
         cmd += f" --report {fileout}"
-        format_cmd = cmd.split()
+        format_cmd = cmd.split() + [None,]  # This ensures all elements are included in the zip
         format_cmd = list(zip(format_cmd[1::2], format_cmd[2::2]))
         format_cmd = "snakemake\t\\\n\t" + "\t\t\\\n\t".join([" ".join(t) for t in format_cmd])
         print("Your command is:")
