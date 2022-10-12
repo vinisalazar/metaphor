@@ -117,6 +117,11 @@ def main(args):
         timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         fileout = f"metaphor_report_{timestamp}.html"
         cmd += f" --report {fileout}"
+        format_cmd = cmd.split()
+        format_cmd = list(zip(format_cmd[1::2], format_cmd[2::2]))
+        format_cmd = "snakemake\t\\\n\t" + "\t\t\\\n\t".join([" ".join(t) for t in format_cmd])
+        print("Your command is:")
+        print(format_cmd)
         retcode = run_cmd(cmd)
         get_successful_completion(
             retcode, f"Metaphor finished successf ully and generated the report above."

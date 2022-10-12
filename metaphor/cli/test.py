@@ -173,6 +173,11 @@ def main(args):
     """
     )
 
+    format_cmd = cmd.split()
+    format_cmd = list(zip(format_cmd[1::2], format_cmd[2::2]))
+    format_cmd = "snakemake\t\\\n\t" + "\t\t\\\n\t".join([" ".join(t) for t in format_cmd])
+    print("Your command is:")
+    print(format_cmd)
     retcode = run_cmd(cmd)
 
     get_successful_completion(retcode, dedent(test_complete_message))
