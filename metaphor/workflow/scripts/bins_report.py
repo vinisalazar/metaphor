@@ -68,6 +68,7 @@ def bin_scores(
     hp = sns.histplot(
         x=rename_dict["bin_score"], data=df, hue="Binning software", multiple="stack"
     )
+    ax.set_xlim(-2.5, 1)
 
     if score_threshold:
         plt.axvline(
