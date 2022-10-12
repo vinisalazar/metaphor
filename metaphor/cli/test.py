@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
-from metaphor.config import test_config
+from metaphor.config import test_config, conda_prefix
 from metaphor.utils import confirm_message, get_successful_completion, run_cmd
 
 from .create_input_table import main as create_input_table
@@ -143,7 +143,8 @@ def main(args):
               --cores {cores}                   \
               -p -r                             \
               --use-conda                       \
-              --wrapper-prefix {wrapper_prefix}
+              --wrapper-prefix {wrapper_prefix} \
+              --conda-prefix {conda_prefix}  
     """
 
     for arg in ("max_mb", "coassembly"):

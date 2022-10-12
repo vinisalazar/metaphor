@@ -13,7 +13,7 @@ from datetime import datetime
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
-from metaphor.config import default_config
+from metaphor.config import default_config, conda_prefix
 from metaphor.utils import (
     confirm_message,
     get_successful_completion,
@@ -33,6 +33,7 @@ def main(args):
     cores = args.cores
     max_mb = args.max_mb
     confirm = args.confirm
+    conda_prefix_arg = args.conda_prefix
     extras = args.extras
     profile = args.profile
     skip_report = args.skip_report
@@ -86,6 +87,11 @@ def main(args):
               --use-conda                       \
               --wrapper-prefix {wrapper_prefix}
     """
+
+    if conda_prefix_arg:
+        cmd += f"  --conda_prefix {conda_prefix_arg}"
+    else:
+        cmd += f"  --conda_prefix {conda_prefix}"
 
     for arg in ("samples", "max_mb"):
         if value := eval(arg):
