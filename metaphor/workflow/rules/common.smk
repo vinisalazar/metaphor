@@ -374,7 +374,7 @@ def get_metaquast_reference(wildcards):
         return config["metaquast"]["coassembly_reference"]
     try:
         reference = samples.loc[wildcards.group, "metaquast_reference"].unique()[0]
-        assert Path(reference).is_file()
+        assert Path(reference).exists()
         return reference
     except (KeyError, IndexError):
         if allow():
