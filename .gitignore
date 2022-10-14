@@ -15,3 +15,4 @@ run.sh
 *.code-workspace
 **/__pycache__
 metaphor.egg-info/
+**/conda
