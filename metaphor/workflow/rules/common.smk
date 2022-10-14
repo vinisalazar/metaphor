@@ -14,6 +14,7 @@ import pandas as pd
 from snakemake.utils import validate
 
 from metaphor import wrapper_version
+from metaphor.config import data_dir
 
 
 ###############################################################
@@ -22,6 +23,12 @@ from metaphor import wrapper_version
 ###############################################################
 
 validate(config, schema="../schemas/config.schema.yaml")
+
+# Configure the data directory
+if config["data_dir"] == "DEFAULT":
+    pass
+else:
+    data_dir = config["data_dir"]
 
 samples = pd.read_csv(
     config["samples"], dtype={"sample_name": str}, sep=None, engine="python"
@@ -58,8 +65,6 @@ if config["host_removal"]["activate"]:
     ).exists(), f"Host removal reference path '{reference_path}' wasn't found. Please ensure it exists or deactivate host_removal setting."
 
 
-if "ok":
-    assert "ok", "ok"
 ###############################################################
 # TOP LEVEL
 # These are top level helpers for all modules
@@ -461,7 +466,8 @@ ranks = "species genus family order class phylum domain".split()
 
 
 def get_cog_db_file(filename):
-    return str(Path(config["cog_functional_parser"]["db"]).joinpath(filename))
+    dirpath = Path(data_dir).joinpath(config["cog_functional_parser"]["db"])
+    return str(dirpath.joinpath(filename))
 
 
 def get_database_outputs():
@@ -559,8 +565,8 @@ def get_annotation_output():
     annotations = {
         "diamond": [
             get_all_diamond_outputs(),
-            config["lineage_parser"]["names"],
-            config["lineage_parser"]["nodes"],
+            add_data_dir(config["lineage_parser"]["names"]),
+            add_data_dir(config["lineage_parser"]["nodes"]),
         ],
         "taxonomy_parser": (get_concatenate_taxonomies_outputs()),
         "plot_taxonomies": (get_taxa_plot_outputs()),
@@ -744,3 +750,8 @@ def get_postprocessing_output():
 
 def get_processing_benchmarks():
     return "output/benchmarks/postprocessing/processing_benchmarks.csv"
+
+
+def add_data_dir(path) -> str:
+    """Add the 'data_dir' config variable as a prefix to path."""
+    return str(Path(data_dir).joinpath(path))

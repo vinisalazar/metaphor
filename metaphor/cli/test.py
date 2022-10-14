@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
-from metaphor.config import test_config, conda_prefix
+from metaphor.config import test_config, conda_prefix, data_dir
 from metaphor.utils import confirm_message, get_successful_completion, run_cmd
 
 from .create_input_table import main as create_input_table
@@ -160,11 +160,11 @@ def main(args):
     cmd += f" {extras}"
 
     test_complete_message = (
-        """
+    f"""
     Test complete!
 
     This means that you can use this directory to run your actual analysis.
-    All necessary software is in the .snakemake/conda/ directory, and databases are in the data/ directory.
+    All necessary software is in the {conda_prefix} directory, and databases are in the {data_dir} directory.
     Simply delete the output/ directory and you're good to go.
     """
         if not dry_run

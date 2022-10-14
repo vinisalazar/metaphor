@@ -143,12 +143,12 @@ rule generate_COG_taxonmap:
 
 rule diamond_makedb:
     input:
-        fname=config["diamond"]["db_source"],
-        taxonmap=config["lineage_parser"]["taxonmap"],
-        taxonnodes=config["lineage_parser"]["nodes"],
-        taxonnames=config["lineage_parser"]["names"],
+        fname=add_data_dir(config["diamond"]["db_source"]),
+        taxonmap=add_data_dir(config["lineage_parser"]["taxonmap"]),
+        taxonnodes=add_data_dir(config["lineage_parser"]["nodes"]),
+        taxonnames=add_data_dir(config["lineage_parser"]["names"]),
     output:
-        fname=config["diamond"]["db"],
+        fname=add_data_dir(config["diamond"]["db"]),
     params:
         extra=lambda w, input: f"--taxonmap {input.taxonmap} --taxonnames {input.taxonnames} --taxonnodes {input.taxonnodes}",
     log:
@@ -163,9 +163,9 @@ rule diamond_makedb:
 rule download_taxonomy_database:
     output:
         # Replace the .test/ directory with data/ directory if it is set like so
-        rankedlineage=config["lineage_parser"]["rankedlineage"],
-        names=config["lineage_parser"]["names"],
-        nodes=config["lineage_parser"]["nodes"],
+        rankedlineage=add_data_dir(config["lineage_parser"]["rankedlineage"]),
+        names=add_data_dir(config["lineage_parser"]["names"]),
+        nodes=add_data_dir(config["lineage_parser"]["nodes"]),
     params:
         download_url=config["lineage_parser"]["download_url"],
         output_dir=lambda w, output: str(Path(output.rankedlineage).parent),
@@ -191,7 +191,7 @@ rule download_taxonomy_database:
 rule diamond:
     input:
         fname_fasta=get_group_or_sample_file("annotation", "prodigal", "proteins.faa"),
-        fname_db=config["diamond"]["db"],
+        fname_db=add_data_dir(config["diamond"]["db"]),
     output:
         fname=get_diamond_output(),
     params:
@@ -337,7 +337,7 @@ rule concatenate_taxonomies:
 rule lineage_parser:
     input:
         tax_out=get_group_or_sample_file("annotation", "cog", "tax_{count_type}.tsv"),
-        rankedlineage=config["lineage_parser"]["rankedlineage"],
+        rankedlineage=add_data_dir(config["lineage_parser"]["rankedlineage"]),
     output:
         # Class must be spelled with a 'k' to prevent conflicts with the Python keyword
         species=get_group_or_sample_file(

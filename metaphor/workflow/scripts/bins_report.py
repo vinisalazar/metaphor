@@ -29,7 +29,7 @@ def create_df(file, score_threshold):
     )
     df["SCG_set"] = df["SCG_set"].str.capitalize()
     df = df.rename(columns=rename_dict)
-    qc_pass = f"Quality threshold" if score_threshold else None
+    qc_pass = "Quality threshold"
     domain = "Domain" if len(df["Domain"].value_counts()) > 1 else None
 
     return df, rename_dict, qc_pass, domain
