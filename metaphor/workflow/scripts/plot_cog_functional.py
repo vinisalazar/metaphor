@@ -39,7 +39,7 @@ def create_heatmap(args):
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
     sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
     outfile = args.categories_plot
-    plt.savefig(outfile, bbox_inches="tight")
+    plt.savefig(outfile, dpi=600, bbox_inches="tight")
     logging.info(f"Generated plot: '{outfile}'.")
 
 

@@ -101,7 +101,7 @@ def create_tax_barplot(
     if save:
         if not outfile:
             outfile = f"output/annotation/cog/plots/COG_{rank}_relative.png"
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
 

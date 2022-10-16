@@ -55,7 +55,7 @@ def bin_quality(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -68,7 +68,7 @@ def bin_scores(
     hp = sns.histplot(
         x=rename_dict["bin_score"], data=df, hue="Binning software", multiple="stack"
     )
-    ax.set_xlim(-2.5, 1)
+    ax.set_xlim(-1, 1)
 
     if score_threshold:
         plt.axvline(
@@ -85,7 +85,7 @@ def bin_scores(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -120,7 +120,7 @@ def bin_quantity(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -148,7 +148,7 @@ def bin_sizes(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -171,7 +171,7 @@ def bin_N50(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
