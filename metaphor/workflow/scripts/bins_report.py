@@ -48,7 +48,7 @@ def bin_quality(
         ax=ax,
     )
 
-    ax.set_ylim(-10, 110)
+    ax.set_ylim(-5, 105)
     ax.set_xlim(-5, 105)
     _ = ax.set_title("Bin quality scatterplot")
 
