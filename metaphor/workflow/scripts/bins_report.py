@@ -29,7 +29,7 @@ def create_df(file, score_threshold):
     )
     df["SCG_set"] = df["SCG_set"].str.capitalize()
     df = df.rename(columns=rename_dict)
-    qc_pass = f"Quality threshold" if score_threshold else None
+    qc_pass = "Quality threshold"
     domain = "Domain" if len(df["Domain"].value_counts()) > 1 else None
 
     return df, rename_dict, qc_pass, domain
@@ -48,7 +48,7 @@ def bin_quality(
         ax=ax,
     )
 
-    ax.set_ylim(-10, 110)
+    ax.set_ylim(-5, 105)
     ax.set_xlim(-5, 105)
     _ = ax.set_title("Bin quality scatterplot")
 
@@ -68,6 +68,7 @@ def bin_scores(
     hp = sns.histplot(
         x=rename_dict["bin_score"], data=df, hue="Binning software", multiple="stack"
     )
+    ax.set_xlim(-2.5, 1)
 
     if score_threshold:
         plt.axvline(

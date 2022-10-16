@@ -7,6 +7,9 @@ type: object
 properties:
   samples:
     type: string
+
+  data_dir:
+    type: string
   
   units:
     type: string
@@ -325,6 +328,7 @@ properties:
 
 required:
   - samples
+  - data_dir
   - coassembly
   - max_mb
   - local_execution

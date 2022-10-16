@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 from metaphor import wrapper_prefix
 from metaphor.workflow import snakefile
-from metaphor.config import test_config
+from metaphor.config import test_config, conda_prefix, data_dir
 from metaphor.utils import confirm_message, get_successful_completion, run_cmd
 
 from .create_input_table import main as create_input_table
@@ -143,7 +143,8 @@ def main(args):
               --cores {cores}                   \
               -p -r                             \
               --use-conda                       \
-              --wrapper-prefix {wrapper_prefix}
+              --wrapper-prefix {wrapper_prefix} \
+              --conda-prefix {conda_prefix}  
     """
 
     for arg in ("max_mb", "coassembly"):
@@ -159,11 +160,11 @@ def main(args):
     cmd += f" {extras}"
 
     test_complete_message = (
-        """
+    f"""
     Test complete!
 
     This means that you can use this directory to run your actual analysis.
-    All necessary software is in the .snakemake/conda/ directory, and databases are in the data/ directory.
+    All necessary software is in the {conda_prefix} directory, and databases are in the {data_dir} directory.
     Simply delete the output/ directory and you're good to go.
     """
         if not dry_run
@@ -172,6 +173,11 @@ def main(args):
     """
     )
 
+    format_cmd = cmd.split()
+    format_cmd = list(zip(format_cmd[1::2], format_cmd[2::2]))
+    format_cmd = "snakemake\t\\\n\t" + "\t\t\\\n\t".join([" ".join(t) for t in format_cmd])
+    print("Your command is:")
+    print(format_cmd)
     retcode = run_cmd(cmd)
 
     get_successful_completion(retcode, dedent(test_complete_message))

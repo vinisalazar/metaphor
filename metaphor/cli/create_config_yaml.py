@@ -117,13 +117,13 @@ def get_general_settings():
         "What's the maximum MB RAM you would like to use?",
         "max_mb",
         None,
-        int, 
+        int,
     )
     setting_prompt(
         "Are you running Metaphor locally (i.e. not on a cluster)?",
         "local_execution",
         None,
-        bool
+        bool,
     )
     print("\n")
 
@@ -145,7 +145,7 @@ def get_qc_settings():
             "host_removal",
             "reference",
             str,
-            file=True
+            file=True,
         )
     print("\n")
 

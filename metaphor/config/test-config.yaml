@@ -11,6 +11,10 @@
 # sample).
 samples: samples.csv
 
+# Path to the Metaphor data directory, where databases (COG, EggNOG, NCBI Taxonomy)
+# will be installed. Leave 'DEFAULT' if using the Metaphor installation directory
+data_dir: DEFAULT
+
 # CPU settings
 # Total cores are passed from the command line
 cores_per_big_task: 1         # Total of workflow cores to use per big task
@@ -81,20 +85,20 @@ prokka:
   args: "--quiet --force"
 
 diamond:
-  db: "data/COG2020/cog-20.dmnd"  # for testing purposes only
+  db: "COG2020/cog-20.dmnd"  # for testing purposes only
   output_type: 6
   output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
 
 cog_functional_parser:
   activate: True
-  db: "data/COG2020"
+  db: "COG2020"
 
 lineage_parser:
   activate: False
-  taxonmap: "data/COG2020/cog-20.taxonmap.tsv"
-  rankedlineage: "data/taxonomy/rankedlineage.dmp"
-  names: "data/taxonomy/names.dmp"
-  nodes: "data/taxonomy/nodes.dmp"
+  taxonmap: "COG2020/cog-20.taxonmap.tsv"
+  rankedlineage: "taxonomy/rankedlineage.dmp"
+  names: "taxonomy/names.dmp"
+  nodes: "taxonomy/nodes.dmp"
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"
 
 plot_cog_functional:
@@ -115,7 +119,7 @@ plot_taxonomies:
 cobinning: True # Whether to perform cobinning. When this is true, only one binning group will be used. If False, samples will be binned according to their 'group' column.
 
 vamb:
-  activate: True
+  activate: False
   minfasta: 1000
   batchsize: 128
 
@@ -129,7 +133,7 @@ concoct:
 
 das_tool:
   activate: True
-  score_threshold: 0.0
+  score_threshold: 0.05
   bins_report: True
 
 ###############################################################

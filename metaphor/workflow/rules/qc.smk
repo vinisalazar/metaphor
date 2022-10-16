@@ -190,7 +190,7 @@ rule host_removal:
         else get_fastqc_input_trimmed,
         reference="output/qc/host_removal_reference_db.mmi",
     output:
-        filtered_fq="output/qc/filtered/{sample}_filtered_{read}.fq.gz",
+        unpaired=temp("output/qc/filtered/{sample}_unpaired_{read}.fq"),
     params:
         preset="sr",
     threads: get_threads_per_task_size("big")
@@ -207,8 +207,51 @@ rule host_removal:
         {{ minimap2 -t {threads}           \
                  -ax {params.preset}       \
                  {input.reference}         \
-                 {input.fastqs} ; }}        2>> {log}   | 
-        {{ samtools view -buSh -f 4 ; }}    2>> {log}   |
-        {{ samtools fastq - ; }}            2>> {log}   |
-        {{ gzip -c - > {output} ; }}        2>> {log}
+                 {input.fastqs} ; }}                                2>> {log}   | 
+        {{ samtools view -buSh -f 4 ; }}                            2>> {log}   |
+        {{ samtools fastq - > {output.unpaired} ; }}                2>> {log}
+        """
+
+
+rule fastq_pair:
+    input:
+        unpaired=expand(
+            "output/qc/filtered/{{sample}}_unpaired_{read}.fq", read=["R1", "R2"]
+        ),
+    output:
+        paired=expand(
+            "output/qc/filtered/{{sample}}_unpaired_{read}.fq.paired.fq",
+            read=["R1", "R2"],
+        ),
+    resources:
+        mem_mb=get_max_mb(),
+    log:
+        "output/logs/qc/host_removal/{sample}-pairing.log",
+    benchmark:
+        "output/benchmarks/qc/host_removal/{sample}-pairing.txt"
+    conda:
+        "../envs/fastq-pair.yaml"
+    shell:
+        """
+        fastq_pair {input.unpaired} 2>> {log}      
+        """
+
+
+rule compress_paired:
+    input:
+        "output/qc/filtered/{sample}_unpaired_{read}.fq.paired.fq",
+    output:
+        "output/qc/filtered/{sample}_filtered_{read}.fq.gz",
+    resources:
+        mem_mb=get_mb_per_cores,
+    threads: get_threads_per_task_size("medium")
+    log:
+        "output/logs/qc/host_removal/{sample}-compress-{read}.log",
+    benchmark:
+        "output/benchmarks/qc/host_removal/{sample}-compress-{read}.txt"
+    conda:
+        "../envs/utils.yaml"
+    shell:
+        """
+        {{ pigz -p {threads} -f -c {input} > {output} ; }} &> {log}
         """

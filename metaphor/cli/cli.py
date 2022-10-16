@@ -77,6 +77,14 @@ def main():
         help="Don't create report when run finishes.",
     )
 
+    execute.add_argument(
+        "--conda-prefix",
+        help="Conda prefix where conda environments will be installed. Default is config directory, this way multiple runs of Metaphor will share the same environments.",
+        type=str,
+        default=None,
+        required=False,
+    )
+
     execute.set_defaults(
         func=metaphor_execute,
         input_dir=None,
@@ -86,7 +94,8 @@ def main():
         max_mb=None,
         profile=None,
         extras="",
-        skip_report=False
+        skip_report=False,
+        conda_prefix=None,
     )
 
     ###############################################################
@@ -228,6 +237,11 @@ def main():
     show_config_paths_exc_group.add_argument(
         "--example-input",
         help="Show path of the Metaphor example input file.",
+        action="store_true",
+    )
+    show_config_paths_exc_group.add_argument(
+        "--conda-prefix",
+        help="Show path where conda environments are installed.",
         action="store_true",
     )
     show_config_paths_exc_group.set_defaults(func=config_show)

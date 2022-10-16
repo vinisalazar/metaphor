@@ -15,6 +15,10 @@
 
 samples: samples.csv
 
+# Path to the Metaphor data directory, where databases (COG, EggNOG, NCBI Taxonomy)
+# will be installed. Leave 'DEFAULT' to use the Metaphor installation directory (config folder).
+data_dir: DEFAULT
+
 # CPU settings
 # Total cores are passed from the command line
 cores_per_big_task: 1         # Percentage of workflow cores to use per big task
@@ -86,21 +90,21 @@ prokka:
   args: "--quiet --force"
 
 diamond:
-  db: "data/COG2020/cog-20.dmnd"      # Will try to create from db_source if it doesn't exist.
-  db_source: "data/COG2020/cog-20.fa.gz"
+  db: "COG2020/cog-20.dmnd"      # Will try to create from db_source if it doesn't exist.
+  db_source: "COG2020/cog-20.fa.gz"
   output_type: 6
   output_format: "qseqid sseqid stitle evalue bitscore staxids sscinames"
 
 cog_functional_parser:
   activate: True
-  db: "data/COG2020"
+  db: "COG2020"
 
 lineage_parser:
   activate: True
-  taxonmap: "data/COG2020/cog-20.taxonmap.tsv"
-  rankedlineage: "data/taxonomy/rankedlineage.dmp"
-  names: "data/taxonomy/names.dmp"  # Path of names file of NCBI Taxonomy 
-  nodes: "data/taxonomy/nodes.dmp"  # Path of nodes file of NCBI Taxonomy
+  taxonmap: "COG2020/cog-20.taxonmap.tsv"
+  rankedlineage: "taxonomy/rankedlineage.dmp"
+  names: "taxonomy/names.dmp"  # Path of names file of NCBI Taxonomy 
+  nodes: "taxonomy/nodes.dmp"  # Path of nodes file of NCBI Taxonomy
   download_url: "https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"  # URL to download NCBI Taxonomy database
 
 plot_cog_functional:
