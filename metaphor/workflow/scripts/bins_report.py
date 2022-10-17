@@ -3,6 +3,7 @@ import argparse
 import logging
 from inspect import currentframe
 
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
@@ -27,6 +28,12 @@ def create_df(file, score_threshold):
     df["Quality threshold"] = df["bin_score"].apply(
         lambda x: "Pass" if x >= score_threshold else "Fail"
     )
+
+    # Add total values to legends
+    for column in ("Quality threshold", "bin_set"):
+        for ix, value in df[column].value_counts().iteritems():
+            df[column] = df[column].str.replace(ix, f"{ix} ({value})")
+
     df["SCG_set"] = df["SCG_set"].str.capitalize()
     df = df.rename(columns=rename_dict)
     qc_pass = "Quality threshold"
@@ -39,18 +46,44 @@ def bin_quality(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
     fig, ax = plt.subplots()
+
+    plot_df = df
+
+    def jitter(values, j):
+        return values + np.random.normal(j, 0.2, values.shape)
+
+    plot_df["Completeness (%)"] = jitter(plot_df["Completeness (%)"], 0)
+    plot_df["Redundancy (%)"] = jitter(plot_df["Redundancy (%)"], 0)
+
     sns.scatterplot(
         x="Completeness (%)",
         y="Redundancy (%)",
-        data=df,
+        data=plot_df,  # [plot_df[qc_pass] == "Pass"],
         hue="Binning software",
+        hue_order=df["Binning software"].value_counts().sort_index().index.to_list(),
         style=qc_pass,
         ax=ax,
+        alpha=0.75,
+        s=20,
     )
+    # sns.scatterplot(
+    #     x="Completeness (%)",
+    #     y="Redundancy (%)",
+    #     data=plot_df[plot_df[qc_pass] == "Fail"],
+    #     # hue="Binning software",
+    #     style=qc_pass,
+    #     markers=[
+    #         "X",
+    #     ],
+    #     color="gray",
+    #     ax=ax,
+    #     alpha=0.5,
+    #     s=20,
+    # )
 
-    ax.set_ylim(-5, 105)
-    ax.set_xlim(-5, 105)
-    _ = ax.set_title("Bin quality scatterplot")
+    _ = ax.set_ylim(-5, 105)
+    _ = ax.set_xlim(-5, 105)
+    _ = ax.set_title(f"Bin quality scatterplot: {binning_group}")
 
     if save:
         func_name = currentframe().f_code.co_name
@@ -66,7 +99,12 @@ def bin_scores(
 ):
     fig, ax = plt.subplots()
     hp = sns.histplot(
-        x=rename_dict["bin_score"], data=df, hue="Binning software", multiple="stack"
+        x=rename_dict["bin_score"],
+        data=df,
+        hue="Binning software",
+        hue_order=df["Binning software"].value_counts().sort_index().index.to_list(),
+        multiple="stack",
+        bins=np.linspace(-1, 1, 21),
     )
     ax.set_xlim(-1, 1)
 
@@ -101,6 +139,7 @@ def bin_quantity(
         kind="bar",
         stacked=True,
         ax=ax,
+        sort_columns=True,
         cmap=ListedColormap(
             ["#4196C5", "#E6AB44"]
         ),  # Change this if switching color palette
@@ -112,7 +151,7 @@ def bin_quantity(
         labels = [v.get_height() if v.get_height() > 0 else "" for v in c]
         # Remove the labels parameter if it's not needed for customized labels
         ax.bar_label(c, labels=labels, label_type="center")
-    _ = ax.set_title("Number of bins")
+    _ = ax.set_title(f"Number of bins: {binning_group}")
     _ = ax.set_ylabel("")
     _ = ax.set_xlabel(rename_dict["bin_set"])
     plt.xticks(rotation=0)
@@ -133,12 +172,13 @@ def bin_sizes(
     bp = sns.boxplot(
         x=rename_dict["bin_set"],
         y=rename_dict["size"],
+        order=df["Binning software"].value_counts().sort_index().index.to_list(),
         data=df,
         ax=ax,
         showfliers=False,
     )
     sp = sns.stripplot(x=rename_dict["bin_set"], y=rename_dict["size"], data=df, ax=ax)
-    _ = ax.set_title("Size of bins (# nucleotides)")
+    _ = ax.set_title(f"Size of bins (# nucleotides): {binning_group}")
     _ = ax.set_ylabel("")
 
     for patch in bp.patches:
@@ -159,10 +199,21 @@ def bin_N50(
 ):
     fig, ax = plt.subplots()
     bp = sns.boxplot(
-        x=rename_dict["bin_set"], y=rename_dict["n50"], data=df, ax=ax, showfliers=False
+        x=rename_dict["bin_set"],
+        y=rename_dict["n50"],
+        data=df,
+        ax=ax,
+        showfliers=False,
+        order=df["Binning software"].value_counts().sort_index().index.to_list(),
     )
-    sp = sns.stripplot(x=rename_dict["bin_set"], y=rename_dict["n50"], data=df, ax=ax)
-    _ = ax.set_title("N50")
+    sp = sns.stripplot(
+        x=rename_dict["bin_set"],
+        y=rename_dict["n50"],
+        order=df["Binning software"].value_counts().sort_index().index.to_list(),
+        data=df,
+        ax=ax,
+    )
+    _ = ax.set_title(f"N50: {binning_group}")
     _ = ax.set_ylabel("")
     for patch in bp.patches:
         r, g, b, a = patch.get_facecolor()
