@@ -16,6 +16,7 @@ from matplotlib.patches import Rectangle
 
 # String used to describe the low abundance taxa that are filtered/bundled together.
 filtered_label = "Undetermined/Low abundance"
+plt.set_style("seaborn")
 
 
 def calculate_legend_width(index):
@@ -101,7 +102,7 @@ def create_tax_barplot(
     if save:
         if not outfile:
             outfile = f"output/annotation/cog/plots/COG_{rank}_relative.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
         logging.info(f"Generated plot: '{outfile}'.")
 
 

@@ -37,9 +37,10 @@ def create_heatmap(args):
     reidx = dataframe.mean(axis=1).sort_values(ascending=False).index
     dataframe = dataframe.reindex(reidx)
     fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
-    sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
+    _ = sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
+    # _ = ax.set_ylabel("COG categories", labelpad=25, rotation=0)
     outfile = args.categories_plot
-    plt.savefig(outfile, dpi=600, bbox_inches="tight")
+    plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
     logging.info(f"Generated plot: '{outfile}'.")
 
 
