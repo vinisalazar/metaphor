@@ -576,7 +576,7 @@ def get_annotation_output():
         ),
         "lineage_parser": (
             get_all_lineage_parser_outputs(),
-            config["lineage_parser"]["rankedlineage"],
+            add_data_dir(config["lineage_parser"]["rankedlineage"]),
         ),
         "plot_cog": get_all_cog_functional_plot_outputs(),
         "prokka": get_prokka_output()
