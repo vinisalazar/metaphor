@@ -379,9 +379,9 @@ rule plot_cog_functional:
     wildcard_constraints:
         group="|".join(binning_group_names),
     log:
-        "output/logs/annotation/{group}/plot_cog_functional.log",
+        "output/logs/annotation/plot_cog_functional/{group}.log",
     benchmark:
-        "output/benchmarks/annotation/{group}/plot_cog_functional.txt"
+        "output/benchmarks/annotation/plot_cog_functional/{group}.txt"
     conda:
         "../envs/utils.yaml"
     script:
@@ -400,9 +400,9 @@ rule plot_cog_taxonomy:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
         colormap=config["plot_taxonomies"]["colormap"],
     log:
-        "output/logs/annotation/{group}/plot_taxonomies_{rank}.log",
+        "output/logs/annotation/plot_taxonomies_{rank}/{group}.log",
     benchmark:
-        "output/benchmarks/annotation/{group}/plot_taxonomies_{rank}.txt"
+        "output/benchmarks/annotation/plot_taxonomies_{rank}/{group}.txt"
     conda:
         "../envs/utils.yaml"
     script:
