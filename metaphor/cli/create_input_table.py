@@ -180,4 +180,12 @@ if __name__ == "__main__":
     )
     parser.add_argument("-o", "--output-file", help="Path to output file.")
     args = parser.parse_args()
-    main(args)
+    try:
+        main(args)
+    except:
+        print(
+            "There was a problem generating the input table. "
+            "Please look at the error message below for more information. "
+            "If you continue to have problems, please write your input table manually using e.g. Excel or Pandas.\n"
+        )
+        raise

@@ -48,7 +48,7 @@ def runtime_barplot_sum(df, **kwargs):
     ax.set_xlabel("Runtime " + xlabels[time_unit], fontsize=12)
     ax.set_ylabel("Rule name", rotation=0, fontsize=12)
     if outfile:
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
 
 
 def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
@@ -98,7 +98,7 @@ def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
     ax.set_xlabel("Runtime " + xlabels[time_unit], fontsize=12)
     ax.set_ylabel("Rule name", rotation=0, fontsize=12, position=(0, 0.7))
     if outfile:
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
 
 
 def memory_barplot_sum(df, **kwargs):
@@ -119,7 +119,7 @@ def memory_barplot_sum(df, **kwargs):
     df_ = df.copy()
     df_[memory_unit]
     if gb:
-        df_[memory_unit] = df_[memory_unit] / 2 ** 10
+        df_[memory_unit] = df_[memory_unit] / 2**10
     plot_data = (
         (df_.groupby(by=["module", "rule"])[memory_unit].sum())
         .reset_index()
@@ -149,7 +149,7 @@ def memory_barplot_sum(df, **kwargs):
     ax.set_xlabel(xlabel, labelpad=15, fontsize=12)
     ax.set_ylabel("Rule name", rotation=0, fontsize=12)
     if outfile:
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
 
 
 def memory_barplot_errorbar(df, n_samples=None, **kwargs):
@@ -168,7 +168,7 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
     fig, ax = plt.subplots(figsize=(4, 8))
     df_ = df.copy()
     if gb:
-        df_[memory_unit] = df_[memory_unit] / 2 ** 10
+        df_[memory_unit] = df_[memory_unit] / 2**10
     plot_data = df_.query(f"{memory_unit} > {cutoff}").sort_values(
         memory_unit, ascending=False
     )
@@ -205,7 +205,7 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
     ax.set_xlabel(xlabel, fontsize=12)
     ax.set_ylabel("Rule name", rotation=0, fontsize=12)
     if outfile:
-        plt.savefig(outfile, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight")
 
 
 def main(args):
