@@ -20,7 +20,7 @@ Metaphor will support automatic citation in the future.
 Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable.
 If you have any questions regarding Metaphor, please don't hesitate to open an issue.
 
-Check out our [documentation!](metaphor-workflow.readthedocs.io)
+Check out our [documentation!](https://metaphor-workflow.readthedocs.io)
 
 ### Installation
 The first thing that you need to install Metaphor is [conda](https://docs.conda.io/). To install it, please follow their [user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html).
