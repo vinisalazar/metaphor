@@ -132,9 +132,9 @@ concoct:
   activate: False  # CONCOCT installation can be problematic in some OSs so this is disabled for testing
 
 das_tool:
-  activate: True
+  activate: False
   score_threshold: 0.05
-  bins_report: True
+  bins_report: False
 
 ###############################################################
 # Postprocessing

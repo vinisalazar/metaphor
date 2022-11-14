@@ -1,8 +1,9 @@
 channels:
+  - conda-forge
   - bioconda
   - pytorch
-  - conda-forge
 dependencies:
+  - mkl
   - vamb=3.0.2
   - pytorch
   - torchvision
