@@ -32,7 +32,7 @@ def is_valid_ext(filepath):
 def get_sample_unit(s):
     unit_split = re.split("S[0-9][0-9][0-9]", s)
     if len(unit_split) == 1:
-        return "unit0"
+        return "single_unit"
     else:
         return re.search(unit_expr, s).group()
 
@@ -49,9 +49,9 @@ def create_file_lists(files):
     R1, R2, unpaired = [], [], []
 
     for file in files:
-        if re.search("_R1", file):
+        if (re.search("_R1", file)) or (re.search("_1.f", file)):
             R1.append(file)
-        elif re.search("_R2", file):
+        elif (re.search("_R2", file)) or (re.search("_2.f", file)):
             R2.append(file)
         else:
             unpaired.append(file)
@@ -68,7 +68,7 @@ def create_paired_files_dict(R1, R2, n_files, s_as_units):
         match = difflib.SequenceMatcher(None, f, r)
         size = match.find_longest_match().size
         sample_name = f[:size].replace("_R", "")
-        unit = get_sample_unit(sample_name) if s_as_units else "unit0"
+        unit = get_sample_unit(sample_name) if s_as_units else "single_unit"
         sample_name = (
             sample_name.replace(unit, "").replace("__", "")
             if s_as_units

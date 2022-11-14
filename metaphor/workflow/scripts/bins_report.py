@@ -45,7 +45,7 @@ def create_df(file, score_threshold):
 def bin_quality(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 6))
 
     plot_df = df
 
@@ -83,12 +83,13 @@ def bin_quality(
 
     _ = ax.set_ylim(-5, 105)
     _ = ax.set_xlim(-5, 105)
+    _ = ax.set_ylabel("Redundancy (%)", labelpad=25, rotation=0)
     _ = ax.set_title(f"Bin quality scatterplot: {binning_group}")
 
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -97,7 +98,7 @@ def bin_quality(
 def bin_scores(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10, 6))
     hp = sns.histplot(
         x=rename_dict["bin_score"],
         data=df,
@@ -106,7 +107,8 @@ def bin_scores(
         multiple="stack",
         bins=np.linspace(-1, 1, 21),
     )
-    ax.set_xlim(-1, 1)
+    _ = ax.set_xlim(-1, 1)
+    _ = ax.set_ylabel("Count", labelpad=25, rotation=0)
 
     if score_threshold:
         plt.axvline(
@@ -123,7 +125,7 @@ def bin_scores(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -132,7 +134,7 @@ def bin_scores(
 def bin_quantity(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 6))
     plot_data = pd.crosstab(df["Binning software"], df[qc_pass])
 
     plot_data.plot(
@@ -159,7 +161,7 @@ def bin_quantity(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -168,7 +170,7 @@ def bin_quantity(
 def bin_sizes(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 6))
     bp = sns.boxplot(
         x=rename_dict["bin_set"],
         y=rename_dict["size"],
@@ -178,8 +180,11 @@ def bin_sizes(
         showfliers=False,
     )
     sp = sns.stripplot(x=rename_dict["bin_set"], y=rename_dict["size"], data=df, ax=ax)
-    _ = ax.set_title(f"Size of bins (# nucleotides): {binning_group}")
-    _ = ax.set_ylabel("")
+
+    # Axes formatting
+    _ = ax.set_title(f"Size of bins: {binning_group}")
+    _ = ax.set_ylabel("# nucleotides", rotation=0, labelpad=40)
+    _ = ax.set_yscale("log")
 
     for patch in bp.patches:
         r, g, b, a = patch.get_facecolor()
@@ -188,7 +193,7 @@ def bin_sizes(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -197,7 +202,7 @@ def bin_sizes(
 def bin_N50(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
 ):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 6))
     bp = sns.boxplot(
         x=rename_dict["bin_set"],
         y=rename_dict["n50"],
@@ -215,6 +220,7 @@ def bin_N50(
     )
     _ = ax.set_title(f"N50: {binning_group}")
     _ = ax.set_ylabel("")
+    _ = ax.set_yscale("log")
     for patch in bp.patches:
         r, g, b, a = patch.get_facecolor()
         patch.set_facecolor((r, g, b, 0.3))
@@ -222,7 +228,7 @@ def bin_N50(
     if save:
         func_name = currentframe().f_code.co_name
         outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax

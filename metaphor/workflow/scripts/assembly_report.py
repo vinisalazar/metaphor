@@ -71,8 +71,11 @@ def plot_column(df, column, outfile):
     fig, ax = plt.subplots(figsize=(dimensions, dimensions))
     df[column].plot(kind="barh", ax=ax)
     ax.set_xlabel(column)
+    ax.set_ylabel("")
     plt.ticklabel_format(axis="x", style="sci", scilimits=(0, 4))
-    fig.savefig(outfile, dpi=600, bbox_inches="tight")
+    for i in ax.containers:
+        ax.bar_label(i, label_type="center", fontsize=4, color="white")
+    fig.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
 
 
 def plot_columns(df, assembly_report):

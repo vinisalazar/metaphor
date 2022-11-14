@@ -7,6 +7,8 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
+sns.set_palette("colorblind")
+
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -20,7 +22,8 @@ def runtime_barplot_sum(df, **kwargs):
     """
     Generates barplot of sum of rules' runtimes.
     """
-    fig, ax = plt.subplots(figsize=(4, 8))
+
+    fig, ax = plt.subplots(figsize=(6, 6))
     outfile, time_unit, cutoff = (
         kwargs["outfile"],
         kwargs["time_unit"],
@@ -32,23 +35,18 @@ def runtime_barplot_sum(df, **kwargs):
         .sort_values(time_unit, ascending=False)
         .query(f"{time_unit} > {cutoff}")
     )
-    sns.barplot(
-        x=time_unit,
-        y="rule",
-        hue="module",
-        dodge=False,
-        data=plot_data,
-        palette="Dark2",
-    )
+    sns.barplot(x=time_unit, y="rule", hue="module", dodge=False, data=plot_data, ax=ax)
     plt.legend(loc="lower right", title="Module")
 
     xlabels = {"h": "(hours)", "m": "(minutes)", "s": "(seconds)"}
 
     plt.title("Total rule runtime")
     ax.set_xlabel("Runtime " + xlabels[time_unit], fontsize=12)
-    ax.set_ylabel("Rule name", rotation=0, fontsize=12)
+    # ax.set_ylabel("Rule name", rotation=0, fontsize=12)
+    ax.set_ylabel("")
+    ax.set_xscale("log")
     if outfile:
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
 
 
 def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
@@ -57,7 +55,7 @@ def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
 
     The time-per-sample is corrected in rules that run once for all samples.
     """
-    fig, ax = plt.subplots(figsize=(4, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
     outfile, time_unit, cutoff = (
         kwargs["outfile"],
         kwargs["time_unit"],
@@ -82,23 +80,48 @@ def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
             axis=1,
         )
 
-    sns.barplot(
+    order = (
+        plot_data.groupby("rule")
+        .mean()
+        .sort_values(time_unit + "_corrected", ascending=False)
+        .index.to_list()
+    )
+
+    sns.boxplot(
         x=time_unit + "_corrected",
         y="rule",
         hue="module",
-        dodge=False,
         data=plot_data,
-        palette="Dark2",
+        order=order,
+        dodge=False,
+        ax=ax,
     )
-    plt.legend(loc="lower right", title="Module")
+    sp = sns.stripplot(
+        x=time_unit + "_corrected",
+        y="rule",
+        hue="module",
+        data=plot_data,
+        order=order,
+        dodge=False,
+        ax=ax,
+    )
+    for patch in ax.patches:
+        r, g, b, a = patch.get_facecolor()
+        patch.set_facecolor((r, g, b, 0.3))
+
+    handles, labels = ax.get_legend_handles_labels()
+    handles, labels = handles[4:], labels[4:]
+    plt.legend(handles, labels, loc="lower right", title="Module")
 
     xlabels = {"h": "(hours)", "m": "(minutes)", "s": "(seconds)"}
 
     plt.title("Mean runtime per sample")
     ax.set_xlabel("Runtime " + xlabels[time_unit], fontsize=12)
-    ax.set_ylabel("Rule name", rotation=0, fontsize=12, position=(0, 0.7))
+    # ax.set_ylabel("Rule name", rotation=0, fontsize=12, position=(0, 0.7))
+    ax.set_ylabel("")
+    ax.set_xscale("log")
     if outfile:
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
 
 
 def memory_barplot_sum(df, **kwargs):
@@ -115,7 +138,7 @@ def memory_barplot_sum(df, **kwargs):
     if df[memory_unit].all() == "-":
         logging.info("Skipping plot, no memory stats recorded.")
         return
-    fig, ax = plt.subplots(figsize=(4, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
     df_ = df.copy()
     df_[memory_unit]
     if gb:
@@ -132,7 +155,6 @@ def memory_barplot_sum(df, **kwargs):
         hue="module",
         dodge=False,
         data=plot_data,
-        palette="Dark2",
     )
     plt.legend(loc="lower right", title="Module")
 
@@ -142,14 +164,16 @@ def memory_barplot_sum(df, **kwargs):
         "max_pss": "Proportional Set Size (MB)",
     }
 
-    plt.title("Sum of rules' memory usage")
+    plt.title("Total rule memory usage")
     xlabel = xlabels[memory_unit]
     if gb:
         xlabel = xlabel.replace("MB", "GB")
     ax.set_xlabel(xlabel, labelpad=15, fontsize=12)
-    ax.set_ylabel("Rule name", rotation=0, fontsize=12)
+    # ax.set_ylabel("Rule name", rotation=0, fontsize=12)
+    ax.set_ylabel("")
+    ax.set_xscale("log")
     if outfile:
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
 
 
 def memory_barplot_errorbar(df, n_samples=None, **kwargs):
@@ -165,7 +189,7 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
     if df[memory_unit].all() == "-":
         logging.info("Skipping plot, no memory stats recorded.")
         return
-    fig, ax = plt.subplots(figsize=(4, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
     df_ = df.copy()
     if gb:
         df_[memory_unit] = df_[memory_unit] / 2**10
@@ -182,15 +206,39 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
             axis=1,
         )
 
-    sns.barplot(
+    order = (
+        plot_data.groupby("rule")
+        .mean()
+        .sort_values(memory_unit, ascending=False)
+        .index.to_list()
+    )
+
+    sns.boxplot(
         x=memory_unit,
         y="rule",
         hue="module",
-        dodge=False,
         data=plot_data,
-        palette="Dark2",
+        order=order,
+        dodge=False,
+        ax=ax,
     )
-    plt.legend(loc="lower right", title="Module")
+    sns.stripplot(
+        x=memory_unit,
+        y="rule",
+        hue="module",
+        data=plot_data,
+        order=order,
+        dodge=False,
+        ax=ax,
+    )
+    for patch in ax.patches:
+        r, g, b, a = patch.get_facecolor()
+        patch.set_facecolor((r, g, b, 0.3))
+
+
+    handles, labels = ax.get_legend_handles_labels()
+    handles, labels = handles[4:], labels[4:]
+    plt.legend(handles, labels, loc="lower right", title="Module")
 
     xlabels = {
         "max_vms": "Virtual Memory Size (MB)",
@@ -203,9 +251,11 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
     if gb:
         xlabel = xlabel.replace("MB", "GB")
     ax.set_xlabel(xlabel, fontsize=12)
-    ax.set_ylabel("Rule name", rotation=0, fontsize=12)
+    # ax.set_ylabel("Rule name", rotation=0, fontsize=12)
+    ax.set_ylabel("")
+    ax.set_xscale("log")
     if outfile:
-        plt.savefig(outfile, dpi=600, bbox_inches="tight")
+        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
 
 
 def main(args):
