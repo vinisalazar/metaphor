@@ -49,9 +49,9 @@ def create_file_lists(files):
     R1, R2, unpaired = [], [], []
 
     for file in files:
-        if (re.search("_R1", file)) or (re.search("_1.f")):
+        if (re.search("_R1", file)) or (re.search("_1.f", file)):
             R1.append(file)
-        elif (re.search("_R2", file)) or (re.search("_2.f")):
+        elif (re.search("_R2", file)) or (re.search("_2.f", file)):
             R2.append(file)
         else:
             unpaired.append(file)

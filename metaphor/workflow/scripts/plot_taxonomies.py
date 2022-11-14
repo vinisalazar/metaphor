@@ -16,7 +16,7 @@ from matplotlib.patches import Rectangle
 
 # String used to describe the low abundance taxa that are filtered/bundled together.
 filtered_label = "Undetermined/Low abundance"
-plt.set_style("seaborn")
+plt.style.use("seaborn")
 
 
 def calculate_legend_width(index):

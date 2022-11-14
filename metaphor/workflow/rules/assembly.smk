@@ -8,6 +8,7 @@ Assembly rules:
     - megahit: assemble preprocessed reads with MEGAHIT
     - metaquast: evaluate assembly results with MetaQuast
 """
+from sys import platform
 
 
 rule concatenate_merged_reads:
@@ -58,7 +59,7 @@ rule megahit:
     benchmark:
         get_group_benchmark_or_log("benchmark", "assembly", "megahit")
     conda:
-        "../envs/megahit.yaml"
+        "../envs/megahit.yaml" if platform != "darwin" else "../envs/megahit_osx.yaml"  # pin the build for OS X
     shell:
         """
         # MegaHit has no --force flag, so we must remove the created directory prior to running

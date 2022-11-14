@@ -119,7 +119,7 @@ plot_taxonomies:
 cobinning: True # Whether to perform cobinning. When this is true, only one binning group will be used. If False, samples will be binned according to their 'group' column.
 
 vamb:
-  activate: False
+  activate: True
   minfasta: 1000
   batchsize: 128
 
@@ -132,7 +132,7 @@ concoct:
   activate: False  # CONCOCT installation can be problematic in some OSs so this is disabled for testing
 
 das_tool:
-  activate: False
+  activate: True
   score_threshold: 0.05
   bins_report: False
 
