@@ -13,7 +13,7 @@ These settings are valid for all steps in the workflow.
 
 **QC**
 
-**`cutadapt:`**    
+**`fastp:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
 &nbsp;&nbsp;&nbsp;**`phred:`** `33`    
 &nbsp;&nbsp;&nbsp;**`minimum_length:`** `50`    

@@ -1,12 +1,12 @@
 """
 qc.smk
 
-    Quality Control module. Filter reads by quality and trim with CutAdapt. Run FastQC at each stage
+    Quality Control module. Filter reads by quality and trim with fastp. Run FastQC at each stage
     and join results in MultiQC report.
 
 QC rules:
-    - cutadapt_pipe: get pipe input for cutadapt
-    - cutadapt_pe: trim paired end reads with cutadapt
+    - fastp_pipe: get pipe input for fastp
+    - fastp_pe: trim paired end reads with fastp
     - merge_fastqs: merge files from different lanes in the same sample with cat
     - fastqc_raw: check quality of raw reads with FastQC
     - fastqc_trimmed: check quality of trimmed reads with FastQC
@@ -16,18 +16,18 @@ QC rules:
 from pathlib import Path
 
 
-rule cutadapt_pipe:
-    """Pipe reads into cutadapt."""
+rule fastp_pipe:
+    """Pipe reads into fastp."""
     input:
-        get_cutadapt_pipe_input,
+        get_fastp_pipe_input,
     output:
-        pipe("pipe/qc/cutadapt/{sample}_{unit}_{fq}.{ext}"),
+        pipe("pipe/qc/fastp/{sample}_{unit}_{fq}.{ext}"),
     resources:
         mem_mb=get_max_mb(0.5),
     log:
-        "output/logs/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.log",
+        "output/logs/qc/fastp/{sample}_{unit}_{fq}_pipe.{ext}.log",
     benchmark:
-        "output/benchmarks/qc/cutadapt/{sample}_{unit}_{fq}_pipe.{ext}.txt"
+        "output/benchmarks/qc/fastp/{sample}_{unit}_{fq}_pipe.{ext}.txt"
     wildcard_constraints:
         sample="|".join(sample_IDs),
         unit="|".join(unit_names),
@@ -39,40 +39,40 @@ rule cutadapt_pipe:
         """cat {input} > {output} 2> {log}"""
 
 
-rule cutadapt_pe:
+rule fastp_pe:
     """
-    Trim paired end reads with cutadapt.
+    Trim paired end reads with fastp.
     """
     input:
-        get_cutadapt_input,
+        get_fastp_input,
     output:
-        fastq1="output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
-        fastq2="output/qc/cutadapt/{sample}_{unit}_R2.fq.gz",
-        qc="output/qc/cutadapt/{sample}_{unit}.paired.qc.txt",
+        fastq1="output/qc/fastp/{sample}_{unit}_R1.fq.gz",
+        fastq2="output/qc/fastp/{sample}_{unit}_R2.fq.gz",
+        qc="output/qc/fastp/{sample}_{unit}.paired.qc.txt",
     resources:
         mem_mb=get_max_mb(0.5),
     log:
-        "output/logs/qc/cutadapt/{sample}-{unit}.log",
+        "output/logs/qc/fastp/{sample}-{unit}.log",
     benchmark:
-        "output/benchmarks/qc/cutadapt/{sample}-{unit}.txt"
+        "output/benchmarks/qc/fastp/{sample}-{unit}.txt"
     threads: get_threads_per_task_size("small")
     params:
         # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
         others="",
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
         extra=(
-            f"--minimum-length {config['cutadapt']['minimum_length']} "
-            + f"--quality-cutoff {config['cutadapt']['quality_cutoff']} "
-            + f"--quality-base {config['cutadapt']['phred']} "
-            + f"-u {config['cutadapt']['clip_r5']} "
-            + f"-u -{config['cutadapt']['clip_r3']} "
-            + f"-U {config['cutadapt']['clip_r5']} "
-            + f"-U -{config['cutadapt']['clip_r3']} "
+            f"--minimum-length {config['fastp']['minimum_length']} "
+            + f"--quality-cutoff {config['fastp']['quality_cutoff']} "
+            + f"--quality-base {config['fastp']['phred']} "
+            + f"-u {config['fastp']['clip_r5']} "
+            + f"-u -{config['fastp']['clip_r3']} "
+            + f"-U {config['fastp']['clip_r5']} "
+            + f"-U -{config['fastp']['clip_r3']} "
         ),
     wildcard_constraints:
         sample="|".join(sample_IDs),
     wrapper:
-        get_wrapper("cutadapt/pe")
+        get_wrapper("fastp/pe")
 
 
 rule merge_fastqs:

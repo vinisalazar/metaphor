@@ -41,7 +41,7 @@ properties:
 # QC
 ###############################################################
 
-  cutadapt:
+  fastp:
     type: object
     properties:
       activate:
@@ -333,7 +333,7 @@ required:
   - max_mb
   - local_execution
   - cleanup_modules
-  - cutadapt
+  - fastp
   - merge_reads
   - host_removal
   - fastqc

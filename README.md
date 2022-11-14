@@ -7,7 +7,7 @@
 <!-- [![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor) -->
 
 Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads data. It includes the following steps:
-- Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [Cutadapt](https://github.com/marcelm/cutadapt))
+- Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [fastp](https://github.com/marcelm/fastp))
 - Assembly (with [Megahit](https://github.com/voutcn/megahit), and evaluation is done with [MetaQUAST](https://github.com/ablab/quast))
 - Read mapping (with [Minimap2](https://github.com/lh3/minimap2), [Samtools](https://github.com/samtools/samtools))
 - Binning (binners include [Vamb](https://github.com/RasmussenLab/vamb/), [MetaBAT](https://bitbucket.org/berkeleylab/metabat), [CONCOCT](https://github.com/BinPro/CONCOCT)<!--, [GraphBin](https://github.com/Vini2/GraphBin)-->; refinement is done with [DAS Tool](https://github.com/cmks/DAS_Tool))

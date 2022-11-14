@@ -39,7 +39,7 @@ cleanup_modules:
 # QC
 ###############################################################
 
-cutadapt:
+fastp:
   activate: True
   phred: 33
   minimum_length: 50

@@ -8,17 +8,17 @@ developers to find what is, and isn't yet supported. Not all Metaphor rules are 
 `shell` directive. Rules with `script` or `wrapper` directives are not included. To see all rules in Metaphor, 
 please refer to the [workflow source code](https://github.com/vinisalazar/metaphor/tree/main/workflow).
 ## qc.smk
-**cutadapt_pipe**
+**fastp_pipe**
 
-Pipe reads into cutadapt.
+Pipe reads into fastp.
 
 ```
 cat {input} > {output} 2> {log}
 ```
 
-**cutadapt_pe**
+**fastp_pe**
 
-Trim paired end reads with cutadapt.
+Trim paired end reads with fastp.
 
 **merge_fastqs**
 
