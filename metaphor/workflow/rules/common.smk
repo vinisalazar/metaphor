@@ -237,20 +237,18 @@ def get_fastqs(wildcards):
     return samples.xs(wildcards.sample, level=1)[fq].tolist().squeeze()
 
 
-def get_fastp_pipe_input(wildcards):
-    files = list(
-        sorted(
-            glob(
-                samples.xs(wildcards.sample, level=1)
-                .xs(wildcards.unit, level=1)[wildcards.fq]
-                .squeeze()
-            )
-        )
+def get_fastp_pe_input(wildcards):
+    files = sorted(
+        samples.xs(wildcards.sample, level=1)
+        .xs(wildcards.unit, level=1)
+        .squeeze()[["R1", "R2"]]
+        .to_list()
     )
     assert len(files) > 0, "No files were found!"
     return files
 
 
+# This is deprecated for now
 def get_fastp_input(wildcards):
     unit = samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1).squeeze()
 

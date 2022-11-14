@@ -44,11 +44,14 @@ rule fastp_pe:
     Trim paired end reads with fastp.
     """
     input:
-        get_fastp_input,
+        sample=get_fastp_pe_input,
     output:
-        fastq1="output/qc/fastp/{sample}_{unit}_R1.fq.gz",
-        fastq2="output/qc/fastp/{sample}_{unit}_R2.fq.gz",
-        qc="output/qc/fastp/{sample}_{unit}.paired.qc.txt",
+        trimmed=[
+            "output/qc/fastp/{sample}_{unit}_R1.fq.gz",
+            "output/qc/fastp/{sample}_{unit}_R2.fq.gz",
+        ],
+        html="output/qc/fastp/{sample}_{unit}.html",
+        json="output/qc/fastp/{sample}_{unit}.json",
     resources:
         mem_mb=get_max_mb(0.5),
     log:
@@ -57,22 +60,12 @@ rule fastp_pe:
         "output/benchmarks/qc/fastp/{sample}-{unit}.txt"
     threads: get_threads_per_task_size("small")
     params:
-        # adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
-        others="",
-        adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        extra=(
-            f"--minimum-length {config['fastp']['minimum_length']} "
-            + f"--quality-cutoff {config['fastp']['quality_cutoff']} "
-            + f"--quality-base {config['fastp']['phred']} "
-            + f"-u {config['fastp']['clip_r5']} "
-            + f"-u -{config['fastp']['clip_r3']} "
-            + f"-U {config['fastp']['clip_r5']} "
-            + f"-U -{config['fastp']['clip_r3']} "
-        ),
+        adapters="",
+        extra="--detect_adapter_for_pe",
     wildcard_constraints:
         sample="|".join(sample_IDs),
     wrapper:
-        get_wrapper("fastp/pe")
+        get_wrapper("fastp")
 
 
 rule merge_fastqs:
