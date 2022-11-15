@@ -47,8 +47,8 @@ rule fastp_pe:
         sample=get_fastp_pe_input,
     output:
         trimmed=[
-            "output/qc/fastp/{sample}_{unit}_R1.fq.gz",
-            "output/qc/fastp/{sample}_{unit}_R2.fq.gz",
+            temp("output/qc/fastp/{sample}_{unit}_R1.fq.gz"),
+            temp("output/qc/fastp/{sample}_{unit}_R2.fq.gz"),
         ],
         html="output/qc/fastp/{sample}_{unit}.html",
         json="output/qc/fastp/{sample}_{unit}.json",
@@ -212,9 +212,11 @@ rule fastq_pair:
             "output/qc/filtered/{{sample}}_unpaired_{read}.fq", read=["R1", "R2"]
         ),
     output:
-        paired=expand(
-            "output/qc/filtered/{{sample}}_unpaired_{read}.fq.paired.fq",
-            read=["R1", "R2"],
+        paired=temp(
+            expand(
+                ("output/qc/filtered/{{sample}}_unpaired_{read}.fq.paired.fq"),
+                read=["R1", "R2"],
+            )
         ),
     resources:
         mem_mb=get_max_mb(),

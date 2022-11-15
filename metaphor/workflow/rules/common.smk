@@ -249,7 +249,7 @@ def get_fastp_pe_input(wildcards):
 
 
 # This is deprecated for now
-def get_fastp_input(wildcards):
+def get_fastp_pipe_input(wildcards):
     unit = samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1).squeeze()
 
     if unit["R1"].endswith("gz"):
