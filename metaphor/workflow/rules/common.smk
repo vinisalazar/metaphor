@@ -344,7 +344,9 @@ def get_multiqc_input():
         read=["R1", "R2"],
     )
 
-    return raw + trimmed + merged
+    # Rule 'fastqc_merged' is disabled for now, so
+    # that's excluded from the output.
+    return raw + trimmed
 
 
 def get_qc_output():

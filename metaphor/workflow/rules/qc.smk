@@ -134,6 +134,9 @@ rule fastqc_trimmed:  # qc on trimmed reads
         get_wrapper("fastqc")
 
 
+# This rule is deprecated. It will not run by default.
+# There is no point in running fastqc on the merged reads,
+# as they are merely the concatenation of multiple units.
 rule fastqc_merged:  # qc on trimmed, merged reads
     input:
         get_fastqc_input_merged,
