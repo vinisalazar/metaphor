@@ -41,11 +41,9 @@ cleanup_modules:
 
 fastp:
   activate: True
-  phred: 33
-  minimum_length: 50
-  quality_cutoff: 30
-  clip_r5: 10
-  clip_r3: 5
+  length_required: 50
+  cut_mean_quality: 30
+  extra: "--detect_adapter_for_pe"
 
 merge_reads:
   activate: True

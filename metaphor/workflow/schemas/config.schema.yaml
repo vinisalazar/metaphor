@@ -46,23 +46,17 @@ properties:
     properties:
       activate:
         type: boolean
-      phred:
+      length_required:
         type: integer
-      minimum_length:
+      cut_mean_quality:
         type: integer
-      quality_cutoff:
-        type: integer
-      clip_r5:
-        type: integer
-      clip_r3:
-        type: integer
+      extra:
+        type: string
     required:
       - activate
-      - phred
-      - minimum_length
-      - quality_cutoff
-      - clip_r5
-      - clip_r3
+      - length_required
+      - cut_mean_quality
+      - extra
 
   merge_reads:
     type: object

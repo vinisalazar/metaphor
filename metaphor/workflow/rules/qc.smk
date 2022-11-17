@@ -61,7 +61,15 @@ rule fastp_pe:
     threads: get_threads_per_task_size("small")
     params:
         adapters="",
-        extra="--detect_adapter_for_pe",
+        extra=" ".join(
+            [
+                "-M",
+                config["fastp"]["cut_mean_quality"],
+                "-l",
+                config["fastp"]["length_required"],
+                config["fastp"]["extra"],
+            ]
+        ),
     wildcard_constraints:
         sample="|".join(sample_IDs),
     wrapper:
