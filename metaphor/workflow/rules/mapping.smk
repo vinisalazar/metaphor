@@ -186,7 +186,7 @@ rule sort_reads:
     input:
         bam="output/mapping/bam/{binning_group}/{sample}-to-{kind}.map.bam",
     output:
-        sort=temp("output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam"),
+        sort="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
