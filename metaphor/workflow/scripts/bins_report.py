@@ -105,7 +105,7 @@ def bin_scores(
         hue="Binning software",
         hue_order=df["Binning software"].value_counts().sort_index().index.to_list(),
         multiple="stack",
-        bins=np.linspace(-1, 1, 21),
+        bins=np.linspace(-1, 1, 41),
     )
     _ = ax.set_xlim(-1, 1)
     _ = ax.set_ylabel("Count", labelpad=25, rotation=0)
@@ -179,7 +179,16 @@ def bin_sizes(
         ax=ax,
         showfliers=False,
     )
-    sp = sns.stripplot(x=rename_dict["bin_set"], y=rename_dict["size"], data=df, ax=ax, jitter=True, edgecolor="k", linewidth=0.5, alpha=0.5)
+    sp = sns.stripplot(
+        x=rename_dict["bin_set"],
+        y=rename_dict["size"],
+        data=df,
+        ax=ax,
+        jitter=True,
+        edgecolor="k",
+        linewidth=0.5,
+        alpha=0.5,
+    )
 
     # Axes formatting
     _ = ax.set_title(f"Size of bins: {binning_group}")
@@ -217,7 +226,10 @@ def bin_N50(
         order=df["Binning software"].value_counts().sort_index().index.to_list(),
         data=df,
         ax=ax,
-        jitter=True, edgecolor="k", linewidth=0.5, alpha=0.5
+        jitter=True,
+        edgecolor="k",
+        linewidth=0.5,
+        alpha=0.5,
     )
     _ = ax.set_title(f"N50: {binning_group}")
     _ = ax.set_ylabel("")
