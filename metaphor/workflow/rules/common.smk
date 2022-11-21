@@ -621,7 +621,10 @@ def get_map_reads_input_R1(wildcards):
         sample_units = samples.xs(wildcards.sample, level=1).squeeze()
         return sample_units["R1"]
     if is_paired_end(wildcards.sample):
-        return "output/qc/merged/{sample}_R1.fq.gz"
+        if is_activated("host_removal"):
+            return "output/qc/filtered/{sample}_filtered_R1.fq.gz"
+        else:
+            return "output/qc/merged/{sample}_R1.fq.gz"
     return "output/qc/merged/{sample}_single.fq.gz"
 
 
@@ -641,7 +644,10 @@ def get_map_reads_input_R2(wildcards):
                 return expand("sra/{accession}_R2.fq", accession=accession)
             sample_units = samples.xs(wildcards.sample, level=1).squeeze()
             return sample_units["R2"]
-        return ("output/qc/merged/{sample}_R2.fq.gz",)
+        if is_activated("host_removal"):
+            return ("output/qc/filtered/{sample}_filtered_R2.fq.gz",)
+        else:
+            return ("output/qc/merged/{sample}_R2.fq.gz",)
     return ""
 
 
