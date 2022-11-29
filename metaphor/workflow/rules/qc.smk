@@ -64,10 +64,10 @@ rule fastp_pe:
         extra=" ".join(
             [
                 "-M",
-                config["fastp"]["cut_mean_quality"],
+                str(config["fastp"]["cut_mean_quality"]),
                 "-l",
-                config["fastp"]["length_required"],
-                config["fastp"]["extra"],
+                str(config["fastp"]["length_required"]),
+                str(config["fastp"]["extra"]),
             ]
         ),
     wildcard_constraints:
