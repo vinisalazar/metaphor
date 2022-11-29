@@ -62,6 +62,7 @@ megahit:
   preset: "meta-large"
   cleanup: True
   min_contig_len: 200
+  rename_contigs: True
 
 metaquast:
   activate: False

@@ -109,10 +109,13 @@ properties:
         type: boolean
       min_contig_len:
         type: integer
+      rename_contigs:
+        type: boolean
     required:
       - preset
       - cleanup
       - min_contig_len
+      - rename_contigs
 
   metaquast:
     type: object
