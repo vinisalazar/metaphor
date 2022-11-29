@@ -361,8 +361,11 @@ def get_qc_output():
 ###############################################################
 # Assembly
 ###############################################################
-def get_contigs_input(expand_=False):
+def get_contigs_input(expand_=False, renamed=None):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
+
+    if renamed is None:
+        renamed = config["megahit"]["rename_contigs"]
 
     if expand_:
         contigs = expand(
@@ -371,6 +374,12 @@ def get_contigs_input(expand_=False):
         )
     else:
         contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
+    if renamed:
+        contigs = (
+            [i.replace("contigs", "contigs_renamed") for i in contigs]
+            if isinstance(contigs, list)
+            else contigs.replace("contigs", "contigs_renamed")
+        )
     return contigs
 
 
