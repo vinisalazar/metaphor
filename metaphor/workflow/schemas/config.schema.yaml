@@ -26,6 +26,11 @@ properties:
   local_execution:
     type: boolean
 
+  transparent_background:
+    type: boolean
+  dpi:
+    type: integer
+
   cleanup_modules:
     type: object
     properties:
@@ -329,6 +334,9 @@ required:
   - coassembly
   - max_mb
   - local_execution
+  - transparent_background
+  - dpi
+  - output_format
   - cleanup_modules
   - fastp
   - merge_reads

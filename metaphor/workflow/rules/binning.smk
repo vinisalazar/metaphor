@@ -234,6 +234,9 @@ rule bins_report:
     params:
         score_threshold=config["das_tool"]["score_threshold"],
         binning_group=lambda w: w.binning_group,
+        white_background=not config["transparent_background"],
+        dpi=config["dpi"],
+        output_format=config["output_format"],
     log:
         "output/logs/binning/plots/{binning_group}.log",
     benchmark:
