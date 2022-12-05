@@ -28,6 +28,21 @@ Metaphor also supports having multiple files for a single sample. These are refe
 
 Metaphor will perform QC on each unit on its own, and then (by default), it will merge all units from each sample. This can be deactivated with the `merge_reads` parameter in the YAML settings file.
 
+## Finding logs
+
+Whenever we encounter a problem, the first reaction is usually to read the error message in the screen. However, we may have "lost"
+the error message, due to the terminal being cleared, our program being interrupted, or any other reason. We must then turn to log files.
+Thankfully for us, Snakemake has great logging features. There are two different types of log files:
+
+1. The 'workflow-level' log: this is what is printed on the screen when we run Snakemake. It shows the rules to be executed, when they are completed, the shell commands which are being run, and if there are any errors. **These logs live in the `.snakemake/logs` folder inside the work directory** where the analysis is being run. Every time you run the `metaphor execute` command (or the `snakemake` command for that matter) a new log is created with the same content that is being printed on the screen. These files are named with a timestamp
+indicating when the analysis started. You can easily access the last created file using this bash command from the analysis work directory:
+
+```{code-block} console
+(metaphor)$ less $(ls -Art .snakemake/log | tail -n 1)
+```
+
+You can replace `less` with other commands, such as `more`, `nano`, or `vi`. 
+
 ## Conda environment problems
 
 A big part of running bioinformatics workflows is setting up the programs that will be used in the analysis. Each program may have a different installation method, several dependencies, and OS-system specific requirements. 
