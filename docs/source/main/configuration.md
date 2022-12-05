@@ -15,11 +15,9 @@ These settings are valid for all steps in the workflow.
 
 **`fastp:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
-&nbsp;&nbsp;&nbsp;**`phred:`** `33`    
-&nbsp;&nbsp;&nbsp;**`minimum_length:`** `50`    
-&nbsp;&nbsp;&nbsp;**`quality_cutoff:`** `30`    
-&nbsp;&nbsp;&nbsp;**`clip_r5:`** `10`    
-&nbsp;&nbsp;&nbsp;**`clip_r3:`** `5`    
+&nbsp;&nbsp;&nbsp;**`length_required:`** `50`    
+&nbsp;&nbsp;&nbsp;**`cut_mean_quality:`** `30`    
+&nbsp;&nbsp;&nbsp;**`extra:`** `"--detect_adapter_for_pe"`    
 
 
 **`merge_reads:`**    
@@ -47,7 +45,8 @@ These settings are valid for all steps in the workflow.
 **`megahit:`**    
 &nbsp;&nbsp;&nbsp;**`preset:`** `"meta-large"`    
 &nbsp;&nbsp;&nbsp;**`cleanup:`** `True`    
-&nbsp;&nbsp;&nbsp;**`min_contig_len:`** `200`    
+&nbsp;&nbsp;&nbsp;**`min_contig_len:`** `1000`    
+&nbsp;&nbsp;&nbsp;**`rename_contigs:`** `True`    
 
 
 **`metaquast:`**    
@@ -71,23 +70,23 @@ These settings are valid for all steps in the workflow.
 
 
 **`diamond:`**    
-&nbsp;&nbsp;&nbsp;**`db:`** `"data/COG2020/cog-20.dmnd"`   Will try to create from db_source if it doesn't exist.  
-&nbsp;&nbsp;&nbsp;**`db_source:`** `"data/COG2020/cog-20.fa.gz"`    
+&nbsp;&nbsp;&nbsp;**`db:`** `"COG2020/cog-20.dmnd"`   Will try to create from db_source if it doesn't exist.  
+&nbsp;&nbsp;&nbsp;**`db_source:`** `"COG2020/cog-20.fa.gz"`    
 &nbsp;&nbsp;&nbsp;**`output_type:`** `6`    
 &nbsp;&nbsp;&nbsp;**`output_format:`** `"qseqid sseqid stitle evalue bitscore staxids sscinames"`    
 
 
 **`cog_functional_parser:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
-&nbsp;&nbsp;&nbsp;**`db:`** `"data/COG2020"`    
+&nbsp;&nbsp;&nbsp;**`db:`** `"COG2020"`    
 
 
 **`lineage_parser:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
-&nbsp;&nbsp;&nbsp;**`taxonmap:`** `"data/COG2020/cog-20.taxonmap.tsv"`    
-&nbsp;&nbsp;&nbsp;**`rankedlineage:`** `"data/taxonomy/rankedlineage.dmp"`    
-&nbsp;&nbsp;&nbsp;**`names:`** `"data/taxonomy/names.dmp"`   Path of names file of NCBI Taxonomy  
-&nbsp;&nbsp;&nbsp;**`nodes:`** `"data/taxonomy/nodes.dmp"`   Path of nodes file of NCBI Taxonomy  
+&nbsp;&nbsp;&nbsp;**`taxonmap:`** `"COG2020/cog-20.taxonmap.tsv"`    
+&nbsp;&nbsp;&nbsp;**`rankedlineage:`** `"taxonomy/rankedlineage.dmp"`    
+&nbsp;&nbsp;&nbsp;**`names:`** `"taxonomy/names.dmp"`   Path of names file of NCBI Taxonomy  
+&nbsp;&nbsp;&nbsp;**`nodes:`** `"taxonomy/nodes.dmp"`   Path of nodes file of NCBI Taxonomy  
 &nbsp;&nbsp;&nbsp;**`download_url:`** `"https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz"`   URL to download NCBI Taxonomy database  
 
 
@@ -110,7 +109,7 @@ These settings are valid for all steps in the workflow.
 
 **`vamb:`**    
 &nbsp;&nbsp;&nbsp;**`activate:`** `True`    
-&nbsp;&nbsp;&nbsp;**`minfasta:`** `10000`    
+&nbsp;&nbsp;&nbsp;**`minfasta:`** `100000`    
 &nbsp;&nbsp;&nbsp;**`batchsize:`** `256`    
 
 
