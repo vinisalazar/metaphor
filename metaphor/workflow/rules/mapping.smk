@@ -45,7 +45,9 @@ rule decompress_catalogue:
     input:
         catalogue_gz="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     output:
-        catalogue=temp("output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna"),
+        catalogue=temp(
+            "output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna"
+        ),
     threads: get_threads_per_task_size("small")
     resources:
         mem_mb=get_max_mb(),
@@ -96,7 +98,9 @@ rule create_contigs_index:
     input:
         catalogue_fna="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     output:
-        catalogue_idx=temp("output/mapping/{binning_group}/{binning_group}_contigs_catalogue.mmi"),
+        catalogue_idx=temp(
+            "output/mapping/{binning_group}/{binning_group}_contigs_catalogue.mmi"
+        ),
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -119,7 +123,9 @@ rule create_genes_index:
     input:
         catalogue_fna="output/annotation/prodigal/{binning_group}/{binning_group}_genes.fna",
     output:
-        catalogue_idx=temp("output/mapping/{binning_group}/{binning_group}_genes_catalogue.mmi"),
+        catalogue_idx=temp(
+            "output/mapping/{binning_group}/{binning_group}_genes_catalogue.mmi"
+        ),
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
@@ -210,7 +216,9 @@ rule index_reads:
     input:
         sort="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
     output:
-        index=temp("output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam.bai"),
+        index=temp(
+            "output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam.bai"
+        ),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -234,7 +242,9 @@ rule flagstat:
     input:
         sort="output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
     output:
-        flagstat=temp("output/mapping/bam/{binning_group}/{sample}-to-{kind}.flagstat.txt"),
+        flagstat=temp(
+            "output/mapping/bam/{binning_group}/{sample}-to-{kind}.flagstat.txt"
+        ),
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
