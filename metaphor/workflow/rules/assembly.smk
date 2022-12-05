@@ -96,7 +96,7 @@ rule rename_contigs:
     conda:
         "../envs/utils.yaml"
     shell:
-        """awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}"""
+        config["megahit"]["rename_contigs_awk_command"]
 
 
 rule assembly_report:

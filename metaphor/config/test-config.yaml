@@ -68,6 +68,7 @@ megahit:
   cleanup: True
   min_contig_len: 200
   rename_contigs: True
+  rename_contigs_awk_command: awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}  # This is to prevent errors with the Snakemake --lint command. Don't change it unless you know what you're doing.
 
 metaquast:
   activate: False

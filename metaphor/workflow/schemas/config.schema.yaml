@@ -121,6 +121,7 @@ properties:
       - cleanup
       - min_contig_len
       - rename_contigs
+      - rename_contigs_awk_command
 
   metaquast:
     type: object
@@ -344,6 +345,7 @@ required:
   - fastqc
   - multiqc
   - megahit
+  - rename_contigs_awk_command
   - metaquast
   - prodigal
   - prokka
