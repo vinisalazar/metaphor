@@ -36,10 +36,21 @@ cat {input} > {output} 2> {log}
 {{ minimap2 -t {threads}           \
          -ax {params.preset}       \
          {input.reference}         \
-         {input.fastqs} ; }}        2>> {log}   | 
-{{ samtools view -buSh -f 4 ; }}    2>> {log}   |
-{{ samtools fastq - ; }}            2>> {log}   |
-{{ gzip -c - > {output} ; }}        2>> {log}
+         {input.fastqs} ; }}                                2>> {log}   | 
+{{ samtools view -buSh -f 4 ; }}                            2>> {log}   |
+{{ samtools fastq - > {output.unpaired} ; }}                2>> {log}
+```
+
+**fastq_pair**
+
+```
+fastq_pair {input.unpaired} 2>> {log}      
+```
+
+**compress_paired**
+
+```
+{{ pigz -p {threads} -f -c {input} > {output} ; }} &> {log}
 ```
 
 ## assembly.smk
@@ -65,6 +76,16 @@ megahit -1 {params.fastq1} -2 {params.fastq2}         \
         --k-list {params.k_list} &> {log}
 
 {params.cleanup}
+```
+
+**rename_contigs**
+
+Rename contigs for downstream analysis.
+
+This is mainly used so contigs and mapping files are compatible with Anvi'o.
+
+```
+awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}
 ```
 
 **assembly_report**
@@ -197,8 +218,14 @@ vamb --outdir {params.outdir}           \
      --minfasta {params.minfasta} &> {log}
 
 {{ awk -v OFS='\t' '{{ print $2, $1 }}' {output.clusters} |  \
-sed "s/$(echo '\t')/$(echo '\t')vamb./g" >          \
-{output.scaffolds2bin} ; }} >> {log} 2>&1
+sed "s/$(echo '\t')/$(echo '\t')vamb./g" >                   \
+{params.scaffolds2bin_unfiltered} ; }} >> {log} 2>&1
+
+{{ grep -E "$(ls {params.outdir}/bins/*.fna | cut -f 6 -d / |   \
+cut -f 1 -d . | xargs | sed 's/ /$|/g')$"                       \
+{params.scaffolds2bin_unfiltered} > {output.scaffolds2bin} ; }} >> {log} 2>&1
+
+rm {params.scaffolds2bin_unfiltered}
 ```
 
 **metabat2**
@@ -223,6 +250,8 @@ sed "s/$(echo '\t')/$(echo '\t')metabat2./g" {params.outfile} > {output.scaffold
  
 rm -rf {output.outdir}
 mkdir {output.outdir} 
+
+{params.open_mp}
 
 {{ cut_up_fasta.py {input.catalogue}                        \
                    -c {params.contig_size}                  \
@@ -258,14 +287,14 @@ Refine bins assembled with one or more binners.
 
 ```
 DAS_Tool -i {params.fmt_scaffolds2bin}                      \
-         -l {params.binners}                                \
          -c {input.contigs}                                 \
          -o {params.outpreffix}                             \
+         -l {params.binners}                                \
          -p {input.proteins}                                \
          --score_threshold {params.score_threshold}         \
          --search_engine diamond                            \
          --write_bins                                       \
-         --write_bins_eval                                  \
+         --write_bin_evals                                  \
          {params.extra}                                     \
          --threads {threads} &> {log}
 ```
