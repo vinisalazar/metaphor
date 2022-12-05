@@ -37,7 +37,7 @@ rule megahit:
         fastq2=lambda w: get_fastq_groups(w, "R2"),
     output:
         contigs=temp(get_contigs_input(renamed=False))
-        if config["megahit"]["rename_contigs"]
+        if is_activated("rename_contigs")
         else get_contigs_input(renamed=False),
     params:
         # Turn 'remove_intermediates' on/off in config['megahit']
@@ -96,7 +96,7 @@ rule rename_contigs:
     conda:
         "../envs/utils.yaml"
     shell:
-        config["megahit"]["rename_contigs_awk_command"]
+        config["rename_contigs"]["awk_command"]
 
 
 rule assembly_report:

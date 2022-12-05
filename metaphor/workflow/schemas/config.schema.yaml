@@ -120,8 +120,17 @@ properties:
       - preset
       - cleanup
       - min_contig_len
-      - rename_contigs
-      - rename_contigs_awk_command
+
+  rename_contigs:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      awk_command:
+        type: string
+    required:
+      - activate
+      - awk_command
 
   metaquast:
     type: object
@@ -345,7 +354,7 @@ required:
   - fastqc
   - multiqc
   - megahit
-  - rename_contigs_awk_command
+  - rename_contigs
   - metaquast
   - prodigal
   - prokka

@@ -365,7 +365,7 @@ def get_contigs_input(expand_=False, renamed=None):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
 
     if renamed is None:
-        renamed = config["megahit"]["rename_contigs"]
+        renamed = is_activated("rename_contigs")
 
     if expand_:
         contigs = expand(
