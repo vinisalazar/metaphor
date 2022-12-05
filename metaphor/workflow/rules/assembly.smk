@@ -113,6 +113,8 @@ rule assembly_report:
                 input.contigs,
             ]
         ),
+        white_background=not config["transparent_background"],
+        dpi=config["dpi"],
     output:
         report(get_assembly_report("avg_length"), category="Assembly"),
         report(get_assembly_report("max_length"), category="Assembly"),

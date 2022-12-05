@@ -7,6 +7,10 @@ from subprocess import Popen, PIPE
 import pandas as pd
 from matplotlib import pyplot as plt
 
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+})
 
 def run_seqstats(fasta):
     """
@@ -47,8 +51,8 @@ def metrics_to_df(fastas, outfile=None):
     df.index = samples
     df.index.name = "Samples"
     rename_dict = {
-        "Total n": "# contigs",
-        "Total seq": "# bp",
+        "Total n": "No. contigs",
+        "Total seq": "No. bp",
         "Avg. seq": "Avg. length",
         "Median seq": "Median length",
         "N 50": "N50",
@@ -65,38 +69,42 @@ def metrics_to_df(fastas, outfile=None):
     return df
 
 
-def plot_column(df, column, outfile):
+def plot_column(df, column, outfile, transparent=True, dpi=600):
     # Calculate figsize based on number of samples
     dimensions = round(len(df) / 2)
     fig, ax = plt.subplots(figsize=(dimensions, dimensions))
-    df[column].plot(kind="barh", ax=ax)
+    df[column].plot(kind="barh", ax=ax, color="#277CAB")
     ax.set_xlabel(column)
     ax.set_ylabel("")
     plt.ticklabel_format(axis="x", style="sci", scilimits=(0, 4))
     for i in ax.containers:
         ax.bar_label(i, label_type="center", fontsize=4, color="white")
-    fig.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+    fig.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
 
 
-def plot_columns(df, assembly_report):
+def plot_columns(df, assembly_report, **kw):
     outdir = Path(assembly_report).parent
     for column in df.columns:
         outfile = Path(outdir).joinpath(
-            column.replace(" ", "_").replace(".", "").replace("#", "n").lower() + ".png"
+            column.replace(" ", "_").replace(".", "").replace("\#", "n").lower() + ".png"
         )
-        plot_column(df, column, outfile)
+        plot_column(df, column, outfile, **kw)
         logging.info(f"Generated plot: '{outfile}'.")
 
 
 def main(args):
     df = metrics_to_df(args.fastas, args.assembly_report)
-    plot_columns(df, args.assembly_report)
+    transparent = not getattr(args, "white_background", False)
+    dpi = getattr(args, "dpi", 600)
+    plot_columns(df, args.assembly_report, transparent=transparent, dpi=dpi)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fastas", nargs="+")
     parser.add_argument("--assembly-report")
+    parser.add_argument("--dpi", type=int, default=600)
+    parser.add_argument("--white-background", action="store_true", default=False)
     args = parser.parse_args()
     return args
 

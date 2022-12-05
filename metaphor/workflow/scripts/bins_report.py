@@ -67,8 +67,8 @@ def bin_quality(
         s=20,
     )
     # sns.scatterplot(
-    #     x="Completeness (%)",
-    #     y="Redundancy (%)",
+    #     x="Completeness (\\%)",
+    #     y="Redundancy (\\%)",
     #     data=plot_df[plot_df[qc_pass] == "Fail"],
     #     # hue="Binning software",
     #     style=qc_pass,
@@ -83,7 +83,7 @@ def bin_quality(
 
     _ = ax.set_ylim(-5, 105)
     _ = ax.set_xlim(-5, 105)
-    _ = ax.set_ylabel("Redundancy (%)", labelpad=25, rotation=0)
+    _ = ax.set_ylabel("Redundancy (%)", labelpad=0, rotation=90)
     _ = ax.set_title(f"Bin quality scatterplot: {binning_group}")
 
     if save:
@@ -98,17 +98,17 @@ def bin_quality(
 def bin_scores(
     df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
 ):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 8))
     hp = sns.histplot(
         x=rename_dict["bin_score"],
         data=df,
         hue="Binning software",
         hue_order=df["Binning software"].value_counts().sort_index().index.to_list(),
         multiple="stack",
-        bins=np.linspace(-1, 1, 41),
+        bins=np.linspace(-0.5, 1, 31),
     )
-    _ = ax.set_xlim(-1, 1)
-    _ = ax.set_ylabel("Count", labelpad=25, rotation=0)
+    _ = ax.set_xlim(-0.5, 1)
+    _ = ax.set_ylabel("Number of bins", labelpad=0, rotation=90)
 
     if score_threshold:
         plt.axvline(
@@ -193,7 +193,7 @@ def bin_sizes(
 
     # Axes formatting
     _ = ax.set_title(f"Size of bins: {binning_group}")
-    _ = ax.set_ylabel("# basepairs", rotation=0, labelpad=40)
+    _ = ax.set_ylabel("No. basepairs", rotation=90, labelpad=0)
     _ = ax.set_yscale("log")
 
     for patch in bp.patches:

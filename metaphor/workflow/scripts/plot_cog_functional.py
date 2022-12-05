@@ -36,11 +36,12 @@ def create_heatmap(args):
     # Sort rows by abundance
     reidx = dataframe.mean(axis=1).sort_values(ascending=False).index
     dataframe = dataframe.reindex(reidx)
-    fig, ax = plt.subplots(figsize=(3 + len(dataframe.columns), 6))
-    _ = sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax)
+    fig, ax = plt.subplots(figsize=(1 + int(len(dataframe.columns) * 0.5), 6))
+    _ = sns.heatmap(dataframe, cmap="viridis", vmax=vmax, vmin=vmin, ax=ax, )
     # _ = ax.set_ylabel("COG categories", labelpad=25, rotation=0)
     outfile = args.categories_plot
-    plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+    transparent = not getattr(args, "white_background", False)
+    plt.savefig(outfile, dpi=args.dpi, bbox_inches="tight", transparent=transparent)
     logging.info(f"Generated plot: '{outfile}'.")
 
 
@@ -54,6 +55,8 @@ def parse_args():
     parser.add_argument("--categories-plot")
     parser.add_argument("--filter-categories", action="store_true")
     parser.add_argument("--categories-cutoff", type=float)
+    parser.add_argument("--white-background", action="store_true", default=False)
+    parser.add_argument("--dpi", type=int, default=600)
     args = parser.parse_args()
     return args
 
