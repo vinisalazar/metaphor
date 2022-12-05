@@ -46,8 +46,11 @@ These settings are valid for all steps in the workflow.
 &nbsp;&nbsp;&nbsp;**`preset:`** `"meta-large"`    
 &nbsp;&nbsp;&nbsp;**`cleanup:`** `True`    
 &nbsp;&nbsp;&nbsp;**`min_contig_len:`** `1000`    
-&nbsp;&nbsp;&nbsp;**`rename_contigs:`** `True`    
-&nbsp;&nbsp;&nbsp;**`rename_contigs_awk_command:`** `awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}`   This is to prevent errors with the Snakemake --lint command. Don't change it unless you know what you're doing.  
+
+
+**`rename_contigs:`**    
+&nbsp;&nbsp;&nbsp;**`activate:`** `True`   Whether to rename contigs so contigs and mapping files (.bam) can be imported into Anvi'o. We suggest you keep this on.  
+&nbsp;&nbsp;&nbsp;**`awk_command:`** `awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}`   This is to prevent errors with the Snakemake --lint command. Don't change it unless you know what you're doing.  
 
 
 **`metaquast:`**    
