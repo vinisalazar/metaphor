@@ -259,11 +259,7 @@ The workflow is structured in accordance with the
 [Snakemake recommended best practices](https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html).
 
 Metaphor's Snakefile is very simple. Basically, it imports all of the Metaphor rules (defined in separate `.smk`
-files for each module) and requires a single `rule all` which will require the final output to be produced. More on that
-later.
-
-All of Metaphor's
-
+files for each module) and requires a single `rule all` which will require the final output to be produced. 
 
 <!--
 - How Snakemake works
