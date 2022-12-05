@@ -29,6 +29,11 @@ cores_per_small_task: 0.25    # Percentage of workflow cores to use per small ta
 max_mb: 65536         # Max MB memory to be used.
 local_execution: True  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
 
+# Plotting
+transparent_background: True  # Whether to draw figures with a transparent background
+dpi: 600  # Dots per inch (quality of figures). 600 is publication-level quality.
+output_format: "png"  # Output format of plots. Values are the ones supported by plt.savefig().
+
 # Modules in this string will undergo cleanup process
 # See the 'cleanup_modules' function in the common.smk module for clarification
 cleanup_modules:
@@ -39,13 +44,11 @@ cleanup_modules:
 # QC
 ###############################################################
 
-cutadapt:
+fastp:
   activate: True
-  phred: 33
-  minimum_length: 50
-  quality_cutoff: 30
-  clip_r5: 10
-  clip_r3: 5
+  length_required: 50
+  cut_mean_quality: 30
+  extra: "--detect_adapter_for_pe"
 
 merge_reads:
   activate: True
@@ -69,6 +72,10 @@ megahit:
   preset: "meta-large"
   cleanup: True
   min_contig_len: 1000
+
+rename_contigs:
+  activate: True  # Whether to rename contigs so contigs and mapping files (.bam) can be imported into Anvi'o. We suggest you keep this on.
+  awk_command: awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}  # This is to prevent errors with the Snakemake --lint command. Don't change it unless you know what you're doing.
 
 metaquast:
   activate: False

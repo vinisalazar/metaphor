@@ -376,6 +376,8 @@ rule plot_cog_functional:
     params:
         filter_categories=config["plot_cog_functional"]["filter_categories"],
         categories_cutoff=config["plot_cog_functional"]["categories_cutoff"],
+        white_background=not config["transparent_background"],
+        dpi=config["dpi"],
     wildcard_constraints:
         group="|".join(binning_group_names),
     log:
@@ -399,6 +401,9 @@ rule plot_cog_taxonomy:
     params:
         tax_cutoff=config["plot_taxonomies"]["tax_cutoff"],
         colormap=config["plot_taxonomies"]["colormap"],
+        white_background=not config["transparent_background"],
+        dpi=config["dpi"],
+        output_format=config["output_format"],
     log:
         "output/logs/annotation/plot_taxonomies_{rank}/{group}.log",
     benchmark:

@@ -121,7 +121,7 @@ def cleanup_modules():
     """
 
     modules = {
-        "qc": ["output/qc/cutadapt", "output/qc/filtered", "output/qc/merged"],
+        "qc": ["output/qc/fastp", "output/qc/filtered", "output/qc/merged"],
         "mapping": [
             "output/mapping/bam",
         ],
@@ -159,7 +159,7 @@ def get_wrapper(wrapper):
     Builds the string for the 'wrapper' directive
     based on 'wrapper_version' key in the config.
 
-    wrapper: a wrapper from the Snakemake-wrappers repository, e.g. 'cutadapt-pe'
+    wrapper: a wrapper from the Snakemake-wrappers repository, e.g. 'fastp-pe'
     """
     return str(Path(wrapper_version).joinpath(f"bio/{wrapper}"))
 
@@ -225,9 +225,9 @@ def is_paired_end(sample):
 
 
 def get_fastqs(wildcards):
-    if config["cutadapt"]["activate"]:
+    if config["fastp"]["activate"]:
         return expand(
-            "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz",
+            "output/qc/fastp/{sample}_{unit}_{read}.fq.gz",
             unit=samples.xs(wildcards.sample, level=1)["unit_name"],
             sample=wildcards.sample,
             read=wildcards.read,
@@ -237,21 +237,19 @@ def get_fastqs(wildcards):
     return samples.xs(wildcards.sample, level=1)[fq].tolist().squeeze()
 
 
-def get_cutadapt_pipe_input(wildcards):
-    files = list(
-        sorted(
-            glob(
-                samples.xs(wildcards.sample, level=1)
-                .xs(wildcards.unit, level=1)[wildcards.fq]
-                .squeeze()
-            )
-        )
+def get_fastp_pe_input(wildcards):
+    files = sorted(
+        samples.xs(wildcards.sample, level=1)
+        .xs(wildcards.unit, level=1)
+        .squeeze()[["R1", "R2"]]
+        .to_list()
     )
     assert len(files) > 0, "No files were found!"
     return files
 
 
-def get_cutadapt_input(wildcards):
+# This is deprecated for now
+def get_fastp_pipe_input(wildcards):
     unit = samples.xs(wildcards.sample, level=1).xs(wildcards.unit, level=1).squeeze()
 
     if unit["R1"].endswith("gz"):
@@ -261,13 +259,13 @@ def get_cutadapt_input(wildcards):
 
     if pd.isna(unit["R2"]):
         # single end local sample
-        return "pipe/qc/cutadapt/{sample}_{unit}.fq{ending}".format(
+        return "pipe/qc/fastp/{sample}_{unit}.fq{ending}".format(
             sample=unit.sample_name, unit=unit.unit_name, ending=ending
         )
     else:
         # paired end local sample
         return expand(
-            "pipe/qc/cutadapt/{sample}_{unit}_{{read}}.fq{ending}".format(
+            "pipe/qc/fastp/{sample}_{unit}_{{read}}.fq{ending}".format(
                 sample=unit.sample_name, unit=unit.unit_name, ending=ending
             ),
             read=["R1", "R2"],
@@ -285,7 +283,7 @@ def get_fastqc_input_raw(wildcards):
 
 def get_fastqc_input_trimmed(wildcards):
     sample, unit, read = wildcards.sample, wildcards.unit, wildcards.read
-    return "output/qc/cutadapt/{sample}_{unit}_{read}.fq.gz"
+    return "output/qc/fastp/{sample}_{unit}_{read}.fq.gz"
 
 
 def get_fastqc_input_merged(wildcards):
@@ -315,7 +313,7 @@ def get_fastq_groups(wildcards, sense, kind="filtered"):
         kind = "merged"
         add = "_"
     elif is_activated("trimming"):
-        kind = "cutadapt"
+        kind = "fastp"
         add = getattr(wildcards, "unit", "_")
 
     fastq_groups = sorted(
@@ -346,7 +344,9 @@ def get_multiqc_input():
         read=["R1", "R2"],
     )
 
-    return raw + trimmed + merged
+    # Rule 'fastqc_merged' is disabled for now, so
+    # that's excluded from the output.
+    return raw + trimmed
 
 
 def get_qc_output():
@@ -361,8 +361,11 @@ def get_qc_output():
 ###############################################################
 # Assembly
 ###############################################################
-def get_contigs_input(expand_=False):
+def get_contigs_input(expand_=False, renamed=None):
     """Returns coassembly contigs if coassembly is on, else return each sample contig individually"""
+
+    if renamed is None:
+        renamed = is_activated("rename_contigs")
 
     if expand_:
         contigs = expand(
@@ -371,6 +374,12 @@ def get_contigs_input(expand_=False):
         )
     else:
         contigs = "output/assembly/megahit/{group}/{group}.contigs.fa"
+    if renamed:
+        contigs = (
+            [i.replace("contigs", "contigs_renamed") for i in contigs]
+            if isinstance(contigs, list)
+            else contigs.replace("contigs", "contigs_renamed")
+        )
     return contigs
 
 
@@ -607,9 +616,9 @@ def get_annotation_output():
 ###############################################################
 def get_map_reads_input_R1(wildcards):
     if not is_activated("merge_reads"):
-        if config["cutadapt"]["activate"]:
+        if config["fastp"]["activate"]:
             return expand(
-                "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
+                "output/qc/fastp/{sample}_{unit}_R1.fq.gz",
                 unit=samples.xs(wildcards.sample, level=1)["unit_name"].squeeze(),
                 sample=wildcards.sample,
             )
@@ -621,16 +630,19 @@ def get_map_reads_input_R1(wildcards):
         sample_units = samples.xs(wildcards.sample, level=1).squeeze()
         return sample_units["R1"]
     if is_paired_end(wildcards.sample):
-        return "output/qc/merged/{sample}_R1.fq.gz"
+        if is_activated("host_removal"):
+            return "output/qc/filtered/{sample}_filtered_R1.fq.gz"
+        else:
+            return "output/qc/merged/{sample}_R1.fq.gz"
     return "output/qc/merged/{sample}_single.fq.gz"
 
 
 def get_map_reads_input_R2(wildcards):
     if is_paired_end(wildcards.sample):
         if not is_activated("merge_reads"):
-            if config["cutadapt"]["activate"]:
+            if config["fastp"]["activate"]:
                 return expand(
-                    "output/qc/cutadapt/{sample}_{unit}_R1.fq.gz",
+                    "output/qc/fastp/{sample}_{unit}_R1.fq.gz",
                     unit=samples.xs(wildcards.sample, level=1)["unit_name"].squeeze(),
                     sample=wildcards.sample,
                 )
@@ -641,7 +653,10 @@ def get_map_reads_input_R2(wildcards):
                 return expand("sra/{accession}_R2.fq", accession=accession)
             sample_units = samples.xs(wildcards.sample, level=1).squeeze()
             return sample_units["R2"]
-        return ("output/qc/merged/{sample}_R2.fq.gz",)
+        if is_activated("host_removal"):
+            return ("output/qc/filtered/{sample}_filtered_R2.fq.gz",)
+        else:
+            return ("output/qc/merged/{sample}_R2.fq.gz",)
     return ""
 
 

@@ -197,36 +197,41 @@ leave the `coassembly` setting off in the config.
 All of these differences can be confusing. Let's summarise how to put each of them in practice, in terms of how
 to set up the Metaphor config:
 
-**Individual assembly, individual binning**  
+**Individual assembly, individual binning (sasb)**  
 You want to assemble and bin each sample individually:
 * `coassembly: False`
 * `cobinning: False`
 * Leave `group` column blank.
 
-**Individual assembly, cobinning (one group)**  
+**Individual assembly, cobinning (one group) (sacb)**  
 You want to assemble each sample individually and bin all of them together into a single group:
 * `coassembly: False`
 * `cobinning: True` (default setting)
 * `group` column doesn't matter.
 
-**Individidual assembly, bin by groups**  
+**Individidual assembly, bin by groups (sagb)**  
 You want to assemble each sample individually and bin them by groups:
 * `coassembly: False`
 * `cobinning: False`
 * `group` column with desired binning groups.
 
-**Coassembly, bin by groups**  
+**Coassembly, bin by groups (gagb)**  
 You want to assemble the samples by groups, and also bin them as so:
 * `coassembly: True`
 * `cobinning: False`
 * `group` column with desired assembly groups, that will be also used for binning.
 
-**Coassembly, cobinning**  
+**Coassembly, cobinning (gacb)**  
 You want to assemble the samples by groups, but bin them into a single group:
 * `coassebly: True`
 * `cobinning: True`
 * `group` column with desired assembly groups, that will NOT be used for binning (rather a single binning group will
 be used).
+
+**Coassembly, cobinning, one group for both (cacb)**
+* `coassembly: True`
+* `cobinning: True`
+* `group` column blank.
 
 ## Package structure
 
@@ -259,11 +264,7 @@ The workflow is structured in accordance with the
 [Snakemake recommended best practices](https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html).
 
 Metaphor's Snakefile is very simple. Basically, it imports all of the Metaphor rules (defined in separate `.smk`
-files for each module) and requires a single `rule all` which will require the final output to be produced. More on that
-later.
-
-All of Metaphor's
-
+files for each module) and requires a single `rule all` which will require the final output to be produced. 
 
 <!--
 - How Snakemake works

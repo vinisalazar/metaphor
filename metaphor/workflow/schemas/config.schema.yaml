@@ -26,6 +26,11 @@ properties:
   local_execution:
     type: boolean
 
+  transparent_background:
+    type: boolean
+  dpi:
+    type: integer
+
   cleanup_modules:
     type: object
     properties:
@@ -41,28 +46,22 @@ properties:
 # QC
 ###############################################################
 
-  cutadapt:
+  fastp:
     type: object
     properties:
       activate:
         type: boolean
-      phred:
+      length_required:
         type: integer
-      minimum_length:
+      cut_mean_quality:
         type: integer
-      quality_cutoff:
-        type: integer
-      clip_r5:
-        type: integer
-      clip_r3:
-        type: integer
+      extra:
+        type: string
     required:
       - activate
-      - phred
-      - minimum_length
-      - quality_cutoff
-      - clip_r5
-      - clip_r3
+      - length_required
+      - cut_mean_quality
+      - extra
 
   merge_reads:
     type: object
@@ -115,10 +114,23 @@ properties:
         type: boolean
       min_contig_len:
         type: integer
+      rename_contigs:
+        type: boolean
     required:
       - preset
       - cleanup
       - min_contig_len
+
+  rename_contigs:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      awk_command:
+        type: string
+    required:
+      - activate
+      - awk_command
 
   metaquast:
     type: object
@@ -332,13 +344,17 @@ required:
   - coassembly
   - max_mb
   - local_execution
+  - transparent_background
+  - dpi
+  - output_format
   - cleanup_modules
-  - cutadapt
+  - fastp
   - merge_reads
   - host_removal
   - fastqc
   - multiqc
   - megahit
+  - rename_contigs
   - metaquast
   - prodigal
   - prokka

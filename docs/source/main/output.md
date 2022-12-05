@@ -39,7 +39,7 @@ And so on.
 
 The QC module contains four directories and the `multiqc.html` report:
 
-* `cutadapt`: output of the cutadapt rule, which removes the adapters and performs quality cutadapt on the raw
+* `fastp`: output of the fastp rule, which removes the adapters and performs quality fastp on the raw
 reads.
 * `fastqc`: output of the FastQC rule. Has subdirectories for raw, trimmed, and merged reads.
 * `merged`: merged reads after QC.

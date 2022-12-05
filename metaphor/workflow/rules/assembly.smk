@@ -36,7 +36,9 @@ rule megahit:
         fastq1=lambda w: get_fastq_groups(w, "R1"),
         fastq2=lambda w: get_fastq_groups(w, "R2"),
     output:
-        contigs=get_contigs_input(),
+        contigs=temp(get_contigs_input(renamed=False))
+        if is_activated("rename_contigs")
+        else get_contigs_input(renamed=False),
     params:
         # Turn 'remove_intermediates' on/off in config['megahit']
         fastq1=lambda w, input: ",".join(input.fastq1),
@@ -77,6 +79,26 @@ rule megahit:
         """
 
 
+rule rename_contigs:
+    """
+    Rename contigs for downstream analysis.
+
+    This is mainly used so contigs and mapping files are compatible with Anvi'o.
+    """
+    input:
+        get_contigs_input(renamed=False),
+    output:
+        get_contigs_input(),
+    log:
+        "output/logs/assembly/rename_contigs_{group}.log",
+    benchmark:
+        "output/logs/assembly/rename_contigs_{group}.txt"
+    conda:
+        "../envs/utils.yaml"
+    shell:
+        config["rename_contigs"]["awk_command"]
+
+
 rule assembly_report:
     """
     Get metrics for each assembly.
@@ -91,6 +113,8 @@ rule assembly_report:
                 input.contigs,
             ]
         ),
+        white_background=not config["transparent_background"],
+        dpi=config["dpi"],
     output:
         report(get_assembly_report("avg_length"), category="Assembly"),
         report(get_assembly_report("max_length"), category="Assembly"),

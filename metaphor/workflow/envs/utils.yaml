@@ -5,6 +5,7 @@ channels:
 dependencies:
   - bash>=4
   - biopython
+  - gawk
   - pandas
   - perl
   - pigz

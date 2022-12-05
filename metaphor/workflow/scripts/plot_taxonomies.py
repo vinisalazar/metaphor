@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 import argparse
-from audioop import avg
 import logging
-from pathlib import Path
 from textwrap import wrap
 
 import pandas as pd
-import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
@@ -16,7 +13,6 @@ from matplotlib.patches import Rectangle
 
 # String used to describe the low abundance taxa that are filtered/bundled together.
 filtered_label = "Undetermined/Low abundance"
-plt.style.use("seaborn")
 
 
 def calculate_legend_width(index):
@@ -46,7 +42,7 @@ def format_index(index, abbreviate_genus=True):
 
 
 def create_tax_barplot(
-    dataframe, tax_cutoff, colormap, save=True, outfile=None, abbreviate_genus=True
+    dataframe, tax_cutoff, colormap, save=True, outfile=None, abbreviate_genus=True, transparent=True, dpi=600, output_format="png"
 ):
     figsize = (10, len(dataframe.columns))
     if dataframe.index.name == "species":
@@ -101,8 +97,8 @@ def create_tax_barplot(
     axs[1].axis("off")
     if save:
         if not outfile:
-            outfile = f"output/annotation/cog/plots/COG_{rank}_relative.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+            outfile = f"output/annotation/cog/plots/COG_{rank}_relative.{output_format}"
+        plt.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
         logging.info(f"Generated plot: '{outfile}'.")
 
 
@@ -128,12 +124,19 @@ def process_rank_file(args):
 
 def main(args):
     rank_df = process_rank_file(args)
+    transparent = not getattr(args, "white_background", False)
+    save = not getattr(args, "skip_save", False)
+    dpi = getattr(args, "dpi", 600)
+    output_format = getattr(args, "output_format", "png")
     create_tax_barplot(
         rank_df,
         args.tax_cutoff,
         args.colormap,
-        save=True,
+        save=save,
         outfile=args.taxonomy_barplot,
+        transparent=transparent,
+        dpi=dpi,
+        output_format=output_format
     )
 
 
@@ -144,6 +147,9 @@ def parse_args():
     parser.add_argument("--taxonomy-barplot")
     parser.add_argument("--rank")
     parser.add_argument("--colormap", default="tab20c")
+    parser.add_argument("--white-background", action="store_true", default=False)
+    parser.add_argument("--output-format", type=str, default="png")
+    parser.add_argument("--dpi", type=int, default=600)
     args = parser.parse_args()
     return args
 

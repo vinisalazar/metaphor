@@ -43,7 +43,7 @@ def create_df(file, score_threshold):
 
 
 def bin_quality(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
+    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -67,8 +67,8 @@ def bin_quality(
         s=20,
     )
     # sns.scatterplot(
-    #     x="Completeness (%)",
-    #     y="Redundancy (%)",
+    #     x="Completeness (\\%)",
+    #     y="Redundancy (\\%)",
     #     data=plot_df[plot_df[qc_pass] == "Fail"],
     #     # hue="Binning software",
     #     style=qc_pass,
@@ -83,32 +83,32 @@ def bin_quality(
 
     _ = ax.set_ylim(-5, 105)
     _ = ax.set_xlim(-5, 105)
-    _ = ax.set_ylabel("Redundancy (%)", labelpad=25, rotation=0)
+    _ = ax.set_ylabel("Redundancy (%)", labelpad=0, rotation=90)
     _ = ax.set_title(f"Bin quality scatterplot: {binning_group}")
 
     if save:
         func_name = currentframe().f_code.co_name
-        outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+        outfile = f"output/binning/plots/{binning_group}/{func_name}.{output_format}"
+        plt.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
 
 
 def bin_scores(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
+    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
 ):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 8))
     hp = sns.histplot(
         x=rename_dict["bin_score"],
         data=df,
         hue="Binning software",
         hue_order=df["Binning software"].value_counts().sort_index().index.to_list(),
         multiple="stack",
-        bins=np.linspace(-1, 1, 21),
+        bins=np.linspace(-0.5, 1, 31),
     )
-    _ = ax.set_xlim(-1, 1)
-    _ = ax.set_ylabel("Count", labelpad=25, rotation=0)
+    _ = ax.set_xlim(-0.5, 1)
+    _ = ax.set_ylabel("Number of bins", labelpad=0, rotation=90)
 
     if score_threshold:
         plt.axvline(
@@ -124,15 +124,15 @@ def bin_scores(
 
     if save:
         func_name = currentframe().f_code.co_name
-        outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+        outfile = f"output/binning/plots/{binning_group}/{func_name}.{output_format}"
+        plt.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
 
 
 def bin_quantity(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
+    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
     plot_data = pd.crosstab(df["Binning software"], df[qc_pass])
@@ -160,15 +160,15 @@ def bin_quantity(
 
     if save:
         func_name = currentframe().f_code.co_name
-        outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+        outfile = f"output/binning/plots/{binning_group}/{func_name}.{output_format}"
+        plt.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
 
 
 def bin_sizes(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
+    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
     bp = sns.boxplot(
@@ -179,11 +179,21 @@ def bin_sizes(
         ax=ax,
         showfliers=False,
     )
-    sp = sns.stripplot(x=rename_dict["bin_set"], y=rename_dict["size"], data=df, ax=ax)
+    sp = sns.stripplot(
+        x=rename_dict["bin_set"],
+        y=rename_dict["size"],
+        order=df["Binning software"].value_counts().sort_index().index.to_list(),
+        data=df,
+        ax=ax,
+        jitter=True,
+        edgecolor="k",
+        linewidth=0.5,
+        alpha=0.5,
+    )
 
     # Axes formatting
     _ = ax.set_title(f"Size of bins: {binning_group}")
-    _ = ax.set_ylabel("# nucleotides", rotation=0, labelpad=40)
+    _ = ax.set_ylabel("No. basepairs", rotation=90, labelpad=0)
     _ = ax.set_yscale("log")
 
     for patch in bp.patches:
@@ -192,15 +202,15 @@ def bin_sizes(
 
     if save:
         func_name = currentframe().f_code.co_name
-        outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+        outfile = f"output/binning/plots/{binning_group}/{func_name}.{output_format}"
+        plt.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
 
 
 def bin_N50(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True
+    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
     bp = sns.boxplot(
@@ -217,6 +227,10 @@ def bin_N50(
         order=df["Binning software"].value_counts().sort_index().index.to_list(),
         data=df,
         ax=ax,
+        jitter=True,
+        edgecolor="k",
+        linewidth=0.5,
+        alpha=0.5,
     )
     _ = ax.set_title(f"N50: {binning_group}")
     _ = ax.set_ylabel("")
@@ -227,8 +241,8 @@ def bin_N50(
 
     if save:
         func_name = currentframe().f_code.co_name
-        outfile = f"output/binning/plots/{binning_group}/{func_name}.png"
-        plt.savefig(outfile, dpi=600, bbox_inches="tight", transparent=True)
+        outfile = f"output/binning/plots/{binning_group}/{func_name}.{output_format}"
+        plt.savefig(outfile, dpi=dpi, bbox_inches="tight", transparent=transparent)
         logging.info(f"Generated plot: '{outfile}'.")
 
     return ax
@@ -238,13 +252,16 @@ def main(args):
     bins_eval = args.bins_eval
     score_threshold = args.score_threshold
     binning_group = args.binning_group
+    transparent = not getattr(args, "white_background", False)
     save = not getattr(args, "skip_save", False)
+    dpi = getattr(args, "dpi", 600)
+    output_format = getattr(args, "output_format", "png")
     df, rename_dict, qc_pass, domain = create_df(bins_eval, score_threshold)
-    bin_quality(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
-    bin_scores(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
-    bin_quantity(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
-    bin_sizes(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
-    bin_N50(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save)
+    bin_quality(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
+    bin_scores(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
+    bin_quantity(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
+    bin_sizes(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
+    bin_N50(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
     print()
 
 
@@ -254,6 +271,9 @@ def parse_args():
     parser.add_argument("--bins-eval", type=str)
     parser.add_argument("--binning-group", type=str)
     parser.add_argument("--skip-save", action="store_true", default=False)
+    parser.add_argument("--white-background", action="store_true", default=False)
+    parser.add_argument("--output-format", type=str, default="png")
+    parser.add_argument("--dpi", type=int, default=600)
     args = parser.parse_args()
     return args
 

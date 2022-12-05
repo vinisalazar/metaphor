@@ -9,7 +9,7 @@ and Edoardo Tescari at Melbourne Data Analytics Platform ([MDAP](https://mdap.un
 University of Melbourne.
 [Link to MetaGenePipe.](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/)
 
-The parts of Metaphor that are heavily based on MetaGenePipe are the QC module (with cutadapt), followed by
+The parts of Metaphor that are heavily based on MetaGenePipe are the QC module (with fastp), followed by
 the assembly with MegaHIT, gene prediction with Prodigal and annotation with Diamond. All other modules of Metaphor,
 e.g. the binning module, custom scripts (including plots), input validation, utility functions, CLI interface [...]
 are original from Metaphor.
