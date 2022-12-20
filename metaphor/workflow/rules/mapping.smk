@@ -18,7 +18,7 @@ from pathlib import Path
 
 rule concatenate_contigs:
     input:
-        contigs=get_contigs_input(expand_=True),
+        contigs=get_contigs_input(expand_=True if config["cobinning"] else False),
     output:
         catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
     params:
