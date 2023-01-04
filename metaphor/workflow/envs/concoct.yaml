@@ -1,8 +1,12 @@
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
 dependencies:
   - concoct=1.1.0
+  - libopenblas=*=openmp*
+  - mkl
   - python>=3
   - samtools>=1.9
-  - mkl
+  - scikit-learn=1.1.*
+variables:
+  USE_OPENMP: 1
