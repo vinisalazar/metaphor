@@ -26,9 +26,7 @@ rule concatenate_contigs:
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
-        group="cobinning"
-        if config["cobinning"]
-        else "|".join(binning_group_names),
+        group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
     log:
         "output/logs/mapping/concatenate_contigs/{group}.log",
     benchmark:
