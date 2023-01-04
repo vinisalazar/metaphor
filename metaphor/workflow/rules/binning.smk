@@ -132,7 +132,6 @@ rule concoct:
         clustering_merged=lambda w, output: str(
             Path(output.outdir).joinpath("clustering_merged.csv")
         ),
-        open_mp="export OPEN_MP=True" if not config["local_execution"] else "",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,
@@ -145,9 +144,7 @@ rule concoct:
     shell:
         """ 
         rm -rf {output.outdir}
-        mkdir {output.outdir} 
-
-        {params.open_mp}
+        mkdir {output.outdir}
 
         {{ cut_up_fasta.py {input.catalogue}                        \
                            -c {params.contig_size}                  \

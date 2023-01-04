@@ -18,21 +18,19 @@ from pathlib import Path
 
 rule concatenate_contigs:
     input:
-        contigs=get_contigs_input(expand_=True),
+        contigs=get_contigs_input(expand_=True if config["cobinning"] else False),
     output:
-        catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna.gz",
+        catalogue="output/mapping/{group}/{group}_contigs_catalogue.fna.gz",
     params:
         sequence_length_cutoff=config["megahit"]["min_contig_len"],
     resources:
         mem_mb=get_max_mb(),
     wildcard_constraints:
-        binning_group="cobinning"
-        if config["cobinning"]
-        else "|".join(binning_group_names),
+        group="cobinning" if config["cobinning"] else "|".join(binning_group_names),
     log:
-        "output/logs/mapping/concatenate_contigs/{binning_group}.log",
+        "output/logs/mapping/concatenate_contigs/{group}.log",
     benchmark:
-        "output/benchmarks/mapping/concatenate_contigs/{binning_group}.txt"
+        "output/benchmarks/mapping/concatenate_contigs/{group}.txt"
     conda:
         "../envs/vamb.yaml"
     shell:

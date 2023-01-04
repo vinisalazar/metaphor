@@ -7,10 +7,6 @@ from subprocess import Popen, PIPE
 import pandas as pd
 from matplotlib import pyplot as plt
 
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "sans-serif",
-})
 
 def run_seqstats(fasta):
     """

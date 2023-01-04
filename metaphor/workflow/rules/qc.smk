@@ -108,6 +108,10 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         html="output/qc/fastqc/{sample}-{unit}-{read}-raw.html",
     params:
         "--quiet",
+    wildcard_constraints:
+        sample="|".join(sample_IDs),
+        unit="|".join(unit_names),
+        read="single|R1|R2",
     log:
         "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
     benchmark:
@@ -125,6 +129,10 @@ rule fastqc_trimmed:  # qc on trimmed reads
         html="output/qc/fastqc/{sample}-{unit}-{read}-trimmed.html",
     params:
         "--quiet",
+    wildcard_constraints:
+        sample="|".join(sample_IDs),
+        unit="|".join(unit_names),
+        read="single|R1|R2",
     log:
         "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
     benchmark:
@@ -145,6 +153,9 @@ rule fastqc_merged:  # qc on trimmed, merged reads
         html="output/qc/fastqc/{sample}-{read}-merged.html",
     params:
         "--quiet",
+    wildcard_constraints:
+        sample="|".join(sample_IDs),
+        read="single|R1|R2",
     log:
         "output/logs/qc/fastqc_merged/{sample}-{read}.log",
     benchmark:
@@ -197,6 +208,9 @@ rule host_removal:
         unpaired=temp("output/qc/filtered/{sample}_unpaired_{read}.fq"),
     params:
         preset="sr",
+    wildcard_constraints:
+        sample="|".join(sample_IDs),
+        read="single|R1|R2",
     threads: get_threads_per_task_size("big")
     resources:
         mem_mb=get_mb_per_cores,

@@ -129,6 +129,26 @@ However, it may still be the case that we run into problems, and have to debug a
 
     Once the environment is active, you can run commands like `conda install` (or `mamba`), `conda list`, `DAS_Tool` and other programs will be on the `$PATH`, etc.
 
+### Environment errors when starting Metaphor
+
+Sometimes, depending on your conda configuration, you may get errors like this:
+
+```
+Downloading and installing remote packages.
+CreateCondaEnvironmentException:
+Could not create conda environment from /path/to/metaphor/metaphor/workflow/rules/../envs/concoct.yaml:
+Command:
+mamba env create --quiet --file "/path/to/metaphor/metaphor/config/conda/113f1c07c1e471e26f0161cfd3df2c4e_.yaml" --prefix "/path/to/metaphor/metaphor/config/conda/113f1c07c1e471e26f0161cfd3df2c4e_"
+Output:
+Could not solve for environment specs
+Encountered problems while solving:
+  - package concoct-1.1.0-py27h88e4a8a_0 requires python >=2.7,<2.8.0a0, but none of the providers can be installed
+
+The environment can't be solved, aborting the operation
+```
+
+This is likely due to strict channel priorities in conda. Please edit your conda configuration file (usually `~/.condarc`) and set channel priorities to flexible while running Metaphor.
+
 ## Adding additional flags to Snakemake
 
 Snakemake has [many different command line options.](https://snakemake.readthedocs.io/en/stable/executing/cli.html) It wouldn't be practical to add every single option to Metaphor, so, it's possible to pass any additional settings to Snakemake using the `-e` or `--extras` flag in the `metaphor execute` or `metaphor test` commands. For example, if I would like to pass the Snakemake `--rerun-incomplete` setting, I should run:
