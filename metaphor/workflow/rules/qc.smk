@@ -110,7 +110,7 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         "--quiet",
     wildcard_constraints:
         sample="|".join(sample_IDs),
-        unit="|".join(samples[samples['sample_name'] == '{sample}']['unit_name'].to_list()),
+        unit="|".join(unit_names),
         read="single|R1|R2",
     log:
         "output/logs/qc/fastqc_raw/{sample}-{unit}-{read}.log",
@@ -131,7 +131,7 @@ rule fastqc_trimmed:  # qc on trimmed reads
         "--quiet",
     wildcard_constraints:
         sample="|".join(sample_IDs),
-        unit="|".join(samples[samples['sample_name'] == '{sample}']['unit_name'].to_list()),
+        unit="|".join(unit_names),
         read="single|R1|R2",
     log:
         "output/logs/qc/fastqc_trimmed/{sample}-{unit}-{read}.log",
