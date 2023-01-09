@@ -34,12 +34,6 @@ transparent_background: True  # Whether to draw figures with a transparent backg
 dpi: 600  # Dots per inch (quality of figures). 600 is publication-level quality.
 output_format: "png"  # Output format of plots. Values are the ones supported by plt.savefig().
 
-# Modules in this string will undergo cleanup process
-# See the 'cleanup_modules' function in the common.smk module for clarification
-cleanup_modules:
-  activate: True
-  modules: "qc mapping"  # Module names to be cleaned up, space separated
-
 ###############################################################
 # QC
 ###############################################################
@@ -70,8 +64,8 @@ coassembly: False  # Whether to perform coassembly (also known as pooled assembl
 
 megahit:
   preset: "meta-large"
-  cleanup: True
   min_contig_len: 1000
+  remove_intermediate_contigs: True
 
 rename_contigs:
   activate: True  # Whether to rename contigs so contigs and mapping files (.bam) can be imported into Anvi'o. We suggest you keep this on.

@@ -99,43 +99,6 @@ def is_activated(config_object):
     return bool(c.get("activate", False))
 
 
-def cleanup_rule(config_object, path):
-    """
-    Checks if a config_object object has the `cleanup` property set as True.
-    If it does, deletes the selected `path`.
-
-    config_object: a key in the config YAML file.
-    path: the path to be deleted if cleanup is True.
-    """
-    if config[config_object].get("cleanup", False):
-        return f"rm -rf {Path(path)}"
-    else:
-        return ""
-
-
-def cleanup_modules():
-    """
-    Cleans up unnecessary files of the modules selected in config['cleanup_modules'] setting.
-
-    The `modules` dict points to the paths to be deleted.
-    """
-
-    modules = {
-        "qc": ["output/qc/fastp", "output/qc/filtered", "output/qc/merged"],
-        "mapping": [
-            "output/mapping/bam",
-        ],
-    }
-    paths_to_delete = [
-        v
-        for k, v in modules.items()
-        if k in config["cleanup_modules"]["modules"].split()
-    ]
-    paths_to_delete = [Path(p) for sublist in paths_to_delete for p in sublist]
-    paths_to_delete = [str(p) for p in paths_to_delete if p.exists()]
-    return paths_to_delete if is_activated("cleanup_modules") else ()
-
-
 def get_parent(path: str) -> str:
     """Returns parent of path in string form."""
     return str(Path(path).parent)
@@ -273,12 +236,9 @@ def get_fastp_pipe_input(wildcards):
 
 
 def get_fastqc_input_raw(wildcards):
-    unit = (
-        samples.xs(wildcards.sample, level=1)
-        .xs(wildcards.unit, level=1)[wildcards.read]
-        .squeeze()
-    )
-    return unit
+    sample, unit, read = wildcards.sample, wildcards.unit, wildcards.read
+    samples_ = samples.reset_index(drop=True).set_index(["sample_name", "unit_name"])
+    return samples_.loc[(sample, unit), read]
 
 
 def get_fastqc_input_trimmed(wildcards):
@@ -326,18 +286,16 @@ def get_fastq_groups(wildcards, sense, kind="filtered"):
 
 
 def get_multiqc_input():
-    raw = expand(
-        "output/qc/fastqc/{sample}-{unit}-{read}-raw_fastqc.zip",
-        sample=sample_IDs,
-        unit=unit_names,
-        read=["R1", "R2"],
-    )
-    trimmed = expand(
-        "output/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
-        sample=sample_IDs,
-        unit=unit_names,
-        read=["R1", "R2"],
-    )
+    outdir = Path("output/qc/fastqc/")
+    raw = [
+        outdir.joinpath(Path(file).stem + "-raw_fastqc.zip")
+        for file in samples[["R1", "R2"]].values.flat
+    ]
+    trimmed = [
+        outdir.joinpath(Path(file).stem + "-trimmed_fastqc.zip")
+        for file in samples[["R1", "R2"]].values.flat
+    ]
+
     merged = expand(
         "output/qc/fastqc/{sample}-{read}-merged_fastqc.zip",
         sample=sample_IDs,
@@ -442,10 +400,6 @@ def get_metaquast_output():
         return expand(
             "output/assembly/metaquast/{sample}/report.html", sample=sample_IDs
         )
-
-
-# def metaquast_cleanup(report):
-#     if config["metaquast"]["cleanup"]:
 
 
 def get_assembly_report(plot=None):
@@ -755,9 +709,6 @@ def get_postprocessing_output():
             "output/postprocessing/memory_barplot_sum.png",
             "output/postprocessing/memory_barplot_errorbar.png",
             "output/postprocessing/memory_barplot_errorbar.png",
-            "output/postprocessing/cleanup.txt"
-            if is_activated("cleanup_modules")
-            else (),
         )
     else:
         return ()
