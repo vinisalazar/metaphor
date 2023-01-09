@@ -65,17 +65,17 @@ fastq_pair {input.unpaired} 2>> {log}
 
 ```
 # MegaHit has no --force flag, so we must remove the created directory prior to running
-rm -rf {params.out_dir}/{params.sample}
+rm -rf {params.out_dir}/{wildcards.group}
 
-megahit -1 {params.fastq1} -2 {params.fastq2}         \
-        -o {params.out_dir}/{params.sample}         \
+megahit -1 {params.fastq1} -2 {params.fastq2}       \
+        -o {params.out_dir}/{wildcards.group}       \
         --presets {params.preset}                   \
-        --out-prefix {params.sample}                \
+        --out-prefix {wildcards.group}              \
         --min-contig-len {params.min_contig_len}    \
         -t {threads}                                \
         --k-list {params.k_list} &> {log}
 
-{params.cleanup}
+{params.remove_intermediate_contigs}
 ```
 
 **rename_contigs**
@@ -83,10 +83,6 @@ megahit -1 {params.fastq1} -2 {params.fastq2}         \
 Rename contigs for downstream analysis.
 
 This is mainly used so contigs and mapping files are compatible with Anvi'o.
-
-```
-awk '/^>/{{gsub(" |\\\\.|=", "_", $0); print $0; next}}{{print}}' {input} > {output}
-```
 
 **assembly_report**
 
@@ -249,9 +245,7 @@ sed "s/$(echo '\t')/$(echo '\t')metabat2./g" {params.outfile} > {output.scaffold
 ```
  
 rm -rf {output.outdir}
-mkdir {output.outdir} 
-
-{params.open_mp}
+mkdir {output.outdir}
 
 {{ cut_up_fasta.py {input.catalogue}                        \
                    -c {params.contig_size}                  \
