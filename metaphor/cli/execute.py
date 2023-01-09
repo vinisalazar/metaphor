@@ -124,5 +124,5 @@ def main(args):
         print(format_cmd)
         retcode = run_cmd(cmd)
         get_successful_completion(
-            retcode, f"Metaphor finished successf ully and generated the report above."
+            retcode, f"Metaphor finished successfully and generated the report above."
         )
