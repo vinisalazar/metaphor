@@ -64,6 +64,19 @@ def check_test_directory(directory):
     return directory
 
 
+test_files = {
+    "RL1_S001__insert_270_short_R1.fq.gz": "09a0e7403a9cea7c2d3c355db8c649cc",
+    "RL1_S001__insert_270_short_R2.fq.gz": "1c1178a5686422d9f5228bdc3a87f875",
+    "RL1_S002__insert_270_short_R1.fq.gz": "2ebfa1a25b3942bac2bda7f20dea97d7",
+    "RL1_S002__insert_270_short_R2.fq.gz": "6d1dfa872190e9bf3586328a81f307e3",
+    "RL2_S001__insert_270_short_R1.fq.gz": "9528b0e89ee769e236e720d2e8e71c33",
+    "RL2_S001__insert_270_short_R2.fq.gz": "66684a2b0b0a869a6016a8a615dd7932",
+    "RL2_S002__insert_270_short_R1.fq.gz": "0d85c5f8eb8fedc428e3804c3f8a0134",
+    "RL2_S002__insert_270_short_R2.fq.gz": "c46563a7b9d0e9be7cba475c5514f8b7",
+}
+download_url = "https://github.com/vinisalazar/mg-example-data/raw/main/data/"
+
+
 def download_data(directory, test_files, download_url):
     test_directory = check_test_directory(directory)
     downloaded, skipped = 0, 0
@@ -80,6 +93,7 @@ def download_data(directory, test_files, download_url):
         skipped += len(test_files)
     else:
         print("Starting data download.")
+        print(f"Downloading {len(test_files.keys())} files from '{download_url}'.")
         for filename in tqdm(test_files.keys()):
             url = download_url + Path(filename).name
             download_file(url, filename)
@@ -91,19 +105,6 @@ def download_data(directory, test_files, download_url):
             print(msg)
 
     return
-
-
-test_files = {
-    "RL1_S001__insert_270_short_R1.fq.gz": "09a0e7403a9cea7c2d3c355db8c649cc",
-    "RL1_S001__insert_270_short_R2.fq.gz": "1c1178a5686422d9f5228bdc3a87f875",
-    "RL1_S002__insert_270_short_R1.fq.gz": "2ebfa1a25b3942bac2bda7f20dea97d7",
-    "RL1_S002__insert_270_short_R2.fq.gz": "6d1dfa872190e9bf3586328a81f307e3",
-    "RL2_S001__insert_270_short_R1.fq.gz": "9528b0e89ee769e236e720d2e8e71c33",
-    "RL2_S001__insert_270_short_R2.fq.gz": "66684a2b0b0a869a6016a8a615dd7932",
-    "RL2_S002__insert_270_short_R1.fq.gz": "0d85c5f8eb8fedc428e3804c3f8a0134",
-    "RL2_S002__insert_270_short_R2.fq.gz": "c46563a7b9d0e9be7cba475c5514f8b7",
-}
-download_url = "https://github.com/vinisalazar/mg-example-data/raw/main/data/"
 
 
 def main(args):

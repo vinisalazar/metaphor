@@ -37,6 +37,7 @@ def main(args):
     extras = args.extras
     profile = args.profile
     skip_report = args.skip_report
+    unlock = args.unlock
 
     if not Path(config_file).exists():
         if not confirm:
@@ -99,6 +100,9 @@ def main(args):
 
     if profile:
         cmd += f" --profile {profile} "
+
+    if unlock:
+        cmd += f"  --unlock"
 
     cmd += f" {extras} "
 
