@@ -119,8 +119,8 @@ rule assembly_report:
         report(get_assembly_report("avg_length"), category="Assembly"),
         report(get_assembly_report("max_length"), category="Assembly"),
         report(get_assembly_report("median_length"), category="Assembly"),
-        report(get_assembly_report("n_bp"), category="Assembly"),
-        report(get_assembly_report("n_contigs"), category="Assembly"),
+        report(get_assembly_report("no_bp"), category="Assembly"),
+        report(get_assembly_report("no_contigs"), category="Assembly"),
         report(get_assembly_report("n50"), category="Assembly"),
         assembly_report=get_assembly_report(),
     log:

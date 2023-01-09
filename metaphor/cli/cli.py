@@ -253,7 +253,10 @@ def main():
     try:
         args.func(args)
     except AttributeError:
-        eval(args.subparser).print_help()  # get subparser from command and print help
+        try:
+            eval(args.subparser).print_help()  # get subparser from command and print help
+        except TypeError:  # if no subparser
+            parser.print_help()
 
 
 if __name__ == "__main__":
