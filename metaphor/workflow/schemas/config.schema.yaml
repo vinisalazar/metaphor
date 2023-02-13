@@ -330,7 +330,7 @@ required:
   - data_dir
   - coassembly
   - max_mb
-  - local_execution
+  - scheduler
   - transparent_background
   - dpi
   - output_format
