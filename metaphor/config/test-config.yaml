@@ -22,8 +22,8 @@ cores_per_medium_task: 0.5    # Total of workflow cores to use per medium task
 cores_per_small_task: 0.25    # Total of workflow cores to use per small task
 
 # Memory settings
-max_mb: 8192          # Max MB memory to be used.
-local_execution: True  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
+max_mb: 8196          # Max MB memory to be used.
+scheduler: False  # Set this to False when running on a cluster. It makes better usage of memory settings on each node.
 
 # Plotting
 transparent_background: True  # Whether to draw figures with a transparent background

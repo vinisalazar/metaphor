@@ -148,7 +148,7 @@ def get_mb_per_cores(wildcards, threads, task_type="big"):
     wildcards: Snakemake wildcards (passed on automatically)
     threads: number of threads passed to the workflow
     """
-    if config["local_execution"]:
+    if not config["scheduler"]:
         return threads * int(config["max_mb"] / workflow.cores)
     else:
         return get_max_mb(0.0)

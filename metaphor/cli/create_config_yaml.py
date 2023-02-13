@@ -120,8 +120,8 @@ def get_general_settings():
         int,
     )
     setting_prompt(
-        "Are you running Metaphor locally (i.e. not on a cluster)?",
-        "local_execution",
+        "Are you running Metaphor locally (i.e. not on a scheduler system such as SLURM)?",
+        "scheduler",
         None,
         bool,
     )

@@ -148,25 +148,15 @@ description of each configuration value in the [Configuration](./configuration.m
 
 Most Snakemake workflows will have specific settings for **resources** that will be required from the machine.
 There are three main resources in Snakemake: **`mem_mb`**, **`disk_mb`**, and **`tmpdir`**. The
-[Snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#resources) have a detailed explanation
-on how they works. 
+[Snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#resources) have a detailed explanation on how these resource settings work. 
 
-In addition to these, an important resource is the number of cores passed on to the workflow. Metaphor has two memory
-settings:
-* `max_mb`; and
-* `mb_per_core`.
+Metaphor's main memory setting is `max_mb`, which defines the maximum RAM (in megabytes) to be used by the workflow. There is an additional setting, `scheduler`, which should be set to `True` if the workflow is being run on a scheduler, such as SLURM, PBS, HTCondor, etc/
 
-The former defines the maximum amount of memory to be requested, *i.e.* it should be under your machine's RAM limit.
-This setting is used by rules that are memory intensive but run on one or few cores, through the `get_max_mb` function
+`max_mb` defines the maximum amount of memory to be requested by the workflow, *i.e.* it should be under your machine's RAM limit. When `scheduler` is set to `True`, this will be the memory requested from each node.
+The `max_mb` setting is used by rules that are memory intensive but run on one or few cores, through the `get_max_mb` function
 defined in the [`common.smk`](https://github.com/vinisalazar/metaphor/blob/main/metaphor/workflow/rules/common.smk)
 module. This function has a `margin` argument which defines how much of the `max_mb` should the rule use. The default
 value for `margin` is `0.2`, which means the rule will use 80% of what's defined in `max_mb`.
-
-The latter option, `mb_per_core`, is used by rules that require many cores, such as assembly or binning rules. This
-value is multiplied by the number of cores used by that rule to calculate the amount of memory to be requested. So, if
-`mb_per_core` is `2048` and Metaphor is executed with 8 cores, up to 16GB of RAM may be used; if your machine has 12
-cores and 64 GB RAM, you can set your `mb_per_core` to `4096` as that may use up to 48 GB RAM, and so on. To calculate
-the optimal value for this setting, simply divide `max_mb` by the number of cores that you will use for the workflow.
 
 ## Assembly and binning
 

@@ -23,7 +23,7 @@ properties:
 
   max_mb:
     type: integer
-  local_execution:
+  scheduler:
     type: boolean
 
   transparent_background:
