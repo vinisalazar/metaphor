@@ -288,11 +288,11 @@ def get_fastq_groups(wildcards, sense, kind="filtered"):
 def get_multiqc_input():
     outdir = Path("output/qc/fastqc/")
     raw = [
-        outdir.joinpath(Path(file).stem + "-raw_fastqc.zip")
+        outdir.joinpath(f"{str(Path(file).stem)}-raw_fastqc.zip")
         for file in samples[["R1", "R2"]].values.flat
     ]
     trimmed = [
-        outdir.joinpath(Path(file).stem + "-trimmed_fastqc.zip")
+        outdir.joinpath(f"{str(Path(file).stem)}-trimmed_fastqc.zip")
         for file in samples[["R1", "R2"]].values.flat
     ]
 
