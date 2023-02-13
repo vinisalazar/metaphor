@@ -44,8 +44,8 @@ These settings are valid for all steps in the workflow.
 
 **`megahit:`**    
 &nbsp;&nbsp;&nbsp;**`preset:`** `"meta-large"`    
-&nbsp;&nbsp;&nbsp;**`cleanup:`** `True`    
 &nbsp;&nbsp;&nbsp;**`min_contig_len:`** `1000`    
+&nbsp;&nbsp;&nbsp;**`remove_intermediate_contigs:`** `True`    
 
 
 **`rename_contigs:`**    

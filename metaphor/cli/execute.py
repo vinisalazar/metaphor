@@ -37,6 +37,7 @@ def main(args):
     extras = args.extras
     profile = args.profile
     skip_report = args.skip_report
+    unlock = args.unlock
 
     if not Path(config_file).exists():
         if not confirm:
@@ -100,6 +101,9 @@ def main(args):
     if profile:
         cmd += f" --profile {profile} "
 
+    if unlock:
+        cmd += f"  --unlock"
+
     cmd += f" {extras} "
 
     retcode = run_cmd(cmd)
@@ -124,5 +128,5 @@ def main(args):
         print(format_cmd)
         retcode = run_cmd(cmd)
         get_successful_completion(
-            retcode, f"Metaphor finished successf ully and generated the report above."
+            retcode, f"Metaphor finished successfully and generated the report above."
         )

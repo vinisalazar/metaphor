@@ -76,6 +76,11 @@ def main():
         action="store_true",
         help="Don't create report when run finishes.",
     )
+    execute.add_argument(
+        "--unlock",
+        action="store_true",
+        help="Unlock the working directory. For more information, see the Snakemake '--unlock' flag."
+    )
 
     execute.add_argument(
         "--conda-prefix",
@@ -96,6 +101,7 @@ def main():
         extras="",
         skip_report=False,
         conda_prefix=None,
+        unlock=False,
     )
 
     ###############################################################
@@ -151,7 +157,7 @@ def main():
         func=metaphor_test,
         directory="test_data_metaphor",
         cores=3,
-        max_mb=8196,
+        max_mb=8192,
         dry_run=False,
         extras="",
     )

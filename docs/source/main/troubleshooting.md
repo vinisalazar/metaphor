@@ -171,10 +171,10 @@ Error: Directory cannot be locked. Please make sure that no other Snakemake proc
 If you are sure that no other instances of snakemake are running on this directory, the remaining lock was likely caused by a kill signal or a power loss. It can be removed with the --unlock argument.
 ```
 
-Snakemake places a "lock" on work directories to ensure that two executions don't run at the simultaneously, as that may cause problems (*e.g.* two processes writing to the same file). If the analysis is interrupted suddenly, that lock may remain in place. If we read the error message, we see that Snakemake asks the lock to be removed with the `--unlock` argument. We can pass that with the `-e` flag from the previous section:
+Snakemake places a "lock" on work directories to ensure that two executions don't run at the simultaneously, as that may cause problems (*e.g.* two processes writing to the same file). If the analysis is interrupted suddenly, that lock may remain in place. If we read the error message, we see that Snakemake asks the lock to be removed with the `--unlock` argument. We can pass that directly to the `metaphor execute` command:
 
 ```{code-block} console
-(metaphor)$ metaphor execute -y -c 32 -e " --unlock"
+(metaphor)$ metaphor execute -y -c 32 --unlock
 
 Unlocking working directory.
 Metaphor finished successfully.

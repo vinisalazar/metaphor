@@ -1,10 +1,9 @@
 # Metaphor
-## Metagenomics Pipeline for sHOrt Reads
+## A general-purpose workflow for genome-resolved metagenomics
 
-![https://metaphor-workflow.readthedocs.io/](https://img.shields.io/readthedocs/metaphor-workflow?color=g) ![https://github.com/vinisalazar/metaphor/tags](https://img.shields.io/github/v/tag/vinisalazar/metaphor?color=g&label=release)
-
-[![Version](https://anaconda.org/bioconda/metaphor/badges/version.svg)](https://anaconda.org/bioconda/metaphor)
-<!-- [![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor) -->
+[![ReadTheDocs](https://img.shields.io/readthedocs/metaphor-workflow?color=g)](https://metaphor-workflow.readthedocs.io/) [![Release](https://img.shields.io/github/v/tag/vinisalazar/metaphor?color=g&label=release)]([https://github.com/vinisalazar/metaphor/tags])
+[![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor)[![Version](https://anaconda.org/bioconda/metaphor/badges/version.svg)](https://anaconda.org/bioconda/metaphor)  
+[![DOI](https://img.shields.io/badge/doi-10.1101%2F2023.02.09.527784-blue)](https://doi.org/10.1101/2023.02.09.527784) [![bioRxiv](https://img.shields.io/badge/biorXiv-2023.02.09.527784-BD2635)](https://www.biorxiv.org/content/10.1101/2023.02.09.527784)
 
 Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads data. It includes the following steps:
 - Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [fastp](https://github.com/marcelm/fastp))
@@ -14,7 +13,7 @@ Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads 
 - Annotation (with [Prodigal](https://github.com/hyattpd/Prodigal), [Diamond](https://github.com/bbuchfink/diamond), and the [NCBI COG database](https://www.ncbi.nlm.nih.gov/research/cog-project/))
 - Postprocessing (with custom scripts)
 
-Please cite these software if you use Metaphor. The bib files are located [here](./metaphor/workflow/bibs/) for your convenience.
+**Please cite these software if you use Metaphor. The bib files are located [here](./metaphor/workflow/bibs/) for your convenience.**
 Metaphor will support automatic citation in the future.
 
 Metaphor aims to be concise, portable, and sustainable. It only includes third-party software that is properly packaged and easily installable.
@@ -49,18 +48,23 @@ $ metaphor test -h
 $ metaphor test
 ```
 
-Testing may take a long time (a couple of hours), so please be patient. After testing, you can run the workflow on the same directory, this way you won't have to install the conda dependencies all over again.
+Testing may take a long time (a couple of hours), so please be patient. After testing, most dependencies will already be installed, which will save time on your next execution.
 
 ### Usage
-To run Metaphor on your data, we recommend that you create a configuration profile specific to your needs, and then run Metaphor on your directory of FASTQ files:
+To run Metaphor on your data, we recommend that you create a configuration profile specific to your needs, and then create a tabular file containing your sample names and file paths. You can do this with the following commands:
 
 ```bash
-# Run this and follow the screen prompts
+# Create your configuration profile
 $ metaphor config settings
 
-# To execute with your config simply type 
-$ metaphor execute -i path/to/directory/of/fastq
+# Create your tabular file with samples
+$ metaphor config input -i <DIRECTORY_WITH_FASTQ_FILES>
+
+# Then, to execute simply type 
+$ metaphor execute
 ```
+
+Metaphor will automatically detect the `metaphor_settings.yaml` and `samples.csv` files.
 
 If you receive any errors, feel free to open an issue describing your problem.
 
@@ -69,6 +73,5 @@ If you receive any errors, feel free to open an issue describing your problem.
 Metaphor is a derivative work of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), originally released under the
 Apache 2.0 license, developed by [Bobbie Shaban](https://gitlab.unimelb.edu.au/bshaban), Mar Quiroga, Robert Turnbull
 and Edoardo Tescari at Melbourne Data Analytics Platform ([MDAP](https://mdap.unimelb.edu.au/)) at the
-University of Melbourne.
-[Link to MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/). For more information, please see the [license file](./LICENSE.md).
+University of Melbourne. MetaGenePipe is in press at [The Journal of Open Source Software](https://joss.theoj.org/papers/c9c52942084258507eeb1693b83153ba). For more information, please see the [license file](./LICENSE.md).
 

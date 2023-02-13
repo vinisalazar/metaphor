@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, along with relevant third-party software."
+authors:
+  - family-names: "Salazar"
+    given-names: "Vinícius W."
+    orcid: "http://orcid.org/0000-0002-8362-3195"
+  - family-names: "Shaban"
+    given-names: "Babak"
+  - family-names: "Quiroga"
+    given-names: "Maria del Mar"
+    orcid: "http://orcid.org/0000-0002-8943-2808"
+  - family-names: "Turnbull"
+    given-names: "Robert"
+    orcid: "http://orcid.org/0000-0003-1274-6750"
+  - family-names: "Tescari"
+    given-names: "Edoardo"
+    orcid: "http://orcid.org/0000-0003-1157-4897"
+  - family-names: "Marcelino"
+    given-names: "Vanessa R."
+    orcid: "http://orcid.org/0000-0003-1755-0597"
+  - family-names: "Verbruggen"
+    given-names: "Heroen"
+    orcid: "http://orcid.org/0000-0002-6305-4749"
+  - family-names: "Lê Cao"
+    given-names: "Kim-Anh"
+    orcid: "http://orcid.org/0000-0003-3923-1116"
+title: "Metaphor - A workflow for streamlined assembly and binning of metagenomes"
+version: 1.7.3
+doi: 10.1101/2023.02.09.527784
+date-released: 2023-02-10
+url: "https://github.com/vinisalazar/metaphor"

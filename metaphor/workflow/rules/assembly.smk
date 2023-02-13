@@ -47,10 +47,11 @@ rule megahit:
         min_contig_len=config["megahit"]["min_contig_len"],
         k_list="21,29,39,59,79,99,119,141",
         preset=config["megahit"]["preset"],
-        cleanup=lambda w, output: cleanup_rule(
-            "megahit", Path(output.contigs).parent.joinpath("intermediate_contigs")
-        ),
-        sample=lambda w: w.group,
+        remove_intermediate_contigs=lambda w, output: "rm -rf "
+        + str(Path(output.contigs).parent.joinpath("intermediate_contigs"))
+        + "  # to avoid this, disable the 'remove_intermediate_contigs' setting in the config file."
+        if config["megahit"]["remove_intermediate_contigs"]
+        else "",
     threads: get_threads_per_task_size("big")
     wildcard_constraints:
         group="|".join(group_names),
@@ -65,17 +66,17 @@ rule megahit:
     shell:
         """
         # MegaHit has no --force flag, so we must remove the created directory prior to running
-        rm -rf {params.out_dir}/{params.sample}
+        rm -rf {params.out_dir}/{wildcards.group}
 
-        megahit -1 {params.fastq1} -2 {params.fastq2}         \
-                -o {params.out_dir}/{params.sample}         \
+        megahit -1 {params.fastq1} -2 {params.fastq2}       \
+                -o {params.out_dir}/{wildcards.group}       \
                 --presets {params.preset}                   \
-                --out-prefix {params.sample}                \
+                --out-prefix {wildcards.group}              \
                 --min-contig-len {params.min_contig_len}    \
                 -t {threads}                                \
                 --k-list {params.k_list} &> {log}
 
-        {params.cleanup}
+        {params.remove_intermediate_contigs}
         """
 
 

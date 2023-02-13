@@ -23,24 +23,13 @@ properties:
 
   max_mb:
     type: integer
-  local_execution:
+  scheduler:
     type: boolean
 
   transparent_background:
     type: boolean
   dpi:
     type: integer
-
-  cleanup_modules:
-    type: object
-    properties:
-      activate:
-        type: boolean
-      modules:
-        type: string
-    required:
-      - activate
-      - modules
 
 ###############################################################
 # QC
@@ -110,16 +99,14 @@ properties:
     properties:
       preset:
         type: string
-      cleanup:
-        type: boolean
       min_contig_len:
         type: integer
-      rename_contigs:
+      remove_intermediate_contigs:
         type: boolean
     required:
       - preset
-      - cleanup
       - min_contig_len
+      - remove_intermediate_contigs
 
   rename_contigs:
     type: object
@@ -343,11 +330,10 @@ required:
   - data_dir
   - coassembly
   - max_mb
-  - local_execution
+  - scheduler
   - transparent_background
   - dpi
   - output_format
-  - cleanup_modules
   - fastp
   - merge_reads
   - host_removal
