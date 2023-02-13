@@ -266,9 +266,9 @@ rule jgi_summarize_bam_contig_depths:
     input:
         lambda wildcards: expand(
             "output/mapping/bam/{binning_group}/{sample}-to-{kind}.sorted.bam",
-            binning_group=wildcards.binning_group,
-            sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
-            "sample_name"
+        binning_group=wildcards.binning_group,
+        sample=samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        "sample_name"
             ].unique(),
             kind=wildcards.kind,
         ),

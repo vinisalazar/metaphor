@@ -101,17 +101,17 @@ rule concoct:
         catalogue="output/mapping/{binning_group}/{binning_group}_contigs_catalogue.fna",
         bams=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}-to-contigs.sorted.bam",
-            sample=list(
-                samples.query(f"binning_group == '{wildcards.binning_group}'")[
-            "sample_name"
+        sample=list(
+            samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        "sample_name"
                 ].unique()
             ),
         ),
         bais=lambda wildcards: expand(
             "output/mapping/bam/{{binning_group}}/{sample}-to-contigs.sorted.bam.bai",
-            sample=list(
-                samples.query(f"binning_group == '{wildcards.binning_group}'")[
-            "sample_name"
+        sample=list(
+            samples.query(f"binning_group == '{wildcards.binning_group}'")[
+        "sample_name"
                 ].unique()
             ),
         ),
