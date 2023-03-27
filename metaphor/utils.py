@@ -92,9 +92,11 @@ def run_cmd(cmd):
         retcode = check_call(cmd.split())
     except CalledProcessError as e:
         retcode = e.returncode
+        print(f"Metaphor did not finish with exit code {retcode}. Please see the error message below.")
         raise
     except Exception as e:
         retcode = 1
+        print(f"Metaphor did not finish with exit code {retcode}. Please see the error message below.")
         raise
 
     return retcode
