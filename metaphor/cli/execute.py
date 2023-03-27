@@ -115,7 +115,7 @@ def main(args):
 
     # Don't run report if running unlock, lint or cleanup metadata option
     options = ["unlock", "lint", "cleanup-metadata", "dry-run", "dryrun"]
-    skip_report = True if any(f"--{o}" in extras for o in options) else skip_report
+    skip_report = True if any(f"--{o}" in cmd for o in options) else skip_report
 
     if not skip_report:
         timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
