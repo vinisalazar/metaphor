@@ -7,6 +7,11 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+})
+
 #######################################
 # Taxa bar plots
 #######################################
@@ -108,13 +113,13 @@ def process_rank_file(args):
     rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
 
     # Sort in descending abundance
-    rank_df = rank_df.loc[rank_df.sum(axis=1).sort_values(ascending=False).index]
+    rank_df = rank_df.loc[rank_df.sum(axis=1, numeric_only=True).sort_values(ascending=False).index]
 
     # Apply cutoff
     if cutoff:
         rank_df = rank_df.iloc[:cutoff]
         # Group low abundance and undetermined taxa
-        filtered = abs(rank_df.sum() - 1)
+        filtered = abs(rank_df.sum(numeric_only=True) - 1)
         rank_df.loc[filtered_label] = filtered
 
         rank_df = rank_df[sorted(rank_df.columns, reverse=True)]

@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 import argparse
 import logging
-from pathlib import Path
+
 
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+})
 
 def create_heatmap(args):
     logging.info(f"Processing COG categories file: '{args.categories_file}'.")
