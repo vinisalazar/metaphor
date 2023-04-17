@@ -9,6 +9,13 @@ from matplotlib import pyplot as plt
 
 sns.set_palette("colorblind")
 
+plt.rcParams.update(
+    {
+        "text.usetex": True,
+        "font.family": "sans-serif",
+    }
+)
+
 
 def load_data(filepath):
     df = pd.read_csv(filepath)
@@ -82,7 +89,7 @@ def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
 
     order = (
         plot_data.groupby("rule")
-        .mean()
+        .mean(numeric_only=True)
         .sort_values(time_unit + "_corrected", ascending=False)
         .index.to_list()
     )
@@ -125,7 +132,6 @@ def runtime_barplot_errorbar(df, n_samples=None, **kwargs):
 
 
 def memory_barplot_sum(df, **kwargs):
-
     """
     Generates barplot of sum of rules' memory usage.
     """
@@ -208,7 +214,7 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
 
     order = (
         plot_data.groupby("rule")
-        .mean()
+        .mean(numeric_only=True)
         .sort_values(memory_unit, ascending=False)
         .index.to_list()
     )
@@ -234,7 +240,6 @@ def memory_barplot_errorbar(df, n_samples=None, **kwargs):
     for patch in ax.patches:
         r, g, b, a = patch.get_facecolor()
         patch.set_facecolor((r, g, b, 0.3))
-
 
     handles, labels = ax.get_legend_handles_labels()
     handles, labels = handles[4:], labels[4:]

@@ -96,7 +96,7 @@ def create_merged_df(dmnd_out, cog_csv, def_tab, coverage_depths):
     df = df.drop_duplicates("qseqid")
 
     df["Protein ID"] = (
-        df["sseqid"].str[::-1].str.split("_", 1).apply(lambda l: ".".join(l)).str[::-1]
+        df["sseqid"].str[::-1].apply(lambda s: s.split("_", 1)).apply(lambda l: ".".join(l)).str[::-1]
     )
     logging.info(f"Loaded {len(df)} records.")
 
