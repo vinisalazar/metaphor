@@ -11,6 +11,14 @@ from matplotlib.colors import ListedColormap
 
 sns.set_palette("colorblind")
 
+plt.rcParams.update(
+    {
+        "font.size": 12,
+        "text.usetex": True,
+        "font.family": "sans-serif",
+    }
+)
+
 
 def create_df(file, score_threshold):
     df = pd.read_csv(file, sep="\t")
@@ -43,7 +51,16 @@ def create_df(file, score_threshold):
 
 
 def bin_quality(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
+    df,
+    rename_dict,
+    score_threshold,
+    qc_pass,
+    domain,
+    binning_group,
+    save=True,
+    transparent=True,
+    dpi=600,
+    output_format="png",
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -96,7 +113,16 @@ def bin_quality(
 
 
 def bin_scores(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
+    df,
+    rename_dict,
+    score_threshold,
+    qc_pass,
+    domain,
+    binning_group,
+    save=True,
+    transparent=True,
+    dpi=600,
+    output_format="png",
 ):
     fig, ax = plt.subplots(figsize=(8, 8))
     hp = sns.histplot(
@@ -132,7 +158,16 @@ def bin_scores(
 
 
 def bin_quantity(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
+    df,
+    rename_dict,
+    score_threshold,
+    qc_pass,
+    domain,
+    binning_group,
+    save=True,
+    transparent=True,
+    dpi=600,
+    output_format="png",
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
     plot_data = pd.crosstab(df["Binning software"], df[qc_pass])
@@ -168,7 +203,16 @@ def bin_quantity(
 
 
 def bin_sizes(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
+    df,
+    rename_dict,
+    score_threshold,
+    qc_pass,
+    domain,
+    binning_group,
+    save=True,
+    transparent=True,
+    dpi=600,
+    output_format="png",
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
     bp = sns.boxplot(
@@ -210,7 +254,16 @@ def bin_sizes(
 
 
 def bin_N50(
-    df, rename_dict, score_threshold, qc_pass, domain, binning_group, save=True, transparent=True, dpi=600, output_format="png"
+    df,
+    rename_dict,
+    score_threshold,
+    qc_pass,
+    domain,
+    binning_group,
+    save=True,
+    transparent=True,
+    dpi=600,
+    output_format="png",
 ):
     fig, ax = plt.subplots(figsize=(6, 6))
     bp = sns.boxplot(
@@ -257,11 +310,66 @@ def main(args):
     dpi = getattr(args, "dpi", 600)
     output_format = getattr(args, "output_format", "png")
     df, rename_dict, qc_pass, domain = create_df(bins_eval, score_threshold)
-    bin_quality(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
-    bin_scores(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
-    bin_quantity(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
-    bin_sizes(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
-    bin_N50(df, rename_dict, score_threshold, qc_pass, domain, binning_group, save, transparent=transparent, dpi=dpi, output_format=output_format)
+    bin_quality(
+        df,
+        rename_dict,
+        score_threshold,
+        qc_pass,
+        domain,
+        binning_group,
+        save,
+        transparent=transparent,
+        dpi=dpi,
+        output_format=output_format,
+    )
+    bin_scores(
+        df,
+        rename_dict,
+        score_threshold,
+        qc_pass,
+        domain,
+        binning_group,
+        save,
+        transparent=transparent,
+        dpi=dpi,
+        output_format=output_format,
+    )
+    bin_quantity(
+        df,
+        rename_dict,
+        score_threshold,
+        qc_pass,
+        domain,
+        binning_group,
+        save,
+        transparent=transparent,
+        dpi=dpi,
+        output_format=output_format,
+    )
+    bin_sizes(
+        df,
+        rename_dict,
+        score_threshold,
+        qc_pass,
+        domain,
+        binning_group,
+        save,
+        transparent=transparent,
+        dpi=dpi,
+        output_format=output_format,
+    )
+    bin_N50(
+        df,
+        rename_dict,
+        score_threshold,
+        qc_pass,
+        domain,
+        binning_group,
+        save,
+        transparent=transparent,
+        dpi=dpi,
+        output_format=output_format,
+    )
     print()
 
 
