@@ -9,13 +9,6 @@ from matplotlib import pyplot as plt
 
 sns.set_palette("colorblind")
 
-plt.rcParams.update(
-    {
-        "text.usetex": True,
-        "font.family": "sans-serif",
-    }
-)
-
 
 def load_data(filepath):
     df = pd.read_csv(filepath)

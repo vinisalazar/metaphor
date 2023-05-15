@@ -11,14 +11,6 @@ from matplotlib.colors import ListedColormap
 
 sns.set_palette("colorblind")
 
-plt.rcParams.update(
-    {
-        "font.size": 12,
-        "text.usetex": True,
-        "font.family": "sans-serif",
-    }
-)
-
 
 def create_df(file, score_threshold):
     df = pd.read_csv(file, sep="\t")
