@@ -7,10 +7,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
-plt.rcParams.update({
-    "text.usetex": True,
-    "font.family": "sans-serif",
-})
 
 #######################################
 # Taxa bar plots
