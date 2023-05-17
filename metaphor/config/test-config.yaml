@@ -97,7 +97,7 @@ cog_functional_parser:
   db: "COG2020"
 
 lineage_parser:
-  activate: False
+  activate: True
   taxonmap: "COG2020/cog-20.taxonmap.tsv"
   rankedlineage: "taxonomy/rankedlineage.dmp"
   names: "taxonomy/names.dmp"
