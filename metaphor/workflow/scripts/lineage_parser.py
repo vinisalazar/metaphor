@@ -29,7 +29,7 @@ def main(args):
     tax = tax.join(rankedlineage)
 
     for rank in ranks:
-        rank_df = tax.groupby(rank).sum()
+        rank_df = tax.groupby(rank).sum(numeric_only=True)
         outfile = getattr(args, rank)
         rank_df.to_csv(outfile, sep="\t")
         logging.info(f"Wrote {len(rank_df)} records to '{outfile}'.")
