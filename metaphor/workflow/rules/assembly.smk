@@ -129,7 +129,7 @@ rule assembly_report:
     benchmark:
         "output/benchmarks/assembly/assembly_report.txt"
     conda:
-        "../envs/utils.yaml"
+        "../envs/python-utils.yaml"
     script:
         "../scripts/assembly_report.py"
 

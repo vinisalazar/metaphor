@@ -66,7 +66,7 @@ rule plot_benchmarks:
     benchmark:
         "output/benchmarks/postprocessing/plot_benchmarks.txt"
     conda:
-        "../envs/utils.yaml"
+        "../envs/python-utils.yaml"
     script:
         "../scripts/plot_benchmarks.py"
 
