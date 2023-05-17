@@ -1,0 +1,10 @@
+# Base environment for Python scripts
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - biopython
+  - pandas>=2
+  - python>=3.9
+  - seaborn
+  - seqstats  # This has to be here because assembly_report.py runs it from Python

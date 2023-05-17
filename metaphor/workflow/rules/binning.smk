@@ -239,6 +239,6 @@ rule bins_report:
     benchmark:
         "output/benchmarks/binning/plots/{binning_group}.txt"
     conda:
-        "../envs/utils.yaml"
+        "../envs/python-utils.yaml"
     script:
         "../scripts/bins_report.py"

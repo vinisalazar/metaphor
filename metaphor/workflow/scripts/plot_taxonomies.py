@@ -106,6 +106,7 @@ def create_tax_barplot(
 def process_rank_file(args):
     cutoff = int(args.tax_cutoff)
     rank_df = pd.read_csv(args.taxonomy_relative_counts, sep="\t", index_col=0)
+
     rank_df = rank_df.loc[[i for i in rank_df.index if not isinstance(i, float)]]
 
     # Sort in descending abundance
@@ -146,7 +147,6 @@ def parse_args():
     parser.add_argument("--taxonomy-relative-counts")
     parser.add_argument("--tax-cutoff")
     parser.add_argument("--taxonomy-barplot")
-    parser.add_argument("--rank")
     parser.add_argument("--colormap", default="tab20c")
     parser.add_argument("--white-background", action="store_true", default=False)
     parser.add_argument("--output-format", type=str, default="png")

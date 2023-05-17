@@ -5,6 +5,9 @@
 [![Bioconda](https://img.shields.io/conda/dn/bioconda/metaphor.svg?label=Bioconda )](https://anaconda.org/bioconda/metaphor)[![Version](https://anaconda.org/bioconda/metaphor/badges/version.svg)](https://anaconda.org/bioconda/metaphor)  
 [![DOI](https://img.shields.io/badge/doi-10.1101%2F2023.02.09.527784-blue)](https://doi.org/10.1101/2023.02.09.527784) [![bioRxiv](https://img.shields.io/badge/biorXiv-2023.02.09.527784-BD2635)](https://www.biorxiv.org/content/10.1101/2023.02.09.527784)
 
+### Attention: Metaphor is currently in public beta phase.
+**Minor problems are expected to occur. Please do not be discouraged by this. Post an issue to this repository and we'll do our best to help you as quickly as possible.**
+
 Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads data. It includes the following steps:
 - Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [fastp](https://github.com/marcelm/fastp))
 - Assembly (with [Megahit](https://github.com/voutcn/megahit), and evaluation is done with [MetaQUAST](https://github.com/ablab/quast))
