@@ -11,3 +11,4 @@ dependencies:
   - snakemake>=7
   - snakemake-wrapper-utils
   - tqdm                # required for cli
+  - zstandard
