@@ -1,7 +1,7 @@
 <tool id="metaphor" name="Metaphor - Assembly and binning of metagenomes" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
     <description>Metaphor is a workflow for assembly and binning of metagenomes. Use it to generate MAGs and obtain contig-level functional taxonomic annotation.</description>
     <requirements>
-        <requirement type="package">metaphor</requirement>
+        <requirement type="package" version="1.7.7">metaphor</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
         metaphor execute -f metaphor_settings.yaml -c 12
@@ -13,7 +13,43 @@
         <data name="output" format="data" />
     </outputs>
     <help><![CDATA[
-        TODO: Fill in help.
+        usage: metaphor execute [-h] [-i INPUT_DIR] [-f CONFIGFILE] [-e EXTRAS] [-j]
+                        [-c CORES] [-l PROFILE] [-m MAX_MB] [-y]
+                        [--skip-report] [--unlock]
+                        [--conda-prefix CONDA_PREFIX]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT_DIR, --input-dir INPUT_DIR
+                        Input directory containing FASTQ files. (default:
+                        None)
+  -f CONFIGFILE, --configfile CONFIGFILE
+                        Configuration file to run the workflow. (default:
+                        metaphor_settings.yaml)
+  -e EXTRAS, --extras EXTRAS
+                        String of extra arguments to be passed on to
+                        Snakemake. (default: )
+  -j, --join-units      Whether to join units (S001, S002) with the same
+                        preffix as the same file. (default: False)
+  -c CORES, --cores CORES
+                        Number of cores to be used. (default: 4)
+  -l PROFILE, --profile PROFILE
+                        Profile to be used to run Metaphor. (default: None)
+  -m MAX_MB, --max_mb MAX_MB
+                        Max amount of MB RAM to be used. Can be set in config.
+                        (default: None)
+  -y, --confirm         Don't ask for confirmation when running tests.
+                        (default: False)
+  --skip-report         Don't create report when run finishes. (default:
+                        False)
+  --unlock              Unlock the working directory. For more information,
+                        see the Snakemake '--unlock' flag. (default: False)
+  --conda-prefix CONDA_PREFIX
+                        Conda prefix where conda environments will be
+                        installed. Default is config directory, this way
+                        multiple runs of Metaphor will share the same
+                        environments. (default: None)
+
     ]]></help>
     <citations>
         <citation type="doi">10.1101/2023.02.09.527784</citation>

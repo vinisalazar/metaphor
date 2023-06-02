@@ -7,5 +7,6 @@ planemo tool_init --id 'metaphor' \
        --output output \
        --doi '10.1101/2023.02.09.527784' \
        --cite_url 'https://www.biorxiv.org/content/10.1101/2023.02.09.527784' \
-       --requirement 'metaphor' \
+       --help_from_command 'metaphor execute --help' \
+       --requirement 'metaphor@1.7.7' \
        --force
