@@ -1,0 +1,28 @@
+<tool id="metaphor" name="Metaphor - Assembly and binning of metagenomes" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
+    <description>Metaphor is a workflow for assembly and binning of metagenomes. Use it to generate MAGs and obtain contig-level functional taxonomic annotation.</description>
+    <requirements>
+        <requirement type="package">metaphor</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        metaphor execute -f metaphor_settings.yaml -c 12
+    ]]></command>
+    <inputs>
+        <param type="data" name="metaphor_settings" format="yaml" />
+    </inputs>
+    <outputs>
+        <data name="output" format="data" />
+    </outputs>
+    <help><![CDATA[
+        TODO: Fill in help.
+    ]]></help>
+    <citations>
+        <citation type="doi">10.1101/2023.02.09.527784</citation>
+        <citation type="bibtex">
+@misc{renameTODO,
+  author = {LastTODO, FirstTODO},
+  year = {TODO},
+  title = {TODO},
+  url = {https://www.biorxiv.org/content/10.1101/2023.02.09.527784},
+}</citation>
+    </citations>
+</tool>
