@@ -61,3 +61,5 @@ This figure shows a graphical summary of how Metaphor works, where blue rectangl
 .. * :ref:`genindex`
 .. * :ref:`modindex`
 .. * :ref:`search`
+
+All code is licensed under MIT for The University of Melbourne. This documentatio is licensed as Public Domain under `CC0 <https://creativecommons.org/publicdomain/zero/1.0/>`_.
