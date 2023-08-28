@@ -31,7 +31,7 @@ def create_df(file, score_threshold):
 
     # Add total values to legends
     for column in ("Quality threshold", "bin_set"):
-        for ix, value in df[column].value_counts().iteritems():
+        for ix, value in df[column].value_counts().items():
             df[column] = df[column].str.replace(ix, f"{ix} ({value})")
 
     df["SCG_set"] = df["SCG_set"].str.capitalize()

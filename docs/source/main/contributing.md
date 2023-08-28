@@ -52,14 +52,14 @@ git clone git@github.com:your_name_here/metaphor.git
 * Create a development environment. If you aren't yet familiar, get to know [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), the software used to manage our environment.
 
 ```bash
-conda env create --file environment-dev.yml
+conda env create --file environment-dev.yaml
 ```
 
 In case you've already created the environment and changes have been made to it, run:
 
 ```bash
 conda activate metaphor-dev
-conda env update --file environment-dev.yml
+conda env update --file environment-dev.yaml
 ```
 
 * Assuming you've created the environment, install the package locally:
