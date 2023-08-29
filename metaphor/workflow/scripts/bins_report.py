@@ -164,11 +164,10 @@ def bin_quantity(
     fig, ax = plt.subplots(figsize=(6, 6))
     plot_data = pd.crosstab(df["Binning software"], df[qc_pass])
 
-    plot_data.plot(
+    plot_data[sorted(plot_data.columns)].plot(
         kind="bar",
         stacked=True,
         ax=ax,
-        sort_columns=True,
         cmap=ListedColormap(
             ["#4196C5", "#E6AB44"]
         ),  # Change this if switching color palette
