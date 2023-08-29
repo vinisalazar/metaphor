@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+import sys
 import argparse
 
 from metaphor import __version__
@@ -27,6 +27,12 @@ def main():
     from the other scripts defined in this subpackage.
     """
     parser = argparse.ArgumentParser(prog="metaphor", description=__doc__)
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="%(prog)s v{version}".format(version=__version__),
+    )
     subparsers = parser.add_subparsers(help="Command to be executed.", dest="subparser")
 
     ###############################################################
@@ -79,7 +85,7 @@ def main():
     execute.add_argument(
         "--unlock",
         action="store_true",
-        help="Unlock the working directory. For more information, see the Snakemake '--unlock' flag."
+        help="Unlock the working directory. For more information, see the Snakemake '--unlock' flag.",
     )
 
     execute.add_argument(
@@ -136,9 +142,9 @@ def main():
     test.add_argument(
         "-j",
         "--join-units",
-        help="If this option is on, files with the same preffix but with "
+        help="Also known as 'run merging' in some workflows. If this option is on, files with the same preffix but with "
         "S001, S002, S00N distinctions in the filenames will be treated as different units of the same sample, "
-        "i.e. they will be joined into a single file.",
+        "i.e. they will be joined into a single file. This is useful for multiple sequencing lanes for the same sample.",
         action="store_true",
     )
     test.add_argument(
@@ -188,9 +194,9 @@ def main():
     create_input_table_parser.add_argument(
         "-j",
         "--join-units",
-        help="If this option is on, files with the same preffix but with "
+        help="Also known as 'run merging' in some workflows. If this option is on, files with the same preffix but with "
         "S001, S002, S00N distinctions in the filenames will be treated as different units of the same sample, "
-        "i.e. they will be joined into a single file.",
+        "i.e. they will be joined into a single file. This is useful for multiple sequencing lanes for the same sample.",
         action="store_true",
     )
     create_input_table_parser.add_argument(
@@ -255,14 +261,33 @@ def main():
     ###############################################################
     # PARSE ALL ARGS
     ###############################################################
-    args = parser.parse_args()
+    sys_args = sys.argv[1:]
+
+    for value in sys_args:
+        if value in ("-e", "--extras"):
+            ix = sys_args.index(value) + 1
+            try:
+                sys_args[ix] = " " + sys_args[ix]
+            except:
+                print(
+                    "Couldn't fix 'extras' argument. Please provide argument with a space preceding it, .e.g: "
+                    "'-e \" --some-argument\"'."
+                )
+    args = parser.parse_args(sys_args)
     try:
         args.func(args)
     except AttributeError:
         try:
-            eval(args.subparser).print_help()  # get subparser from command and print help
+            eval(
+                args.subparser
+            ).print_help()  # get subparser from command and print help
         except TypeError:  # if no subparser
             parser.print_help()
+    except:
+        print(
+            "An error occurred while running Metaphor. Please check the traceback below."
+        )
+        raise
 
 
 if __name__ == "__main__":

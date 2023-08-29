@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2022 The University of Melbourne
+Copyright (c) 2023 The University of Melbourne
 
 ##### DISCLAIMER
 Metaphor is a derivative work of [MetaGenePipe](https://gitlab.unimelb.edu.au/bshaban/metaGenePipe/), originally released under the

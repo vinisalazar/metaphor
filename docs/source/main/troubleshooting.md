@@ -158,6 +158,7 @@ Snakemake has [many different command line options.](https://snakemake.readthedo
 ```
 
 **It is necessary to add a space** before the `--` characters in the string passed to the `-e` flag, as [argparse](https://docs.python.org/3/library/argparse.html) does not accept arguments starting with dash. This is a [documented issue](https://bugs.python.org/issue9334) with the module.
+**Edit:** this has been fixed as of Metaphor v1.7.8.
 
 ## Unlocking directories
 
