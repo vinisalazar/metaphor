@@ -21,7 +21,7 @@ from metaphor import __name__, __version__, workflow
 # -- Project information -----------------------------------------------------
 
 project = __name__.capitalize()
-copyright = " The University of Melbourne 2022 — This documentation is public domain under a CC0 license"
+copyright = " The University of Melbourne 2023 — This documentation is public domain under a CC0 license"
 author = "Vini Salazar"
 
 # The full version, including alpha/beta/rc tags
