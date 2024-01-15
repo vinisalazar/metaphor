@@ -38,12 +38,12 @@ setup(
     ],
     extras_require={"docs": "myst_parser"},
     keywords="metagenomics binning assembly snakemake workflow pipeline",
-    python_requires=">=3.11",
+    python_requires=">=3.9",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.9",
     ],
 )
