@@ -114,8 +114,8 @@ def main(args):
     get_successful_completion(retcode, msg)
 
     # Don't run report if running unlock, lint or cleanup metadata option
-    options = ["unlock", "lint", "cleanup-metadata", "dry-run", "dryrun"]
-    skip_report = True if any(f"--{o}" in cmd for o in options) else skip_report
+    options = ["unlock", "lint", "cleanup-metadata", "dry-run", "dryrun", "n"]
+    skip_report = True if any(f"--{o}" in cmd for o in options) or any(f"-{o}" in cmd for o in options) else skip_report
 
     if not skip_report:
         timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
