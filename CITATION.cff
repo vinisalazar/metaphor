@@ -25,7 +25,7 @@ authors:
     given-names: "Kim-Anh"
     orcid: "http://orcid.org/0000-0003-3923-1116"
 title: "Metaphor - A workflow for streamlined assembly and binning of metagenomes"
-version: 1.7.3
-doi: 10.1101/2023.02.09.527784
-date-released: 2023-02-10
+version: 1.7.9
+doi: 10.1093/gigascience/giad055
+date-released: 2023-07-31
 url: "https://github.com/vinisalazar/metaphor"
