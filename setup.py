@@ -32,7 +32,7 @@ setup(
         "pandas",
         "pyyaml",
         "requests",
-        "snakemake>=8",
+        "snakemake",
         "snakemake-wrapper-utils",
         "tqdm",
     ],
