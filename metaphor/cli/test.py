@@ -142,7 +142,7 @@ def main(args):
     snakemake --snakefile {snakefile}           \
               --configfile {test_config}        \
               --cores {cores}                   \
-              -p -r                             \
+              --printshellcmds                  \
               --use-conda                       \
               --wrapper-prefix {wrapper_prefix} \
               --conda-prefix {conda_prefix}  

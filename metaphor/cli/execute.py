@@ -84,7 +84,7 @@ def main(args):
     snakemake --snakefile {snakefile}           \
               --configfile {config_file}        \
               --cores {cores}                   \
-              -p -r                             \
+              --printshellcmds                  \
               --use-conda                       \
               --wrapper-prefix {wrapper_prefix}
     """
