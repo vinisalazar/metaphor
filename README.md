@@ -6,6 +6,10 @@
 
 [![DOI](https://img.shields.io/badge/doi-10.1093%2Fgigascience%2Fgiad055-blue)](https://doi.org/10.1093/gigascience/giad055)
 
+> [!IMPORTANT]  
+> **Citation --** if you use Metaphor, please cite the Metaphor publication:
+> Vinícius W Salazar *et al. "Metaphor—A workflow for streamlined assembly and binning of metagenomes"*, **GigaScience**, Volume 12, 2023, giad055, [https://doi.org/10.1093/gigascience/giad055](https://doi.org/10.1093/gigascience/giad055).
+
 Metaphor is a Snakemake-based workflow for analysis of metagenomics short reads data. It includes the following steps:
 - Quality control (with [FastQC](https://github.com/s-andrews/FastQC/), [fastp](https://github.com/marcelm/fastp))
 - Assembly (with [Megahit](https://github.com/voutcn/megahit), and evaluation is done with [MetaQUAST](https://github.com/ablab/quast))
