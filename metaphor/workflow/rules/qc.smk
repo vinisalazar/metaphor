@@ -108,6 +108,8 @@ rule fastqc_raw:  # qc on raw, unmerged reads
         html="output/qc/fastqc/{sample}-{unit}-{read}-raw.html",
     params:
         "--quiet",
+    resources:
+        mem_mb=10000 if get_max_mb(0.5) > 10000 else get_max_mb(0.5),
     wildcard_constraints:
         sample="|".join(sample_IDs),
         unit="|".join(unit_names),
@@ -127,6 +129,8 @@ rule fastqc_trimmed:  # qc on trimmed reads
     output:
         zip="output/qc/fastqc/{sample}-{unit}-{read}-trimmed_fastqc.zip",
         html="output/qc/fastqc/{sample}-{unit}-{read}-trimmed.html",
+    resources:
+        mem_mb=10000 if get_max_mb(0.5) > 10000 else get_max_mb(0.5),
     params:
         "--quiet",
     wildcard_constraints:
@@ -151,6 +155,8 @@ rule fastqc_merged:  # qc on trimmed, merged reads
     output:
         zip="output/qc/fastqc/{sample}-{read}-merged_fastqc.zip",
         html="output/qc/fastqc/{sample}-{read}-merged.html",
+    resources:
+        mem_mb=10000 if get_max_mb(0.5) > 10000 else get_max_mb(0.5),
     params:
         "--quiet",
     wildcard_constraints:
