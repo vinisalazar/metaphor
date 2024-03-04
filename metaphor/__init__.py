@@ -13,7 +13,7 @@ and also variables for the Snakemake wrapper versions to be used, and the packag
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version = "v3.3.3"
+wrapper_version = "v3.4.1"
 wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/"
 
 github_url = "https://github.com/vinisalazar/metaphor"
