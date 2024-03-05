@@ -78,7 +78,7 @@ rule prokka:
         outfile="output/annotation/prokka/{binning_group}/{bin}/{bin}.fna",
     params:
         outdir=lambda w, output: str(Path(output.outfile).parent),
-        args=config["prokka"]["args"],
+        args=config["prokka"]["args"] + " --centre X --compliant",
     wildcard_constraints:
         binning_group="|".join(binning_group_names),
     threads: get_threads_per_task_size("small")
@@ -95,6 +95,7 @@ rule prokka:
         # Get kingdom from bin eval file
         bin_clean=$(echo {wildcards.bin} | sed 's/_sub$//g')  # Remove '_sub' from corrected bins
         kingdom=$(grep $bin_clean {input.bin_evals} | cut -f 5)
+        kingdom=$(echo $kingdom | cut -f 1 -d ' ')
         kingdom=$(echo $kingdom | head -c 1 | tr '[a-z]' '[A-Z]'; echo $kingdom | tail -c +2)
 
         prokka --outdir {params.outdir}     \
