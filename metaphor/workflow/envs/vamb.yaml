@@ -3,7 +3,7 @@ channels:
   - bioconda
   - pytorch
 dependencies:
-  - mkl
+  - mkl=2024.0
   - vamb=3.0.2
   - pytorch
   - torchvision
