@@ -2,7 +2,7 @@ __author__ = "Vini Salazar"
 __email__ = "17276653+vinisalazar@users.noreply.github.com"
 __license__ = "MIT"
 __copyright__ = "The University of Melbourne 2023"
-__version__ = "1.7.11"
+__version__ = "1.7.12"
 
 __doc__ = """
 Metaphor top-level module. This is the entrypoint for the `cli`, `config`, and `workflow` packages.
@@ -13,7 +13,7 @@ and also variables for the Snakemake wrapper versions to be used, and the packag
 
 # Snakemake wrapper version
 # This should match the latest released tag on: https://github.com/snakemake/snakemake-wrappers
-wrapper_version = "v3.4.1"
+wrapper_version = "v3.12.1"
 wrapper_prefix = "https://github.com/snakemake/snakemake-wrappers/raw/"
 
 github_url = "https://github.com/vinisalazar/metaphor"
