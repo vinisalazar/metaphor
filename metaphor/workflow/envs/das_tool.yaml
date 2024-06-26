@@ -5,3 +5,4 @@ dependencies:
   - das_tool=1.1.4
   - diamond
   - coreutils  # for shuf command on OS X
+  - mkl=2024.0
