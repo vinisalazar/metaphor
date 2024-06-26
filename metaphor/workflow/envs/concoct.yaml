@@ -4,7 +4,7 @@ channels:
 dependencies:
   - concoct=1.1.0
   - libopenblas=*=openmp*
-  - mkl
+  - mkl=2024.0
   - python>=3
   - samtools>=1.9
   - scikit-learn=1.1.*
