@@ -2,7 +2,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - das_tool=1.1.4
+  - das_tool=1.1.7
   - diamond
   - coreutils  # for shuf command on OS X
   - mkl=2024.0
