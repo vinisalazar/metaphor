@@ -75,20 +75,6 @@ def bin_quality(
         alpha=0.75,
         s=20,
     )
-    # sns.scatterplot(
-    #     x="Completeness (\\%)",
-    #     y="Redundancy (\\%)",
-    #     data=plot_df[plot_df[qc_pass] == "Fail"],
-    #     # hue="Binning software",
-    #     style=qc_pass,
-    #     markers=[
-    #         "X",
-    #     ],
-    #     color="gray",
-    #     ax=ax,
-    #     alpha=0.5,
-    #     s=20,
-    # )
 
     _ = ax.set_ylim(-5, 105)
     _ = ax.set_xlim(-5, 105)

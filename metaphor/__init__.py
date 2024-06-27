@@ -1,8 +1,8 @@
 __author__ = "Vini Salazar"
 __email__ = "17276653+vinisalazar@users.noreply.github.com"
 __license__ = "MIT"
-__copyright__ = "The University of Melbourne 2023"
-__version__ = "1.7.12"
+__copyright__ = "The University of Melbourne 2024"
+__version__ = "1.7.14"
 
 __doc__ = """
 Metaphor top-level module. This is the entrypoint for the `cli`, `config`, and `workflow` packages.
