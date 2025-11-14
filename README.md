@@ -1,3 +1,10 @@
+> [!WARNING]
+> # Project End-of-Life Notice
+> Metaphor is no longer under active development or maintenance.
+> The code in this project was developed and maintained by a single individual, and the rapid pace of improvements in metagenomics methods makes it impractical to keep Metaphor aligned with current best practices. Going forward, I endorse and recommend the use of [nf-core/mag](https://github.com/nf-core/mag), which is actively maintained by a broader community (including myself) and reflects up-to-date standards for metagenomic assembly and binning.
+> The Metaphor manuscript remains a useful contribution, particularly in its evaluation of co-assembly versus individual-assembly strategies and the methodological insights it provides. However, the software itself should now be considered archived.
+> Thank you to everyone who used, cited, or contributed to Metaphor 💜
+
 # Metaphor
 ## A general-purpose workflow for genome-resolved metagenomics
 
